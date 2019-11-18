@@ -1,6 +1,6 @@
 {
   "name": "@teamwork/autocomplete-editor-codemirror",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "The autocomplete editor adapter for CodeMirror.",
   "keywords": [
     "autocomplete editor CodeMirror"

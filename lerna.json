@@ -1,0 +1,10 @@
+{
+  "packages": ["packages/*"],
+  "version": "independent",
+  "command": {
+    "publish": {
+      "conventionalCommits": true,
+      "message": "chore: publish packages to npm"
+    }
+  }
+}

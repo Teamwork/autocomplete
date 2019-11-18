@@ -1,2 +1,3 @@
-# autocomplete
-An infinitely flexible text autocomplete module for all editors and frameworks.
+# @teamwork/autocomplete
+
+An autocomplete module for all text editors and frameworks.

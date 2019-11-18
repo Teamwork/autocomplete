@@ -1,0 +1,21 @@
+.CodeMirror {
+    border: 1px solid black;
+}
+
+.tw-autocomplete {
+    position: fixed;
+    z-index: 100;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 4px;
+}
+
+.tw-autocomplete__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.tw-autocomplete__list-item--selected {
+    background: #ccc;
+}

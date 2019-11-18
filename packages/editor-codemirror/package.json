@@ -31,7 +31,7 @@
   },
   "peerDependencies": {
     "@teamwork/autocomplete-core": "^0.1.0",
-    "@types/codemirror": "^0.0.78",
+    "@types/codemirror": "^0.0.80",
     "codemirror": "^5.49.0"
   }
 }

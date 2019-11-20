@@ -35,9 +35,9 @@ export interface AutocompleteEvents {
      */
     error: void
     /**
-     * Emitted when the `fetchingItems` property is updated.
+     * Emitted when the `loading` property is updated.
      */
-    fetchingItems: void
+    loading: void
 }
 
 /**
@@ -74,13 +74,13 @@ export interface Autocomplete
      */
     readonly editorPosition: Position
     /**
-     * The error produced by `fetchItems`, if any.
+     * The error produced by `load`, if any.
      */
     readonly error: Error | undefined
     /**
-     * Indicates if autocomplete items are currently being fetched.
+     * Indicates if autocomplete items are currently being loaded.
      */
-    readonly fetchingItems: boolean
+    readonly loading: boolean
     /**
      * Trigger a search for an autocomplete pattern.
      * This function is automatically debounced using `requestAnimationFrame`.
@@ -246,18 +246,18 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
     }
     private _activePatternHandler: PatternHandler | undefined = undefined
 
-    public get fetchingItems(): boolean {
+    public get loading(): boolean {
         return !!this.promise
     }
     private get promise(): Promise<Item[]> | undefined {
         return this._promise
     }
     private set promise(promise: Promise<Item[]> | undefined) {
-        const oldFetchingItems = this.fetchingItems
+        const oldLoading = this.loading
         this._promise = promise
-        const newFetchingItems = this.fetchingItems
-        if (oldFetchingItems !== newFetchingItems) {
-            this.emitLater('fetchingItems')
+        const newLoading = this.loading
+        if (oldLoading !== newLoading) {
+            this.emitLater('loading')
         }
     }
     private _promise: Promise<Item[]> | undefined = undefined
@@ -321,7 +321,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
         if (patternHandler) {
             const item = this.items[this.selectedItem]
             if (item) {
-                patternHandler.acceptItem(this.editorAdapter, item)
+                patternHandler.accept(this.editorAdapter, item)
             }
             this.clear()
         }
@@ -343,7 +343,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
                 this.caretPosition = this.editorAdapter.caretPosition
                 this.editorPosition = this.editorAdapter.editorPosition
                 try {
-                    const itemsOrPomise = patternHandler.fetchItems(
+                    const itemsOrPomise = patternHandler.load(
                         this.editorAdapter,
                         match,
                     )

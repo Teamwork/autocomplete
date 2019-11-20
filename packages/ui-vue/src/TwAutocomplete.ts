@@ -27,8 +27,8 @@ export const TwAutocomplete = Vue.extend({
             caretPosition: defaultPosition,
             editorPosition: defaultPosition,
             error: undefined as Error | undefined,
-            fetchingItems: false,
             items: defaultItems,
+            loading: false,
             matchedText: defaultMatchedText,
             selectedItem: defaultSelectedItem,
         }
@@ -58,8 +58,7 @@ export const TwAutocomplete = Vue.extend({
             const editorPositionListener = () =>
                 (this.editorPosition = autocomplete.editorPosition)
             const errorListener = () => (this.error = autocomplete.error)
-            const fetchingItemsListener = () =>
-                (this.fetchingItems = autocomplete.fetchingItems)
+            const loadingListener = () => (this.loading = autocomplete.loading)
             const itemsListener = () => (this.items = autocomplete.items)
             const matchedTextListener = () =>
                 (this.matchedText = autocomplete.matchedText)
@@ -70,7 +69,7 @@ export const TwAutocomplete = Vue.extend({
             caretPositionListener()
             editorPositionListener()
             errorListener()
-            fetchingItemsListener()
+            loadingListener()
             itemsListener()
             matchedTextListener()
             selectedItemListener()
@@ -79,7 +78,7 @@ export const TwAutocomplete = Vue.extend({
             autocomplete.on('caretPosition', caretPositionListener)
             autocomplete.on('editorPosition', editorPositionListener)
             autocomplete.on('error', errorListener)
-            autocomplete.on('fetchingItems', fetchingItemsListener)
+            autocomplete.on('loading', loadingListener)
             autocomplete.on('items', itemsListener)
             autocomplete.on('matchedText', matchedTextListener)
             autocomplete.on('selectedItem', selectedItemListener)
@@ -89,7 +88,7 @@ export const TwAutocomplete = Vue.extend({
                 autocomplete.off('caretPosition', caretPositionListener)
                 autocomplete.off('editorPosition', editorPositionListener)
                 autocomplete.off('error', errorListener)
-                autocomplete.off('fetchingItems', fetchingItemsListener)
+                autocomplete.off('loading', loadingListener)
                 autocomplete.off('items', itemsListener)
                 autocomplete.off('matchedText', matchedTextListener)
                 autocomplete.off('selectedItem', selectedItemListener)
@@ -145,7 +144,3 @@ export const TwAutocomplete = Vue.extend({
             : createElement()
     },
 })
-
-// TODO use error and fetchingItems in render
-// TODO add unit tests
-// TODO define slots

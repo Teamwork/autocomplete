@@ -1,6 +1,19 @@
 import { Autocomplete, Item, Position } from '@teamwork/autocomplete-core'
 import ko, { Observable, PureComputed } from 'knockout'
 
+/**
+ * The possible view names.
+ */
+export const enum ViewName {
+    error = 'error',
+    items = 'items',
+    loading = 'loading',
+    blank = 'blank',
+}
+
+/**
+ * A Knockout component displaying the state of an `Autocomplete` instance.
+ */
 export class TwAutocomplete {
     /**
      * The Autocomplete instance acting as the source of truth.
@@ -10,12 +23,12 @@ export class TwAutocomplete {
     public readonly caretPosition: Observable<Position>
     public readonly editorPosition: Observable<Position>
     public readonly error: Observable<Error | undefined>
-    public readonly fetchingItems: Observable<boolean>
+    public readonly loading: Observable<boolean>
     public readonly items: Observable<Readonly<Item[]>>
     public readonly matchedText: Observable<string>
     public readonly selectedItem: Observable<number>
-    public readonly hasItems: PureComputed<boolean>
     public readonly caretVisible: PureComputed<boolean>
+    public readonly viewName: PureComputed<ViewName>
 
     /**
      * Creates a new TwAutocomplete component.
@@ -27,7 +40,7 @@ export class TwAutocomplete {
         this.caretPosition = ko.observable(autocomplete.caretPosition)
         this.editorPosition = ko.observable(autocomplete.editorPosition)
         this.error = ko.observable(autocomplete.error)
-        this.fetchingItems = ko.observable(autocomplete.fetchingItems)
+        this.loading = ko.observable(autocomplete.loading)
         this.items = ko.observable(autocomplete.items)
         this.matchedText = ko.observable(autocomplete.matchedText)
         this.selectedItem = ko.observable(autocomplete.selectedItem)
@@ -36,12 +49,11 @@ export class TwAutocomplete {
         this.autocomplete.on('caretPosition', this.caretPositionListener)
         this.autocomplete.on('editorPosition', this.editorPositionListener)
         this.autocomplete.on('error', this.errorListener)
-        this.autocomplete.on('fetchingItems', this.fetchingItemsListener)
+        this.autocomplete.on('loading', this.loadingListener)
         this.autocomplete.on('items', this.itemsListener)
         this.autocomplete.on('matchedText', this.matchedTextListener)
         this.autocomplete.on('selectedItem', this.selectedItemListener)
 
-        this.hasItems = ko.pureComputed(() => this.items().length > 0)
         this.caretVisible = ko.pureComputed(() => {
             const caretPosition = this.caretPosition()
             const editorPosition = this.editorPosition()
@@ -52,6 +64,17 @@ export class TwAutocomplete {
                 caretPosition.right >= editorPosition.left
             )
         })
+        this.viewName = ko.pureComputed(() => {
+            if (this.error()) {
+                return ViewName.error
+            } else if (this.items().length > 0) {
+                return ViewName.items
+            } else if (this.loading()) {
+                return ViewName.loading
+            } else {
+                return ViewName.blank
+            }
+        })
     }
 
     public dispose(): void {
@@ -59,7 +82,7 @@ export class TwAutocomplete {
         this.autocomplete.off('caretPosition', this.caretPositionListener)
         this.autocomplete.off('editorPosition', this.editorPositionListener)
         this.autocomplete.off('error', this.errorListener)
-        this.autocomplete.off('fetchingItems', this.fetchingItemsListener)
+        this.autocomplete.off('loading', this.loadingListener)
         this.autocomplete.off('items', this.itemsListener)
         this.autocomplete.off('matchedText', this.matchedTextListener)
         this.autocomplete.off('selectedItem', this.selectedItemListener)
@@ -71,8 +94,8 @@ export class TwAutocomplete {
     private editorPositionListener = (): void =>
         this.editorPosition(this.autocomplete.editorPosition)
     private errorListener = (): void => this.error(this.autocomplete.error)
-    private fetchingItemsListener = (): void =>
-        this.fetchingItems(this.autocomplete.fetchingItems)
+    private loadingListener = (): void =>
+        this.loading(this.autocomplete.loading)
     private itemsListener = (): void => this.items(this.autocomplete.items)
     private matchedTextListener = (): void =>
         this.matchedText(this.autocomplete.matchedText)
@@ -80,7 +103,26 @@ export class TwAutocomplete {
         this.selectedItem(this.autocomplete.selectedItem)
 }
 
-export const template = `
+/**
+ * The options expected by the `createTemplate` function.
+ */
+export interface CreateTemplateOptions {
+    errorTemplate?: string
+    itemTemplate?: string
+    blankTemplate?: string
+    loadingTemplate?: string
+}
+
+/**
+ * Creates a new component template with optional customizations.
+ */
+export function createTemplate({
+    errorTemplate = 'Loading failed',
+    itemTemplate = '<!-- ko text: item.text --><!-- /ko -->',
+    blankTemplate = 'No items',
+    loadingTemplate = 'Loading',
+}: CreateTemplateOptions = {}): string {
+    return `
 <!-- ko if: active() && caretVisible() -->
     <div
         class="tw-autocomplete"
@@ -88,10 +130,13 @@ export const template = `
             style: {
                 left: caretPosition().left + 'px',
                 top: caretPosition().bottom + 'px'
-            }
+            },
+            css: {
+                'tw-autocomplete--loading': loading()
+            },
         "
     >
-        <!-- ko if: hasItems -->
+        <!-- ko if: viewName() === 'items' -->
             <ul
                 class='tw-autocomplete__list'
                 data-bind="
@@ -105,7 +150,6 @@ export const template = `
                 <li
                     class="tw-autocomplete__list-item"
                     data-bind="
-                        text: item.text,
                         css: {
                             'tw-autocomplete__list-item--selected': selectedItem() === $index()
                         },
@@ -116,12 +160,32 @@ export const template = `
                             }
                         }
                     "
-                ></li>
+                >
+                    ${itemTemplate}
+                </li>
             </ul>
         <!-- /ko -->
-        <!-- ko ifnot: hasItems -->
-            No content
+        <!-- ko if: viewName() === 'error' -->
+            <div class="tw-autocomplete__error">
+                ${errorTemplate}
+            </div>
+        <!-- /ko -->
+        <!-- ko if: viewName() === 'loading' -->
+            <div class="tw-autocomplete__loading">
+                ${loadingTemplate}
+            </div>
+        <!-- /ko -->
+        <!-- ko if: viewName() === 'blank' -->
+            <div class="tw-autocomplete__blank">
+                ${blankTemplate}
+            </div>
         <!-- /ko -->
     </div>
 <!-- /ko -->
 `
+}
+
+/**
+ * The default component template.
+ */
+export const template = createTemplate()

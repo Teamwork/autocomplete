@@ -248,27 +248,25 @@ describe('PatternHandler', () => {
         })
     })
 
-    describe('fetchItems', () => {
+    describe('load', () => {
         test('default implementation', () => {
             const matchedText = 'abc'
             const patternHandler = createPatternHandler()
             expect(
-                patternHandler.fetchItems(editorAdapter, matchedText),
+                patternHandler.load(editorAdapter, matchedText),
             ).toStrictEqual([])
         })
         test('custom implementation', () => {
             const items: Item[] = []
-            const fetchItems = jest.fn().mockReturnValue(items)
+            const load = jest.fn().mockReturnValue(items)
             const matchedText = 'abc'
-            const patternHandler = createPatternHandler({ fetchItems })
-            expect(patternHandler.fetchItems(editorAdapter, matchedText)).toBe(
-                items,
-            )
-            expect(fetchItems).toHaveBeenCalledWith(editorAdapter, matchedText)
+            const patternHandler = createPatternHandler({ load })
+            expect(patternHandler.load(editorAdapter, matchedText)).toBe(items)
+            expect(load).toHaveBeenCalledWith(editorAdapter, matchedText)
         })
     })
 
-    describe('acceptItem', () => {
+    describe('accept', () => {
         test('default implementation', () => {
             const item: Item = { id: 0, text: 'xyz' }
             const patternHandler = createPatternHandler({
@@ -277,24 +275,24 @@ describe('PatternHandler', () => {
             })
             editorAdapter.textBeforeCaret = 'abc'
             editorAdapter.textAfterCaret = '123'
-            patternHandler.acceptItem(editorAdapter, item)
+            patternHandler.accept(editorAdapter, item)
             expect(editorAdapter.textBeforeCaret).toBe('abxyz')
             expect(editorAdapter.textAfterCaret).toBe('23')
         })
         test('custom implementation', () => {
-            const acceptItem = jest.fn()
+            const accept = jest.fn()
             const item: Item = { id: 0, text: 'xyz' }
             const patternHandler = createPatternHandler({
-                acceptItem,
+                accept,
                 patternAfterCaret: createRegexPattern(/^\d/),
                 patternBeforeCaret: createRegexPattern(/\w$/),
             })
             editorAdapter.textBeforeCaret = 'abc'
             editorAdapter.textAfterCaret = '123'
-            patternHandler.acceptItem(editorAdapter, item)
+            patternHandler.accept(editorAdapter, item)
             expect(editorAdapter.textBeforeCaret).toBe('abc')
             expect(editorAdapter.textAfterCaret).toBe('123')
-            expect(acceptItem).toHaveBeenCalledWith(editorAdapter, item)
+            expect(accept).toHaveBeenCalledWith(editorAdapter, item)
         })
     })
 })

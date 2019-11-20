@@ -39,21 +39,21 @@ export interface Item {
  */
 export interface PatternHandler {
     /**
-     * Fetches autocomplete items for the given editor and matched text.
-     * @param editorAdapter The editor for which to fetch the items.
+     * Loads autocomplete items for the given editor and matched text.
+     * @param editorAdapter The editor for which to load the items.
      * @param matchedText The text matched in the editor.
      * @returns Autocomplete items.
      */
-    fetchItems(
+    load(
         editorAdapter: EditorAdapter,
         matchedText: string,
     ): Item[] | Promise<Item[]>
     /**
      * Accepts the specified autocomplete item in the specified editor adapter.
      * @param editorAdapter The editor in which to accept the item.
-     * @param item An item returned by `fetchItems`.
+     * @param item An item returned by `load`.
      */
-    acceptItem(editorAdapter: EditorAdapter, item: Item): void
+    accept(editorAdapter: EditorAdapter, item: Item): void
     /**
      * Matches its associated autocomplete pattern in the specified editor adapter.
      * @param editorAdapter The editor in which to look for a pattern match.
@@ -89,19 +89,19 @@ export interface CreatePatternHandlerOptions {
      */
     readonly patternAfterCaret?: Pattern
     /**
-     * Overrides `PatternHandler#fetchItems`,
+     * Overrides `PatternHandler#load`,
      * which returns an empty array by default.
      */
-    readonly fetchItems?: (
+    readonly load?: (
         this: PatternHandler,
         editorAdapter: EditorAdapter,
         matchedText: string,
     ) => Item[] | Promise<Item[]>
     /**
-     * Overrides `PatternHandler#acceptItem`,
+     * Overrides `PatternHandler#accept`,
      * which calls `this.replace(editorAdapter, item.text)` by default.
      */
-    readonly acceptItem?: (
+    readonly accept?: (
         this: PatternHandler,
         editorAdapter: EditorAdapter,
         item: Item,
@@ -129,16 +129,16 @@ class PatternHandlerClass implements PatternHandler {
     public constructor({
         patternBeforeCaret = defaultPatternBeforeCaret,
         patternAfterCaret = defaultPatternAfterCaret,
-        acceptItem,
-        fetchItems,
+        accept,
+        load,
     }: CreatePatternHandlerOptions = {}) {
         this.patternBeforeCaret = patternBeforeCaret
         this.patternAfterCaret = patternAfterCaret
-        if (acceptItem) {
-            this.acceptItem = acceptItem
+        if (accept) {
+            this.accept = accept
         }
-        if (fetchItems) {
-            this.fetchItems = fetchItems
+        if (load) {
+            this.load = load
         }
     }
 
@@ -179,14 +179,14 @@ class PatternHandlerClass implements PatternHandler {
         editorAdapter.textAfterCaret = textAfter.substring(lengthAfter)
     }
 
-    public fetchItems(
+    public load(
         _editorAdapter: EditorAdapter,
         _matchedText: string,
     ): Item[] | Promise<Item[]> {
         return []
     }
 
-    public acceptItem(editorAdapter: EditorAdapter, item: Item): void {
+    public accept(editorAdapter: EditorAdapter, item: Item): void {
         this.replace(editorAdapter, item.text)
     }
 }

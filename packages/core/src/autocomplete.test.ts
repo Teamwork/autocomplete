@@ -58,16 +58,10 @@ class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
 
 let letterItems: Item[]
 let numberItems: Item[]
-let letterFetchItems: jest.Mock<
-    Item[] | Promise<Item[]>,
-    [EditorAdapter, string]
->
-let numberFetchItems: jest.Mock<
-    Item[] | Promise<Item[]>,
-    [EditorAdapter, string]
->
-let letterAcceptItem: jest.Mock<void, [EditorAdapter, Item]>
-let numberAcceptItem: jest.Mock<void, [EditorAdapter, Item]>
+let letterLoad: jest.Mock<Item[] | Promise<Item[]>, [EditorAdapter, string]>
+let numberLoad: jest.Mock<Item[] | Promise<Item[]>, [EditorAdapter, string]>
+let letterAccept: jest.Mock<void, [EditorAdapter, Item]>
+let numberAccept: jest.Mock<void, [EditorAdapter, Item]>
 let letterPatternHandler: PatternHandler
 let numberPatternHandler: PatternHandler
 let editorAdapter: MockEditorAdapter
@@ -81,7 +75,7 @@ function expectNotActive(): void {
     expect(autocomplete.matchedText).toBe(defaultMatchedText)
     expect(autocomplete.selectedItem).toBe(defaultSelectedItem)
     expect(autocomplete.error).toBe(undefined)
-    expect(autocomplete.fetchingItems).toBe(false)
+    expect(autocomplete.loading).toBe(false)
 }
 
 function expectActive({
@@ -91,7 +85,7 @@ function expectActive({
     matchedText = 'def',
     selectedItem = 0,
     error,
-    fetchingItems = false,
+    loading = false,
 }: {
     caretPosition?: Position
     editorPosition?: Position
@@ -99,7 +93,7 @@ function expectActive({
     matchedText?: string
     selectedItem?: number
     error?: Error | undefined
-    fetchingItems?: boolean
+    loading?: boolean
 } = {}): void {
     expect(autocomplete.active).toBe(true)
     expect(autocomplete.caretPosition).toBe(caretPosition)
@@ -108,7 +102,7 @@ function expectActive({
     expect(autocomplete.matchedText).toBe(matchedText)
     expect(autocomplete.selectedItem).toBe(selectedItem)
     expect(autocomplete.error).toBe(error)
-    expect(autocomplete.fetchingItems).toBe(fetchingItems)
+    expect(autocomplete.loading).toBe(loading)
 }
 
 beforeEach(() => {
@@ -122,18 +116,18 @@ beforeEach(() => {
         { id: 1, text: 'Number item 1' },
         { id: 2, text: 'Number item 2' },
     ]
-    letterFetchItems = jest.fn().mockReturnValue(letterItems)
-    numberFetchItems = jest.fn().mockReturnValue(numberItems)
-    letterAcceptItem = jest.fn()
-    numberAcceptItem = jest.fn()
+    letterLoad = jest.fn().mockReturnValue(letterItems)
+    numberLoad = jest.fn().mockReturnValue(numberItems)
+    letterAccept = jest.fn()
+    numberAccept = jest.fn()
     letterPatternHandler = createPatternHandler({
-        acceptItem: letterAcceptItem,
-        fetchItems: letterFetchItems,
+        accept: letterAccept,
+        load: letterLoad,
         patternBeforeCaret: createRegexPattern(/[a-zA-Z]+$/),
     })
     numberPatternHandler = createPatternHandler({
-        acceptItem: numberAcceptItem,
-        fetchItems: numberFetchItems,
+        accept: numberAccept,
+        load: numberLoad,
         patternBeforeCaret: createRegexPattern(/[0-9]+$/),
     })
 
@@ -164,8 +158,8 @@ describe('match', () => {
         expectNotActive()
         await whenAnimationFrame()
         expectActive()
-        expect(letterFetchItems).toHaveBeenCalledTimes(1)
-        expect(letterFetchItems).toHaveBeenCalledWith(editorAdapter, 'def')
+        expect(letterLoad).toHaveBeenCalledTimes(1)
+        expect(letterLoad).toHaveBeenCalledWith(editorAdapter, 'def')
 
         // no match
         editorAdapter.textBeforeCaret = ''
@@ -330,19 +324,19 @@ describe('accept', () => {
         expectNotActive()
 
         autocomplete.accept()
-        expect(letterAcceptItem).toHaveBeenCalledTimes(0)
+        expect(letterAccept).toHaveBeenCalledTimes(0)
         await whenAnimationFrame()
         expectNotActive()
     })
     test('no items', async () => {
         const items: Item[] = []
-        letterFetchItems.mockReturnValue(items)
+        letterLoad.mockReturnValue(items)
         autocomplete.match()
         await whenAnimationFrame()
         expectActive({ items, selectedItem: -1 })
 
         autocomplete.accept()
-        expect(letterAcceptItem).toHaveBeenCalledTimes(0)
+        expect(letterAccept).toHaveBeenCalledTimes(0)
         await whenAnimationFrame()
         expectNotActive()
     })
@@ -353,17 +347,14 @@ describe('accept', () => {
         expectActive({ selectedItem: 1 })
 
         autocomplete.accept()
-        expect(letterAcceptItem).toHaveBeenCalledTimes(1)
-        expect(letterAcceptItem).toHaveBeenCalledWith(
-            editorAdapter,
-            letterItems[1],
-        )
+        expect(letterAccept).toHaveBeenCalledTimes(1)
+        expect(letterAccept).toHaveBeenCalledWith(editorAdapter, letterItems[1])
         await whenAnimationFrame()
         expectNotActive()
     })
 })
 
-describe('fetching items', () => {
+describe('loading', () => {
     let onActive: jest.Mock
     let onMatchedText: jest.Mock
     let onItems: jest.Mock
@@ -371,7 +362,7 @@ describe('fetching items', () => {
     let onCaretPosition: jest.Mock
     let onEditorPosition: jest.Mock
     let onError: jest.Mock
-    let onFetchingItems: jest.Mock
+    let onLoading: jest.Mock
 
     beforeEach(() => {
         autocomplete.on('active', (onActive = jest.fn()))
@@ -381,7 +372,7 @@ describe('fetching items', () => {
         autocomplete.on('caretPosition', (onCaretPosition = jest.fn()))
         autocomplete.on('editorPosition', (onEditorPosition = jest.fn()))
         autocomplete.on('error', (onError = jest.fn()))
-        autocomplete.on('fetchingItems', (onFetchingItems = jest.fn()))
+        autocomplete.on('loading', (onLoading = jest.fn()))
     })
 
     test('sync success', async () => {
@@ -396,11 +387,11 @@ describe('fetching items', () => {
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
         expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(0)
-        expect(onFetchingItems).toHaveBeenCalledTimes(0)
+        expect(onLoading).toHaveBeenCalledTimes(0)
     })
     test('sync error', async () => {
         const error = new Error('test error')
-        letterFetchItems.mockImplementation(() => {
+        letterLoad.mockImplementation(() => {
             throw error
         })
         autocomplete.match()
@@ -414,23 +405,23 @@ describe('fetching items', () => {
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
         expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(1)
-        expect(onFetchingItems).toHaveBeenCalledTimes(0)
+        expect(onLoading).toHaveBeenCalledTimes(0)
     })
     test('async success', async () => {
         let resolve1: (items: Item[]) => void
         const promise1: Promise<Item[]> = new Promise(r => (resolve1 = r))
         let resolve2: (items: Item[]) => void
         const promise2: Promise<Item[]> = new Promise(r => (resolve2 = r))
-        letterFetchItems.mockReset()
-        letterFetchItems.mockImplementationOnce(() => promise1)
-        letterFetchItems.mockImplementationOnce(() => promise2)
+        letterLoad.mockReset()
+        letterLoad.mockImplementationOnce(() => promise1)
+        letterLoad.mockImplementationOnce(() => promise2)
 
         // Record and wait for promise1.
         autocomplete.match()
         await whenAnimationFrame()
         expectActive({
-            fetchingItems: true,
             items: defaultItems,
+            loading: true,
             selectedItem: -1,
         })
 
@@ -438,8 +429,8 @@ describe('fetching items', () => {
         autocomplete.match()
         await whenAnimationFrame()
         expectActive({
-            fetchingItems: true,
             items: defaultItems,
+            loading: true,
             selectedItem: -1,
         })
 
@@ -457,7 +448,7 @@ describe('fetching items', () => {
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
         expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(0)
-        expect(onFetchingItems).toHaveBeenCalledTimes(2)
+        expect(onLoading).toHaveBeenCalledTimes(2)
     })
     test('async error', async () => {
         const error1 = new Error('test error 1')
@@ -466,16 +457,16 @@ describe('fetching items', () => {
         const error2 = new Error('test error 2')
         let reject2: (error: Error) => void
         const promise2: Promise<Item[]> = new Promise((_, r) => (reject2 = r))
-        letterFetchItems.mockReset()
-        letterFetchItems.mockImplementationOnce(() => promise1)
-        letterFetchItems.mockImplementationOnce(() => promise2)
+        letterLoad.mockReset()
+        letterLoad.mockImplementationOnce(() => promise1)
+        letterLoad.mockImplementationOnce(() => promise2)
 
         // Record and wait for promise1.
         autocomplete.match()
         await whenAnimationFrame()
         expectActive({
-            fetchingItems: true,
             items: defaultItems,
+            loading: true,
             selectedItem: -1,
         })
 
@@ -483,8 +474,8 @@ describe('fetching items', () => {
         autocomplete.match()
         await whenAnimationFrame()
         expectActive({
-            fetchingItems: true,
             items: defaultItems,
+            loading: true,
             selectedItem: -1,
         })
 
@@ -507,19 +498,19 @@ describe('fetching items', () => {
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
         expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(1)
-        expect(onFetchingItems).toHaveBeenCalledTimes(2)
+        expect(onLoading).toHaveBeenCalledTimes(2)
     })
-    test('clear when fetchingItems=true', async () => {
+    test('clear when loading=true', async () => {
         let resolve: (items: Item[]) => void
         const promise: Promise<Item[]> = new Promise(r => (resolve = r))
-        letterFetchItems.mockReset()
-        letterFetchItems.mockImplementationOnce(() => promise)
+        letterLoad.mockReset()
+        letterLoad.mockImplementationOnce(() => promise)
 
         autocomplete.match()
         await whenAnimationFrame()
         expectActive({
-            fetchingItems: true,
             items: defaultItems,
+            loading: true,
             selectedItem: -1,
         })
 
@@ -538,7 +529,7 @@ describe('fetching items', () => {
         expect(onCaretPosition).toHaveBeenCalledTimes(2)
         expect(onEditorPosition).toHaveBeenCalledTimes(2)
         expect(onError).toHaveBeenCalledTimes(0)
-        expect(onFetchingItems).toHaveBeenCalledTimes(2)
+        expect(onLoading).toHaveBeenCalledTimes(2)
     })
 })
 
@@ -631,7 +622,7 @@ describe('events', () => {
             })
             test('no items', async () => {
                 const items: Item[] = []
-                letterFetchItems.mockReturnValue(items)
+                letterLoad.mockReturnValue(items)
                 autocomplete.match()
                 await whenAnimationFrame()
                 expectActive({ items, selectedItem: -1 })
@@ -674,7 +665,7 @@ describe('events', () => {
             })
             test('no items', async () => {
                 const items: Item[] = []
-                letterFetchItems.mockReturnValue(items)
+                letterLoad.mockReturnValue(items)
                 autocomplete.match()
                 await whenAnimationFrame()
                 expectActive({ items, selectedItem: -1 })
@@ -715,12 +706,12 @@ describe('events', () => {
                 await whenAnimationFrame()
                 expectNotActive()
                 expect(event.defaultPrevented).toBe(false)
-                expect(letterAcceptItem).toHaveBeenCalledTimes(0)
+                expect(letterAccept).toHaveBeenCalledTimes(0)
             })
 
             test('no items', async () => {
                 const items: Item[] = []
-                letterFetchItems.mockReturnValue(items)
+                letterLoad.mockReturnValue(items)
                 autocomplete.match()
                 await whenAnimationFrame()
                 expectActive({ items, selectedItem: -1 })
@@ -730,7 +721,7 @@ describe('events', () => {
                 await whenAnimationFrame()
                 expectActive({ items, selectedItem: -1 })
                 expect(event.defaultPrevented).toBe(false)
-                expect(letterAcceptItem).toHaveBeenCalledTimes(0)
+                expect(letterAccept).toHaveBeenCalledTimes(0)
             })
 
             test.each([0, 1, 2])('selectedItem = %d', async selectedItem => {
@@ -740,8 +731,8 @@ describe('events', () => {
                 await whenAnimationFrame()
                 expectNotActive()
                 expect(event.defaultPrevented).toBe(true)
-                expect(letterAcceptItem).toHaveBeenCalledTimes(1)
-                expect(letterAcceptItem).toHaveBeenCalledWith(
+                expect(letterAccept).toHaveBeenCalledTimes(1)
+                expect(letterAccept).toHaveBeenCalledWith(
                     editorAdapter,
                     letterItems[selectedItem],
                 )
@@ -755,7 +746,7 @@ describe('events', () => {
                     await whenAnimationFrame()
                     expectActive()
                     expect(event.defaultPrevented).toBe(false)
-                    expect(letterAcceptItem).toHaveBeenCalledTimes(0)
+                    expect(letterAccept).toHaveBeenCalledTimes(0)
                 },
             )
         })

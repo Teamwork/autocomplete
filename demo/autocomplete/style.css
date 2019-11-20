@@ -1,3 +1,5 @@
+@import 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
+
 #editor {
     border: 1px solid black;
 }
@@ -7,7 +9,22 @@
     z-index: 100;
     background: #fff;
     border: 1px solid #ccc;
-    padding: 4px;
+    padding: 0.25em;
+}
+
+.tw-autocomplete--loading::before {
+    /* spinner fontawesome icon */
+    content: '\f110';
+    display: block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    animation: fa-spin 2s infinite linear;
+
+    position: absolute;
+    top: 0;
+    left: 100%;
+    padding: inherit;
 }
 
 .tw-autocomplete__list {

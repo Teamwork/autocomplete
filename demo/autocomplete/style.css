@@ -1,4 +1,4 @@
-.CodeMirror {
+#editor {
     border: 1px solid black;
 }
 
@@ -16,6 +16,15 @@
     list-style: none;
 }
 
-.tw-autocomplete__list-item--selected {
+.tw-autocomplete__list-item {
+    cursor: pointer;
+}
+
+.tw-autocomplete__list-item:hover {
+    background: #eee;
+}
+
+.tw-autocomplete__list-item--selected,
+.tw-autocomplete__list-item--selected:hover {
     background: #ccc;
 }

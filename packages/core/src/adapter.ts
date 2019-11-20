@@ -46,6 +46,10 @@ export interface EditorAdapter
      */
     readonly caretPosition: Position
     /**
+     * The screen coordinates of the editor's visible area.
+     */
+    readonly editorPosition: Position
+    /**
      * Detaches this adapter from its editor.
      */
     destroy(): void

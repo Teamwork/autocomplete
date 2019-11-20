@@ -1,39 +1,47 @@
 import {
     Autocomplete,
-    defaultCaretPosition,
     defaultItems,
     defaultMatchedText,
+    defaultPosition,
     defaultSelectedItem,
 } from '@teamwork/autocomplete-core'
 import Vue, { VNode } from 'vue'
 
-/* tslint:disable:variable-name */
+/* tslint:disable-next-line:variable-name */
 export const TwAutocomplete = Vue.extend({
     computed: {
-        autocomplete: {
-            get(): Autocomplete | undefined {
-                return (this as any).private_autocomplete
-            },
-            set(autocomplete: Autocomplete | undefined) {
-                ;(this as any).private_autocomplete = autocomplete
-            },
+        caretVisible(): boolean {
+            const caretPosition = this.caretPosition
+            const editorPosition = this.editorPosition
+            return (
+                caretPosition.top <= editorPosition.bottom &&
+                caretPosition.bottom >= editorPosition.top &&
+                caretPosition.left <= editorPosition.right &&
+                caretPosition.right >= editorPosition.left
+            )
         },
     },
     data() {
-        return {
+        const data = {
             active: false,
-            caretPosition: defaultCaretPosition,
+            caretPosition: defaultPosition,
+            editorPosition: defaultPosition,
             error: undefined as Error | undefined,
             fetchingItems: false,
             items: defaultItems,
             matchedText: defaultMatchedText,
             selectedItem: defaultSelectedItem,
         }
+        // Make `autocomplete` a valid property
+        // but do not add it to `data` to avoid making it reactive.
+        return data as typeof data & { autocomplete: Autocomplete }
     },
     methods: {
         /**
-         * The parent component must call this function exactly once to activate this component.
-         * @param autocomplete An instance of Autocomplete.
+         * The parent component must call this function exactly once to initialize this component.
+         * The specified Autocomplete instance is the source of truth of this component and
+         * the component's reactive data is kept in sync with it.
+         * @param autocomplete An instance of Autocomplete to synchronize with.
          */
         init(autocomplete: Autocomplete): void {
             if (autocomplete == null) {
@@ -44,45 +52,53 @@ export const TwAutocomplete = Vue.extend({
             }
             this.autocomplete = autocomplete
 
-            type Name =
-                | 'active'
-                | 'caretPosition'
-                | 'error'
-                | 'fetchingItems'
-                | 'items'
-                | 'matchedText'
-                | 'selectedItem'
-            interface Listener {
-                name: Name
-                listener: () => void
-            }
-            const names: Name[] = [
-                'active',
-                'caretPosition',
-                'error',
-                'fetchingItems',
-                'items',
-                'matchedText',
-                'selectedItem',
-            ]
-            const listeners: Listener[] = names.map(name => ({
-                listener: () => (this.$data[name] = autocomplete[name]),
-                name,
-            }))
-            listeners.forEach(({ name, listener }) => {
-                listener()
-                autocomplete.on(name, listener)
-            })
+            const activeListener = () => (this.active = autocomplete.active)
+            const caretPositionListener = () =>
+                (this.caretPosition = autocomplete.caretPosition)
+            const editorPositionListener = () =>
+                (this.editorPosition = autocomplete.editorPosition)
+            const errorListener = () => (this.error = autocomplete.error)
+            const fetchingItemsListener = () =>
+                (this.fetchingItems = autocomplete.fetchingItems)
+            const itemsListener = () => (this.items = autocomplete.items)
+            const matchedTextListener = () =>
+                (this.matchedText = autocomplete.matchedText)
+            const selectedItemListener = () =>
+                (this.selectedItem = autocomplete.selectedItem)
+
+            activeListener()
+            caretPositionListener()
+            editorPositionListener()
+            errorListener()
+            fetchingItemsListener()
+            itemsListener()
+            matchedTextListener()
+            selectedItemListener()
+
+            autocomplete.on('active', activeListener)
+            autocomplete.on('caretPosition', caretPositionListener)
+            autocomplete.on('editorPosition', editorPositionListener)
+            autocomplete.on('error', errorListener)
+            autocomplete.on('fetchingItems', fetchingItemsListener)
+            autocomplete.on('items', itemsListener)
+            autocomplete.on('matchedText', matchedTextListener)
+            autocomplete.on('selectedItem', selectedItemListener)
+
             this.$once('hook:beforeDestroy', () => {
-                listeners.forEach(({ name, listener }) => {
-                    autocomplete.off(name, listener)
-                })
+                autocomplete.off('active', activeListener)
+                autocomplete.off('caretPosition', caretPositionListener)
+                autocomplete.off('editorPosition', editorPositionListener)
+                autocomplete.off('error', errorListener)
+                autocomplete.off('fetchingItems', fetchingItemsListener)
+                autocomplete.off('items', itemsListener)
+                autocomplete.off('matchedText', matchedTextListener)
+                autocomplete.off('selectedItem', selectedItemListener)
             })
         },
     },
     name: 'TwAutocomplete',
     render(createElement): VNode {
-        return this.active
+        return this.active && this.caretVisible
             ? createElement(
                   'div',
                   {
@@ -109,6 +125,15 @@ export const TwAutocomplete = Vue.extend({
                                                     this.selectedItem === index,
                                             },
                                             key: item.id,
+                                            on: {
+                                                mousedown: (
+                                                    event: MouseEvent,
+                                                ): void => {
+                                                    event.preventDefault()
+                                                    this.autocomplete.selectedItem = index
+                                                    this.autocomplete.accept()
+                                                },
+                                            },
                                         },
                                         [item.text],
                                     ),

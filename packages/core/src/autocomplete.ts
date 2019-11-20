@@ -27,6 +27,10 @@ export interface AutocompleteEvents {
      */
     caretPosition: void
     /**
+     * Emitted when the `editorPosition` property is updated.
+     */
+    editorPosition: void
+    /**
      * Emitted when the `error` property is updated.
      */
     error: void
@@ -62,9 +66,13 @@ export interface Autocomplete
      */
     readonly matchedText: string
     /**
-     * The caret position on the screen.
+     * The screen coordinates of the caret.
      */
     readonly caretPosition: Position
+    /**
+     * The screen coordinates of the editor's visible area.
+     */
+    readonly editorPosition: Position
     /**
      * The error produced by `fetchItems`, if any.
      */
@@ -84,10 +92,10 @@ export interface Autocomplete
      */
     clear(): void
     /**
-     * Update the `caretPosition` property, if it exists.
+     * Update the `caretPosition` and `editorPosition` properties, if autocomplete is active.
      * This function is automatically debounced using `requestAnimationFrame`.
      */
-    updateCaretPosition(): void
+    updatePosition(): void
     /**
      * Accepts the currently selected autocomplete item, if it exists,
      * and then clears the autocomplete state, if it exists.
@@ -137,9 +145,9 @@ export const defaultItems: Readonly<Item[]> = Object.freeze([])
  */
 export const defaultSelectedItem = -1
 /**
- * The value of `caretPosition`, when autocomplete is not active.
+ * The value of `caretPosition` and `editorPosition`, when autocomplete is not active.
  */
-export const defaultCaretPosition: Position = Object.freeze({
+export const defaultPosition: Position = Object.freeze({
     bottom: 0,
     left: 0,
     right: 0,
@@ -196,7 +204,18 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
             this.emitLater('caretPosition')
         }
     }
-    private _caretPosition: Position = defaultCaretPosition
+    private _caretPosition: Position = defaultPosition
+
+    public get editorPosition(): Position {
+        return this._editorPosition
+    }
+    public set editorPosition(editorPosition: Position) {
+        if (this._editorPosition !== editorPosition) {
+            this._editorPosition = editorPosition
+            this.emitLater('editorPosition')
+        }
+    }
+    private _editorPosition: Position = defaultPosition
 
     public get error(): Error | undefined {
         return this._error
@@ -246,7 +265,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
     private pending:
         | 'matchNow'
         | 'clearNow'
-        | 'updateCaretPositionNow'
+        | 'updatePositionNow'
         | undefined = undefined
 
     public constructor(
@@ -283,10 +302,10 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
         this.pending = 'matchNow'
     }
 
-    public updateCaretPosition(): void {
+    public updatePosition(): void {
         if (!this.pending) {
             requestAnimationFrame(this.onAnimationFrame)
-            this.pending = 'updateCaretPositionNow'
+            this.pending = 'updatePositionNow'
         }
     }
 
@@ -322,6 +341,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
                 this.activePatternHandler = patternHandler
                 this.matchedText = match
                 this.caretPosition = this.editorAdapter.caretPosition
+                this.editorPosition = this.editorAdapter.editorPosition
                 try {
                     const itemsOrPomise = patternHandler.fetchItems(
                         this.editorAdapter,
@@ -365,15 +385,17 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
     private clearNow(): void {
         this.activePatternHandler = undefined
         this.matchedText = defaultMatchedText
-        this.caretPosition = defaultCaretPosition
+        this.caretPosition = defaultPosition
+        this.editorPosition = defaultPosition
         this.promise = undefined
         this.items = defaultItems
         this.error = undefined
     }
 
-    private updateCaretPositionNow(): void {
+    private updatePositionNow(): void {
         if (this.active) {
             this.caretPosition = this.editorAdapter.caretPosition
+            this.editorPosition = this.editorAdapter.editorPosition
         }
     }
 
@@ -382,11 +404,11 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
     }
 
     private onScroll = (): void => {
-        this.updateCaretPosition()
+        this.updatePosition()
     }
 
     private onResize = (): void => {
-        this.updateCaretPosition()
+        this.updatePosition()
     }
 
     private onSelectionChange = (): void => {

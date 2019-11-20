@@ -1,31 +1,58 @@
+const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-    entry: __dirname + '/demo/index.js',
+    entry: {
+        index: path.join(__dirname, 'demo', 'index.js'),
+        common: path.join(__dirname, 'demo', 'common', 'index.js'),
+        'CodeMirror-Vue': path.join(__dirname, 'demo', 'CodeMirror-Vue.js'),
+        'CodeMirror-Knockout': path.join(
+            __dirname,
+            'demo',
+            'CodeMirror-Knockout.js',
+        ),
+    },
     module: {
         rules: [
             {
                 test: /\.js$/,
                 include: [
-                    __dirname + '/demo/',
-                    __dirname + '/node_modules/@syncot/',
-                    __dirname + '/packages/',
+                    path.join(__dirname, 'demo'),
+                    path.join(__dirname, 'node_modules', '@syncot'),
+                    path.join(__dirname, 'packages'),
                 ],
                 loader: 'babel-loader',
             },
             {
                 test: /\.css$/,
                 include: [
-                    __dirname + '/demo',
-                    __dirname + '/node_modules/codemirror/',
+                    path.join(__dirname, 'demo'),
+                    path.join(__dirname, 'node_modules', 'codemirror'),
                 ],
                 loader: 'style-loader!css-loader',
+            },
+            {
+                test: /\.html$/,
+                include: [path.join(__dirname, 'demo')],
+                loader: 'html-loader',
             },
         ],
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: __dirname + '/demo/index.html',
+            filename: 'index.html',
+            template: path.join(__dirname, 'demo', 'index.html'),
+            chunks: ['common', 'index'],
+        }),
+        new HtmlWebpackPlugin({
+            filename: 'CodeMirror-Vue.html',
+            template: path.join(__dirname, 'demo', 'CodeMirror-Vue.html'),
+            chunks: ['common', 'CodeMirror-Vue'],
+        }),
+        new HtmlWebpackPlugin({
+            filename: 'CodeMirror-Knockout.html',
+            template: path.join(__dirname, 'demo', 'CodeMirror-Knockout.html'),
+            chunks: ['common', 'CodeMirror-Knockout'],
         }),
     ],
     devServer: {

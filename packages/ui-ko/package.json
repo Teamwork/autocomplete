@@ -1,0 +1,35 @@
+{
+  "name": "@teamwork/autocomplete-ui-ko",
+  "version": "0.0.0",
+  "description": "The autocomplete UI in Knockout.",
+  "keywords": [
+    "autocomplete ui knockout"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "/lib",
+    "!/lib/**/*.test.js",
+    "!/lib/**/*.test.d.ts"
+  ],
+  "author": "Greg Kubisa <gkubisa@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Teamwork/autocomplete.git"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "tslib": "^1.9.3"
+  },
+  "peerDependencies": {
+    "@teamwork/autocomplete-core": "^0.1.0",
+    "knockout": "^3.5.1"
+  }
+}

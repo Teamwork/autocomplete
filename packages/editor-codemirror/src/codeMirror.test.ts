@@ -65,6 +65,15 @@ test('caretPosition', () => {
     })
 })
 
+test('editorPosition', () => {
+    expect(editorAdapter.editorPosition).toStrictEqual({
+        bottom: expect.any(Number),
+        left: expect.any(Number),
+        right: expect.any(Number),
+        top: expect.any(Number),
+    })
+})
+
 test('keyDown', () => {
     const onKeyDown = jest.fn()
     editorAdapter.on('keyDown', onKeyDown)

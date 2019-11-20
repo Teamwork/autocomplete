@@ -20,6 +20,12 @@ class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         right: 0,
         top: 0,
     }
+    public editorPosition: Position = {
+        bottom: 0,
+        left: 0,
+        right: 0,
+        top: 0,
+    }
     public destroy = noop
 }
 

@@ -7,9 +7,9 @@ import {
     createAutocomplete,
     createPatternHandler,
     createRegexPattern,
-    defaultCaretPosition,
     defaultItems,
     defaultMatchedText,
+    defaultPosition,
     defaultSelectedItem,
     EditorAdapter,
     EditorAdapterEvents,
@@ -22,16 +22,28 @@ const whenAnimationFrame = () =>
     new Promise(resolve => requestAnimationFrame(resolve))
 
 const caretPosition1: Position = Object.freeze({
-    bottom: 1,
-    left: 2,
-    right: 3,
-    top: 4,
+    bottom: 110,
+    left: 100,
+    right: 101,
+    top: 100,
 })
 const caretPosition2: Position = Object.freeze({
-    bottom: 100,
-    left: 101,
-    right: 102,
-    top: 103,
+    bottom: 210,
+    left: 200,
+    right: 201,
+    top: 200,
+})
+const editorPosition1: Position = Object.freeze({
+    bottom: 1002,
+    left: 11,
+    right: 1001,
+    top: 12,
+})
+const editorPosition2: Position = Object.freeze({
+    bottom: 1004,
+    left: 13,
+    right: 1003,
+    top: 14,
 })
 
 class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
@@ -40,6 +52,7 @@ class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
     public textBeforeCaret: string = ''
     public textAfterCaret: string = ''
     public caretPosition: Position = caretPosition1
+    public editorPosition: Position = editorPosition1
     public destroy = noop
 }
 
@@ -62,7 +75,8 @@ let autocomplete: Autocomplete
 
 function expectNotActive(): void {
     expect(autocomplete.active).toBe(false)
-    expect(autocomplete.caretPosition).toBe(defaultCaretPosition)
+    expect(autocomplete.caretPosition).toBe(defaultPosition)
+    expect(autocomplete.editorPosition).toBe(defaultPosition)
     expect(autocomplete.items).toBe(defaultItems)
     expect(autocomplete.matchedText).toBe(defaultMatchedText)
     expect(autocomplete.selectedItem).toBe(defaultSelectedItem)
@@ -72,6 +86,7 @@ function expectNotActive(): void {
 
 function expectActive({
     caretPosition = caretPosition1,
+    editorPosition = editorPosition1,
     items = letterItems,
     matchedText = 'def',
     selectedItem = 0,
@@ -79,6 +94,7 @@ function expectActive({
     fetchingItems = false,
 }: {
     caretPosition?: Position
+    editorPosition?: Position
     items?: Readonly<Item[]>
     matchedText?: string
     selectedItem?: number
@@ -87,6 +103,7 @@ function expectActive({
 } = {}): void {
     expect(autocomplete.active).toBe(true)
     expect(autocomplete.caretPosition).toBe(caretPosition)
+    expect(autocomplete.editorPosition).toBe(editorPosition)
     expect(autocomplete.items).toBe(items)
     expect(autocomplete.matchedText).toBe(matchedText)
     expect(autocomplete.selectedItem).toBe(selectedItem)
@@ -229,7 +246,7 @@ describe('clear', () => {
 
 describe('updateCaretPosition', () => {
     test('no state', async () => {
-        autocomplete.updateCaretPosition()
+        autocomplete.updatePosition()
         await whenAnimationFrame()
         expectNotActive()
     })
@@ -241,14 +258,18 @@ describe('updateCaretPosition', () => {
 
         editorAdapter.textBeforeCaret = '123' // This won't be detected.
         editorAdapter.caretPosition = caretPosition2
-        autocomplete.updateCaretPosition()
+        editorAdapter.editorPosition = editorPosition2
+        autocomplete.updatePosition()
         await whenAnimationFrame()
-        expectActive({ caretPosition: caretPosition2 })
+        expectActive({
+            caretPosition: caretPosition2,
+            editorPosition: editorPosition2,
+        })
     })
 
     test('match, updateCaretPosition', async () => {
         autocomplete.match()
-        autocomplete.updateCaretPosition()
+        autocomplete.updatePosition()
         await whenAnimationFrame()
         expectActive()
     })
@@ -256,7 +277,7 @@ describe('updateCaretPosition', () => {
     test('match, clear, updateCaretPosition', async () => {
         autocomplete.match()
         autocomplete.clear()
-        autocomplete.updateCaretPosition()
+        autocomplete.updatePosition()
         await whenAnimationFrame()
         expectNotActive()
     })
@@ -348,6 +369,7 @@ describe('fetching items', () => {
     let onItems: jest.Mock
     let onSelectedItem: jest.Mock
     let onCaretPosition: jest.Mock
+    let onEditorPosition: jest.Mock
     let onError: jest.Mock
     let onFetchingItems: jest.Mock
 
@@ -357,6 +379,7 @@ describe('fetching items', () => {
         autocomplete.on('items', (onItems = jest.fn()))
         autocomplete.on('selectedItem', (onSelectedItem = jest.fn()))
         autocomplete.on('caretPosition', (onCaretPosition = jest.fn()))
+        autocomplete.on('editorPosition', (onEditorPosition = jest.fn()))
         autocomplete.on('error', (onError = jest.fn()))
         autocomplete.on('fetchingItems', (onFetchingItems = jest.fn()))
     })
@@ -371,6 +394,7 @@ describe('fetching items', () => {
         expect(onItems).toHaveBeenCalledTimes(1)
         expect(onSelectedItem).toHaveBeenCalledTimes(1)
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
+        expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(0)
         expect(onFetchingItems).toHaveBeenCalledTimes(0)
     })
@@ -388,6 +412,7 @@ describe('fetching items', () => {
         expect(onItems).toHaveBeenCalledTimes(0)
         expect(onSelectedItem).toHaveBeenCalledTimes(0)
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
+        expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(1)
         expect(onFetchingItems).toHaveBeenCalledTimes(0)
     })
@@ -430,6 +455,7 @@ describe('fetching items', () => {
         expect(onItems).toHaveBeenCalledTimes(1)
         expect(onSelectedItem).toHaveBeenCalledTimes(1)
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
+        expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(0)
         expect(onFetchingItems).toHaveBeenCalledTimes(2)
     })
@@ -479,6 +505,7 @@ describe('fetching items', () => {
         expect(onItems).toHaveBeenCalledTimes(0)
         expect(onSelectedItem).toHaveBeenCalledTimes(0)
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
+        expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(1)
         expect(onFetchingItems).toHaveBeenCalledTimes(2)
     })
@@ -509,6 +536,7 @@ describe('fetching items', () => {
         expect(onItems).toHaveBeenCalledTimes(0)
         expect(onSelectedItem).toHaveBeenCalledTimes(0)
         expect(onCaretPosition).toHaveBeenCalledTimes(2)
+        expect(onEditorPosition).toHaveBeenCalledTimes(2)
         expect(onError).toHaveBeenCalledTimes(0)
         expect(onFetchingItems).toHaveBeenCalledTimes(2)
     })
@@ -523,30 +551,46 @@ describe('events', () => {
 
     test('editor resize', async () => {
         editorAdapter.caretPosition = caretPosition2
+        editorAdapter.editorPosition = editorPosition2
         editorAdapter.emit('resize', editorAdapter)
         await whenAnimationFrame()
-        expectActive({ caretPosition: caretPosition2 })
+        expectActive({
+            caretPosition: caretPosition2,
+            editorPosition: editorPosition2,
+        })
     })
 
     test('editor scroll', async () => {
         editorAdapter.caretPosition = caretPosition2
+        editorAdapter.editorPosition = editorPosition2
         editorAdapter.emit('scroll', editorAdapter)
         await whenAnimationFrame()
-        expectActive({ caretPosition: caretPosition2 })
+        expectActive({
+            caretPosition: caretPosition2,
+            editorPosition: editorPosition2,
+        })
     })
 
     test('window resize', async () => {
         editorAdapter.caretPosition = caretPosition2
+        editorAdapter.editorPosition = editorPosition2
         window.dispatchEvent(new Event('resize'))
         await whenAnimationFrame()
-        expectActive({ caretPosition: caretPosition2 })
+        expectActive({
+            caretPosition: caretPosition2,
+            editorPosition: editorPosition2,
+        })
     })
 
     test('document scroll', async () => {
         editorAdapter.caretPosition = caretPosition2
+        editorAdapter.editorPosition = editorPosition2
         document.dispatchEvent(new Event('scroll'))
         await whenAnimationFrame()
-        expectActive({ caretPosition: caretPosition2 })
+        expectActive({
+            caretPosition: caretPosition2,
+            editorPosition: editorPosition2,
+        })
     })
 
     test('editor blur', async () => {
@@ -817,7 +861,7 @@ describe('events', () => {
             expectNotActive()
         })
         test('pendingAction === "updateCaretPosition"', async () => {
-            autocomplete.updateCaretPosition()
+            autocomplete.updatePosition()
             editorAdapter.emit('selectionChange', editorAdapter)
             await whenAnimationFrame()
             expectNotActive()

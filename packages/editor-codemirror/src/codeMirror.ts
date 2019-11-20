@@ -82,6 +82,16 @@ class CodeMirrorEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         }
     }
 
+    public get editorPosition(): Position {
+        const position = this.editor.getWrapperElement().getBoundingClientRect()
+        return {
+            bottom: position.bottom,
+            left: position.left,
+            right: position.right,
+            top: position.top,
+        }
+    }
+
     private onKeyUp = (
         _editor: CodeMirror.Editor,
         event: KeyboardEvent,

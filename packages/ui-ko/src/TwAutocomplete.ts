@@ -154,7 +154,7 @@ export function createTemplate({
                             'tw-autocomplete__list-item--selected': selectedItem() === $index()
                         },
                         event: {
-                            mousedown: function () {
+                            click: function () {
                                 $data.autocomplete.selectedItem = $index()
                                 $data.autocomplete.accept()
                             }

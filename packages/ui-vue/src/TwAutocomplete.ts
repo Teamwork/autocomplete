@@ -149,7 +149,7 @@ export const TwAutocomplete = Vue.extend({
                                             },
                                             key: item.id,
                                             on: {
-                                                mousedown: (
+                                                click: (
                                                     event: MouseEvent,
                                                 ): void => {
                                                     event.preventDefault()

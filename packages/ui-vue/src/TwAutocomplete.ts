@@ -7,6 +7,16 @@ import {
 } from '@teamwork/autocomplete-core'
 import Vue, { VNode } from 'vue'
 
+/**
+ * The possible view names.
+ */
+export const enum ViewName {
+    error = 'error',
+    items = 'items',
+    loading = 'loading',
+    blank = 'blank',
+}
+
 /* tslint:disable-next-line:variable-name */
 export const TwAutocomplete = Vue.extend({
     computed: {
@@ -19,6 +29,17 @@ export const TwAutocomplete = Vue.extend({
                 caretPosition.left <= editorPosition.right &&
                 caretPosition.right >= editorPosition.left
             )
+        },
+        viewName(): ViewName {
+            if (this.error) {
+                return ViewName.error
+            } else if (this.items.length > 0) {
+                return ViewName.items
+            } else if (this.loading) {
+                return ViewName.loading
+            } else {
+                return ViewName.blank
+            }
         },
     },
     data() {
@@ -101,14 +122,17 @@ export const TwAutocomplete = Vue.extend({
             ? createElement(
                   'div',
                   {
-                      class: 'tw-autocomplete',
+                      class: {
+                          'tw-autocomplete': true,
+                          'tw-autocomplete--loading': this.loading,
+                      },
                       style: {
                           left: `${this.caretPosition.left}px`,
                           top: `${this.caretPosition.bottom}px`,
                       },
                   },
                   [
-                      this.items.length > 0
+                      this.viewName === ViewName.items
                           ? createElement(
                                 'ul',
                                 {
@@ -134,11 +158,39 @@ export const TwAutocomplete = Vue.extend({
                                                 },
                                             },
                                         },
-                                        [item.text],
+                                        this.$scopedSlots.item?.({
+                                            item,
+                                        }) || item.text,
                                     ),
                                 ),
                             )
-                          : 'No content',
+                          : this.viewName === ViewName.error
+                          ? createElement(
+                                'div',
+                                {
+                                    class: 'tw-autocomplete__error',
+                                },
+                                this.$scopedSlots.error?.({
+                                    error: this.error,
+                                }) || 'Loading failed',
+                            )
+                          : this.viewName === ViewName.loading
+                          ? createElement(
+                                'div',
+                                {
+                                    class: 'tw-autocomplete__loading',
+                                },
+                                this.$scopedSlots.loading?.(undefined) ||
+                                    'Loading',
+                            )
+                          : createElement(
+                                'div',
+                                {
+                                    class: 'tw-autocomplete__blank',
+                                },
+                                this.$scopedSlots.blank?.(undefined) ||
+                                    'No content',
+                            ),
                   ],
               )
             : createElement()

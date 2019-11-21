@@ -280,7 +280,6 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
         this.editorAdapter.on('scroll', this.onScroll)
         this.editorAdapter.on('resize', this.onResize)
         this.editorAdapter.on('selectionChange', this.onSelectionChange)
-        this.editorAdapter.on('blur', this.onBlur)
     }
 
     public destroy() {
@@ -291,7 +290,6 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
         this.editorAdapter.off('scroll', this.onScroll)
         this.editorAdapter.off('resize', this.onResize)
         this.editorAdapter.off('selectionChange', this.onSelectionChange)
-        this.editorAdapter.off('blur', this.onBlur)
         this.clear()
     }
 
@@ -397,10 +395,6 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
             this.caretPosition = this.editorAdapter.caretPosition
             this.editorPosition = this.editorAdapter.editorPosition
         }
-    }
-
-    private onBlur = (): void => {
-        this.clear()
     }
 
     private onScroll = (): void => {

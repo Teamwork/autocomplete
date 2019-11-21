@@ -584,12 +584,6 @@ describe('events', () => {
         })
     })
 
-    test('editor blur', async () => {
-        editorAdapter.emit('blur', editorAdapter)
-        await whenAnimationFrame()
-        expectNotActive()
-    })
-
     describe('keyDown', () => {
         function createEvent(options?: KeyboardEventInit): KeyboardEvent {
             const event = new KeyboardEvent('keydown', options)

@@ -10,6 +10,7 @@
     background: #fff;
     border: 1px solid #ccc;
     padding: 0.25em;
+    user-select: none;
 }
 
 .tw-autocomplete--loading::before {

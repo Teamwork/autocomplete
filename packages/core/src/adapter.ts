@@ -20,8 +20,6 @@ export interface EditorAdapterEvents {
     scroll: (editorAdapter: EditorAdapter) => void
     resize: (editorAdapter: EditorAdapter) => void
     selectionChange: (editorAdapter: EditorAdapter) => void
-    focus: (editorAdapter: EditorAdapter) => void
-    blur: (editorAdapter: EditorAdapter) => void
 }
 
 /**
@@ -49,10 +47,6 @@ export interface EditorAdapter
      * The screen coordinates of the editor's visible area.
      */
     readonly editorPosition: Position
-    /**
-     * Determines if the editor contains the specified `node`.
-     */
-    contains(node: Node): boolean
     /**
      * Detaches this adapter from its editor.
      */

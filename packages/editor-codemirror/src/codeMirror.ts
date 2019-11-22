@@ -24,8 +24,6 @@ class CodeMirrorEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         this.editor.on('refresh', this.onResize)
         this.editor.on('cursorActivity', this.onSelectionChange)
         this.editor.on('keyHandled', this.onKeyHandled)
-        this.editor.on('focus', this.onFocus)
-        this.editor.on('blur', this.onBlur)
     }
 
     public destroy(): void {
@@ -36,12 +34,6 @@ class CodeMirrorEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         this.editor.off('refresh', this.onResize)
         this.editor.off('cursorActivity', this.onSelectionChange)
         this.editor.off('keyHandled', this.onKeyHandled)
-        this.editor.off('focus', this.onFocus)
-        this.editor.off('blur', this.onBlur)
-    }
-
-    public contains(node: Node): boolean {
-        return this.editor.getWrapperElement().contains(node)
     }
 
     public get textBeforeCaret(): string {
@@ -126,11 +118,5 @@ class CodeMirrorEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         if (name === 'Backspace' || name === 'Delete') {
             this.emit('input', this)
         }
-    }
-    private onFocus = (): void => {
-        this.emit('focus', this)
-    }
-    private onBlur = (): void => {
-        this.emit('blur', this)
     }
 }

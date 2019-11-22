@@ -30,23 +30,6 @@ afterEach(() => {
     document.body.removeChild(editor.getWrapperElement())
 })
 
-describe('contains', () => {
-    test('document', () => {
-        expect(editorAdapter.contains(document)).toBe(false)
-    })
-    test("editor's parent node", () => {
-        expect(
-            editorAdapter.contains(editor.getWrapperElement().parentNode!),
-        ).toBe(false)
-    })
-    test("editor's root node", () => {
-        expect(editorAdapter.contains(editor.getWrapperElement())).toBe(true)
-    })
-    test("editor's nested element", () => {
-        expect(editorAdapter.contains(editor.getScrollerElement())).toBe(true)
-    })
-})
-
 test('textBeforeCaret', () => {
     expect(editorAdapter.textBeforeCaret).toBe('sec')
     expect(editorAdapter.textAfterCaret).toBe('ond line')
@@ -219,35 +202,4 @@ test('selectionChange', () => {
     onSelectionChange.mockClear()
     editor.setCursor(0, 1)
     expect(onSelectionChange).not.toHaveBeenCalled()
-})
-
-test('focus', () => {
-    const onFocus = jest.fn()
-    editorAdapter.on('focus', onFocus)
-    editor.focus()
-    expect(onFocus).toHaveBeenCalledWith(editorAdapter)
-
-    onFocus.mockClear()
-    editor.focus()
-    expect(onFocus).toHaveBeenCalledWith(editorAdapter)
-
-    editorAdapter.destroy()
-    onFocus.mockClear()
-    editor.focus()
-    expect(onFocus).not.toHaveBeenCalled()
-})
-
-test('blur', () => {
-    const input = document.createElement('input')
-    const onBlur = jest.fn()
-    editor.focus()
-    editorAdapter.on('blur', onBlur)
-    input.focus()
-    expect(onBlur).toHaveBeenCalledWith(editorAdapter)
-
-    editorAdapter.destroy()
-    editor.focus()
-    onBlur.mockClear()
-    input.focus()
-    expect(onBlur).not.toHaveBeenCalled()
 })

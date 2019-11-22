@@ -123,27 +123,28 @@ export class TwAutocomplete {
 }
 
 /**
- * The options expected by the `createTemplate` function.
+ * The options expected by the `createTemplate` function,
+ * where each property specifies a template fragment.
  */
 export interface CreateTemplateOptions {
-    errorTemplate?: string
-    beforeItemTemplate?: string
-    itemTemplate?: string
-    afterItemTemplate?: string
-    blankTemplate?: string
-    loadingTemplate?: string
+    error?: string
+    beforeItem?: string
+    item?: string
+    afterItem?: string
+    blank?: string
+    loading?: string
 }
 
 /**
  * Creates a new component template with optional customizations.
  */
 export function createTemplate({
-    errorTemplate = 'Loading failed',
-    beforeItemTemplate = '',
-    itemTemplate = '<!-- ko text: item.text --><!-- /ko -->',
-    afterItemTemplate = '',
-    blankTemplate = 'No items',
-    loadingTemplate = 'Loading',
+    error = 'Loading failed',
+    beforeItem = '',
+    item = '<!-- ko text: item.text --><!-- /ko -->',
+    afterItem = '',
+    blank = 'No items',
+    loading = 'Loading',
 }: CreateTemplateOptions = {}): string {
     return `
 <!-- ko if: visible -->
@@ -171,7 +172,7 @@ export function createTemplate({
                     }
                 "
             >
-                ${beforeItemTemplate}
+                ${beforeItem}
                 <div
                     class="tw-autocomplete__list-item"
                     data-bind="
@@ -186,24 +187,24 @@ export function createTemplate({
                         }
                     "
                 >
-                    ${itemTemplate}
+                    ${item}
                 </div>
-                ${afterItemTemplate}
+                ${afterItem}
             </div>
         <!-- /ko -->
         <!-- ko if: viewName() === 'error' -->
             <div class="tw-autocomplete__error">
-                ${errorTemplate}
+                ${error}
             </div>
         <!-- /ko -->
         <!-- ko if: viewName() === 'loading' -->
             <div class="tw-autocomplete__loading">
-                ${loadingTemplate}
+                ${loading}
             </div>
         <!-- /ko -->
         <!-- ko if: viewName() === 'blank' -->
             <div class="tw-autocomplete__blank">
-                ${blankTemplate}
+                ${blank}
             </div>
         <!-- /ko -->
     </div>

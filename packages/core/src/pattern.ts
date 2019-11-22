@@ -25,12 +25,21 @@ export const createRegexPattern = (
 export interface Item {
     /**
      * The item's ID.
+     * Used by default by some UI frameworks to identify nodes when diffing virtual DOM,
+     * for example the `key` specifal attribute in Vue.
      */
     id: string | number
     /**
-     * The item's text for display.
+     * The item's text.
+     * Used by default to populate the content of the item's DOM element
+     * and for pattern replacement.
      */
     text: string
+    /**
+     * The item's title.
+     * Used by default to populate the `title` attribute on the item's DOM element.
+     */
+    title?: string
 }
 
 /**

@@ -40,6 +40,7 @@ export function initAutocomplete(editorAdapter) {
                     return body[1].map(text => ({
                         id: text,
                         text,
+                        title: text,
                     }))
                 },
             }),

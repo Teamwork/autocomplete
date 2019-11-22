@@ -172,6 +172,9 @@ export const TwAutocomplete = Vue.extend({
                                     createElement(
                                         'div',
                                         {
+                                            attrs: {
+                                                title: item.title || '',
+                                            },
                                             class: {
                                                 'tw-autocomplete__list-item': true,
                                                 'tw-autocomplete__list-item--selected':

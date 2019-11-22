@@ -183,6 +183,9 @@ export function createTemplate({
                 <div
                     class="tw-autocomplete__list-item"
                     data-bind="
+                        attr: {
+                            title: item.title
+                        },
                         css: {
                             'tw-autocomplete__list-item--selected': selectedIndex() === $index()
                         },

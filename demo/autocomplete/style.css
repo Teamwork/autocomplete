@@ -11,6 +11,24 @@
     border: 1px solid #ccc;
     padding: 0.25em;
     user-select: none;
+    width: 15em;
+    max-height: 10em;
+    display: flex;
+    flex-direction: column;
+}
+
+.tw-autocomplete__header {
+    border-bottom: 1px solid #ccc;
+    padding: 0 1.5em 0.25em 0;
+    margin-bottom: 0.25em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 0 0;
+}
+
+.tw-autocomplete__footer {
+    flex: 0 0;
 }
 
 .tw-autocomplete--loading::before {
@@ -24,12 +42,20 @@
 
     position: absolute;
     top: 0;
-    left: 100%;
+    right: 0;
     padding: inherit;
+}
+
+.tw-autocomplete__list {
+    position: relative;
+    overflow: auto;
 }
 
 .tw-autocomplete__list-item {
     cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tw-autocomplete__list-item:hover {

@@ -55,7 +55,8 @@ export class TwAutocomplete {
         this.autocomplete.on('items', this.itemsListener)
         this.autocomplete.on('matchedText', this.matchedTextListener)
         this.autocomplete.on('selectedItem', this.selectedItemListener)
-        document.addEventListener('mouseup', this.onMouseUp, true)
+        document.addEventListener('mousedown', this.onMouseButton, true)
+        document.addEventListener('mouseup', this.onMouseButton, true)
 
         this.caretVisible = ko.pureComputed(() => {
             const caretPosition = this.caretPosition()
@@ -92,7 +93,8 @@ export class TwAutocomplete {
         this.autocomplete.off('items', this.itemsListener)
         this.autocomplete.off('matchedText', this.matchedTextListener)
         this.autocomplete.off('selectedItem', this.selectedItemListener)
-        document.removeEventListener('mouseup', this.onMouseUp, true)
+        document.removeEventListener('mousedown', this.onMouseButton, true)
+        document.removeEventListener('mouseup', this.onMouseButton, true)
     }
 
     private activeListener = (): void => this.active(this.autocomplete.active)
@@ -109,7 +111,7 @@ export class TwAutocomplete {
     private selectedItemListener = (): void =>
         this.selectedItem(this.autocomplete.selectedItem)
 
-    private onMouseUp = (event: MouseEvent): void => {
+    private onMouseButton = (event: MouseEvent): void => {
         if (
             this.active() &&
             this.node &&

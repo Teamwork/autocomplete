@@ -120,14 +120,16 @@ export const TwAutocomplete = Vue.extend({
         },
     },
     mounted() {
-        const onMouseUp = (event: MouseEvent): void => {
+        const onMouseButton = (event: MouseEvent): void => {
             if (this.active && !this.$el.contains(event.target as Node)) {
                 this.autocomplete.clear()
             }
         }
-        document.addEventListener('mouseup', onMouseUp, true)
+        document.addEventListener('mousedown', onMouseButton, true)
+        document.addEventListener('mouseup', onMouseButton, true)
         this.$once('hook:beforeDestroy', () => {
-            document.removeEventListener('mouseup', onMouseUp, true)
+            document.removeEventListener('mousedown', onMouseButton, true)
+            document.removeEventListener('mouseup', onMouseButton, true)
         })
     },
     name: 'TwAutocomplete',

@@ -50,6 +50,10 @@ export interface EditorAdapter
      */
     readonly editorPosition: Position
     /**
+     * Determines if the editor contains the specified `node`.
+     */
+    contains(node: Node): boolean
+    /**
      * Detaches this adapter from its editor.
      */
     destroy(): void

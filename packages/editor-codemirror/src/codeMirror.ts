@@ -40,6 +40,10 @@ class CodeMirrorEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         this.editor.off('blur', this.onBlur)
     }
 
+    public contains(node: Node): boolean {
+        return this.editor.getWrapperElement().contains(node)
+    }
+
     public get textBeforeCaret(): string {
         const doc = this.editor.getDoc()
         const end = doc.getCursor('head')

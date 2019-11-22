@@ -30,6 +30,23 @@ afterEach(() => {
     document.body.removeChild(editor.getWrapperElement())
 })
 
+describe('contains', () => {
+    test('document', () => {
+        expect(editorAdapter.contains(document)).toBe(false)
+    })
+    test("editor's parent node", () => {
+        expect(
+            editorAdapter.contains(editor.getWrapperElement().parentNode!),
+        ).toBe(false)
+    })
+    test("editor's root node", () => {
+        expect(editorAdapter.contains(editor.getWrapperElement())).toBe(true)
+    })
+    test("editor's nested element", () => {
+        expect(editorAdapter.contains(editor.getScrollerElement())).toBe(true)
+    })
+})
+
 test('textBeforeCaret', () => {
     expect(editorAdapter.textBeforeCaret).toBe('sec')
     expect(editorAdapter.textAfterCaret).toBe('ond line')

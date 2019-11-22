@@ -54,6 +54,7 @@ class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
     public caretPosition: Position = caretPosition1
     public editorPosition: Position = editorPosition1
     public destroy = noop
+    public contains = () => false
 }
 
 let letterItems: Item[]

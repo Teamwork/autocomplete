@@ -27,6 +27,7 @@ class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         top: 0,
     }
     public destroy = noop
+    public contains = () => false
 }
 
 const emptyPattern: Pattern = (_text: string) => 0

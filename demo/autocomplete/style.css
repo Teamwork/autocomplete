@@ -28,12 +28,6 @@
     padding: inherit;
 }
 
-.tw-autocomplete__list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
 .tw-autocomplete__list-item {
     cursor: pointer;
 }

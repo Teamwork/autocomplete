@@ -157,7 +157,7 @@ export function createTemplate({
         "
     >
         <!-- ko if: viewName() === 'items' -->
-            <ul
+            <div
                 class='tw-autocomplete__list'
                 data-bind="
                     foreach: {
@@ -167,7 +167,7 @@ export function createTemplate({
                     }
                 "
             >
-                <li
+                <div
                     class="tw-autocomplete__list-item"
                     data-bind="
                         css: {
@@ -182,8 +182,8 @@ export function createTemplate({
                     "
                 >
                     ${itemTemplate}
-                </li>
-            </ul>
+                </div>
+            </div>
         <!-- /ko -->
         <!-- ko if: viewName() === 'error' -->
             <div class="tw-autocomplete__error">

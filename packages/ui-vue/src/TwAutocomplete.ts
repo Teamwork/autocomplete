@@ -150,13 +150,13 @@ export const TwAutocomplete = Vue.extend({
                   [
                       this.viewName === ViewName.items
                           ? createElement(
-                                'ul',
+                                'div',
                                 {
                                     class: 'tw-autocomplete__list',
                                 },
                                 this.items.map((item, index) =>
                                     createElement(
-                                        'li',
+                                        'div',
                                         {
                                             class: {
                                                 'tw-autocomplete__list-item': true,

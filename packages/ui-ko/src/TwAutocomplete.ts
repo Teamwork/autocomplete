@@ -127,7 +127,9 @@ export class TwAutocomplete {
  */
 export interface CreateTemplateOptions {
     errorTemplate?: string
+    beforeItemTemplate?: string
     itemTemplate?: string
+    afterItemTemplate?: string
     blankTemplate?: string
     loadingTemplate?: string
 }
@@ -137,7 +139,9 @@ export interface CreateTemplateOptions {
  */
 export function createTemplate({
     errorTemplate = 'Loading failed',
+    beforeItemTemplate = '',
     itemTemplate = '<!-- ko text: item.text --><!-- /ko -->',
+    afterItemTemplate = '',
     blankTemplate = 'No items',
     loadingTemplate = 'Loading',
 }: CreateTemplateOptions = {}): string {
@@ -167,6 +171,7 @@ export function createTemplate({
                     }
                 "
             >
+                ${beforeItemTemplate}
                 <div
                     class="tw-autocomplete__list-item"
                     data-bind="
@@ -183,6 +188,7 @@ export function createTemplate({
                 >
                     ${itemTemplate}
                 </div>
+                ${afterItemTemplate}
             </div>
         <!-- /ko -->
         <!-- ko if: viewName() === 'error' -->

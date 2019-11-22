@@ -184,6 +184,7 @@ export const TwAutocomplete = Vue.extend({
                                             index,
                                             item,
                                             items,
+                                            matchedText: this.matchedText,
                                         }) || item.text,
                                     ),
                                     this.$scopedSlots.afterItem?.({

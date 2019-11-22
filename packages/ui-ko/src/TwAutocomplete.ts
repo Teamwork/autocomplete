@@ -165,7 +165,9 @@ export function createTemplate({
             let: ($component.node = $element, undefined)
         "
     >
-        ${header}
+        <div class="tw-autocomplete__header">
+            ${header}
+        </div>
         <!-- ko if: viewName() === 'items' -->
             <div
                 class='tw-autocomplete__list'
@@ -212,7 +214,9 @@ export function createTemplate({
                 ${blank}
             </div>
         <!-- /ko -->
-        ${footer}
+        <div class="tw-autocomplete__footer">
+            ${footer}
+        </div>
     </div>
 <!-- /ko -->
 `

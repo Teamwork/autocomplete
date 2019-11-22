@@ -132,22 +132,10 @@ export function createAutocomplete({
     return new AutocompleteClass(editorAdapter, patternHandlers)
 }
 
-/**
- * The value of `matchedText`, when autocomplete is not active.
- */
-export const defaultMatchedText = ''
-/**
- * The value of `items`, when autocomplete is not active.
- */
-export const defaultItems: Readonly<Item[]> = Object.freeze([])
-/**
- * The value of `selectedIndex`, when autocomplete is not active.
- */
-export const defaultSelectedIndex = -1
-/**
- * The value of `caretPosition` and `editorPosition`, when autocomplete is not active.
- */
-export const defaultPosition: Position = Object.freeze({
+const defaultMatchedText = ''
+const defaultItems: Readonly<Item[]> = Object.freeze([])
+const defaultSelectedIndex = -1
+const defaultPosition: Position = Object.freeze({
     bottom: 0,
     left: 0,
     right: 0,

@@ -7,10 +7,6 @@ import {
     createAutocomplete,
     createPatternHandler,
     createRegexPattern,
-    defaultItems,
-    defaultMatchedText,
-    defaultPosition,
-    defaultSelectedIndex,
     EditorAdapter,
     EditorAdapterEvents,
     Item,
@@ -21,6 +17,12 @@ import {
 const whenAnimationFrame = () =>
     new Promise(resolve => requestAnimationFrame(resolve))
 
+const position0: Position = Object.freeze({
+    bottom: 0,
+    left: 0,
+    right: 0,
+    top: 0,
+})
 const caretPosition1: Position = Object.freeze({
     bottom: 110,
     left: 100,
@@ -70,11 +72,11 @@ let autocomplete: Autocomplete
 
 function expectNotActive(): void {
     expect(autocomplete.active).toBe(false)
-    expect(autocomplete.caretPosition).toBe(defaultPosition)
-    expect(autocomplete.editorPosition).toBe(defaultPosition)
-    expect(autocomplete.items).toBe(defaultItems)
-    expect(autocomplete.matchedText).toBe(defaultMatchedText)
-    expect(autocomplete.selectedIndex).toBe(defaultSelectedIndex)
+    expect(autocomplete.caretPosition).toStrictEqual(position0)
+    expect(autocomplete.editorPosition).toStrictEqual(position0)
+    expect(autocomplete.items).toStrictEqual([])
+    expect(autocomplete.matchedText).toBe('')
+    expect(autocomplete.selectedIndex).toBe(-1)
     expect(autocomplete.error).toBe(undefined)
     expect(autocomplete.loading).toBe(false)
 }
@@ -97,9 +99,9 @@ function expectActive({
     loading?: boolean
 } = {}): void {
     expect(autocomplete.active).toBe(true)
-    expect(autocomplete.caretPosition).toBe(caretPosition)
-    expect(autocomplete.editorPosition).toBe(editorPosition)
-    expect(autocomplete.items).toBe(items)
+    expect(autocomplete.caretPosition).toStrictEqual(caretPosition)
+    expect(autocomplete.editorPosition).toStrictEqual(editorPosition)
+    expect(autocomplete.items).toStrictEqual(items)
     expect(autocomplete.matchedText).toBe(matchedText)
     expect(autocomplete.selectedIndex).toBe(selectedIndex)
     expect(autocomplete.error).toBe(error)
@@ -280,12 +282,12 @@ describe('updateCaretPosition', () => {
 
 describe('selectedIndex', () => {
     test('no items', () => {
-        expect(autocomplete.items).toBe(defaultItems)
-        expect(autocomplete.selectedIndex).toBe(defaultSelectedIndex)
+        expect(autocomplete.items).toStrictEqual([])
+        expect(autocomplete.selectedIndex).toBe(-1)
         autocomplete.selectedIndex++
-        expect(autocomplete.selectedIndex).toBe(defaultSelectedIndex)
+        expect(autocomplete.selectedIndex).toBe(-1)
         autocomplete.selectedIndex--
-        expect(autocomplete.selectedIndex).toBe(defaultSelectedIndex)
+        expect(autocomplete.selectedIndex).toBe(-1)
     })
     test('with items', async () => {
         autocomplete.match()
@@ -418,7 +420,7 @@ describe('loading', () => {
         })
         autocomplete.match()
         await whenAnimationFrame()
-        expectActive({ error, items: defaultItems, selectedIndex: -1 })
+        expectActive({ error, items: [], selectedIndex: -1 })
 
         expect(onActive).toHaveBeenCalledTimes(1)
         expect(onMatchedText).toHaveBeenCalledTimes(1)
@@ -442,7 +444,7 @@ describe('loading', () => {
         autocomplete.match()
         await whenAnimationFrame()
         expectActive({
-            items: defaultItems,
+            items: [],
             loading: true,
             selectedIndex: -1,
         })
@@ -451,7 +453,7 @@ describe('loading', () => {
         autocomplete.match()
         await whenAnimationFrame()
         expectActive({
-            items: defaultItems,
+            items: [],
             loading: true,
             selectedIndex: -1,
         })
@@ -487,7 +489,7 @@ describe('loading', () => {
         autocomplete.match()
         await whenAnimationFrame()
         expectActive({
-            items: defaultItems,
+            items: [],
             loading: true,
             selectedIndex: -1,
         })
@@ -496,7 +498,7 @@ describe('loading', () => {
         autocomplete.match()
         await whenAnimationFrame()
         expectActive({
-            items: defaultItems,
+            items: [],
             loading: true,
             selectedIndex: -1,
         })
@@ -509,7 +511,7 @@ describe('loading', () => {
         await whenNextTick()
         expectActive({
             error: error2,
-            items: defaultItems,
+            items: [],
             selectedIndex: -1,
         })
 
@@ -531,7 +533,7 @@ describe('loading', () => {
         autocomplete.match()
         await whenAnimationFrame()
         expectActive({
-            items: defaultItems,
+            items: [],
             loading: true,
             selectedIndex: -1,
         })

@@ -1,10 +1,4 @@
-import {
-    Autocomplete,
-    defaultItems,
-    defaultMatchedText,
-    defaultPosition,
-    defaultSelectedIndex,
-} from '@teamwork/autocomplete-core'
+import { Autocomplete, Item, Position } from '@teamwork/autocomplete-core'
 import Vue, { VNode } from 'vue'
 
 /**
@@ -53,8 +47,8 @@ export const TwAutocomplete = Vue.extend({
             error: undefined as Error | undefined,
             items: defaultItems,
             loading: false,
-            matchedText: defaultMatchedText,
-            selectedIndex: defaultSelectedIndex,
+            matchedText: '',
+            selectedIndex: -1,
         }
         // Make `autocomplete` a valid property
         // but do not add it to `data` to avoid making it reactive.
@@ -246,4 +240,12 @@ export const TwAutocomplete = Vue.extend({
               )
             : createElement()
     },
+})
+
+const defaultItems: Readonly<Item[]> = Object.freeze([])
+const defaultPosition: Position = Object.freeze({
+    bottom: 0,
+    left: 0,
+    right: 0,
+    top: 0,
 })

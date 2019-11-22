@@ -27,11 +27,11 @@
   },
   "dependencies": {
     "@syncot/util": "^0.1.0",
+    "@teamwork/autocomplete-core": "file:../core",
+    "@types/codemirror": "^0.0.80",
     "tslib": "^1.9.3"
   },
   "peerDependencies": {
-    "@teamwork/autocomplete-core": "^0.1.0",
-    "@types/codemirror": "^0.0.80",
     "codemirror": "^5.49.0"
   }
 }

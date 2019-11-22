@@ -26,10 +26,10 @@
     "access": "public"
   },
   "dependencies": {
+    "@teamwork/autocomplete-core": "file:../core",
     "tslib": "^1.9.3"
   },
   "peerDependencies": {
-    "@teamwork/autocomplete-core": "^0.1.0",
     "knockout": "^3.5.1"
   }
 }

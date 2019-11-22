@@ -3,7 +3,7 @@ import {
     defaultItems,
     defaultMatchedText,
     defaultPosition,
-    defaultSelectedItem,
+    defaultSelectedIndex,
 } from '@teamwork/autocomplete-core'
 import Vue, { VNode } from 'vue'
 
@@ -54,7 +54,7 @@ export const TwAutocomplete = Vue.extend({
             items: defaultItems,
             loading: false,
             matchedText: defaultMatchedText,
-            selectedItem: defaultSelectedItem,
+            selectedIndex: defaultSelectedIndex,
         }
         // Make `autocomplete` a valid property
         // but do not add it to `data` to avoid making it reactive.
@@ -86,8 +86,8 @@ export const TwAutocomplete = Vue.extend({
             const itemsListener = () => (this.items = autocomplete.items)
             const matchedTextListener = () =>
                 (this.matchedText = autocomplete.matchedText)
-            const selectedItemListener = () =>
-                (this.selectedItem = autocomplete.selectedItem)
+            const selectedIndexListener = () =>
+                (this.selectedIndex = autocomplete.selectedIndex)
 
             activeListener()
             caretPositionListener()
@@ -96,7 +96,7 @@ export const TwAutocomplete = Vue.extend({
             loadingListener()
             itemsListener()
             matchedTextListener()
-            selectedItemListener()
+            selectedIndexListener()
 
             autocomplete.on('active', activeListener)
             autocomplete.on('caretPosition', caretPositionListener)
@@ -105,7 +105,7 @@ export const TwAutocomplete = Vue.extend({
             autocomplete.on('loading', loadingListener)
             autocomplete.on('items', itemsListener)
             autocomplete.on('matchedText', matchedTextListener)
-            autocomplete.on('selectedItem', selectedItemListener)
+            autocomplete.on('selectedIndex', selectedIndexListener)
 
             this.$once('hook:beforeDestroy', () => {
                 autocomplete.off('active', activeListener)
@@ -115,7 +115,7 @@ export const TwAutocomplete = Vue.extend({
                 autocomplete.off('loading', loadingListener)
                 autocomplete.off('items', itemsListener)
                 autocomplete.off('matchedText', matchedTextListener)
-                autocomplete.off('selectedItem', selectedItemListener)
+                autocomplete.off('selectedIndex', selectedIndexListener)
             })
         },
     },
@@ -161,7 +161,8 @@ export const TwAutocomplete = Vue.extend({
                                             class: {
                                                 'tw-autocomplete__list-item': true,
                                                 'tw-autocomplete__list-item--selected':
-                                                    this.selectedItem === index,
+                                                    this.selectedIndex ===
+                                                    index,
                                             },
                                             key: item.id,
                                             on: {
@@ -169,7 +170,7 @@ export const TwAutocomplete = Vue.extend({
                                                     event: MouseEvent,
                                                 ): void => {
                                                     event.preventDefault()
-                                                    this.autocomplete.selectedItem = index
+                                                    this.autocomplete.selectedIndex = index
                                                     this.autocomplete.accept()
                                                 },
                                             },

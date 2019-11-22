@@ -15,9 +15,9 @@ export interface AutocompleteEvents {
      */
     items: void
     /**
-     * Emitted when the `selectedItem` property is updated.
+     * Emitted when the `selectedIndex` property is updated.
      */
-    selectedItem: void
+    selectedIndex: void
     /**
      * Emitted when the `matchedText` property is updated.
      */
@@ -60,7 +60,7 @@ export interface Autocomplete
     /**
      * The index of the selected item in `items`.
      */
-    selectedItem: number
+    selectedIndex: number
     /**
      * The matched text.
      */
@@ -141,9 +141,9 @@ export const defaultMatchedText = ''
  */
 export const defaultItems: Readonly<Item[]> = Object.freeze([])
 /**
- * The value of `selectedItem`, when autocomplete is not active.
+ * The value of `selectedIndex`, when autocomplete is not active.
  */
-export const defaultSelectedItem = -1
+export const defaultSelectedIndex = -1
 /**
  * The value of `caretPosition` and `editorPosition`, when autocomplete is not active.
  */
@@ -162,27 +162,27 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
     public set items(items: Readonly<Item[]>) {
         if (this._items !== items) {
             this._items = items
-            this.selectedItem = 0
+            this.selectedIndex = 0
             this.emitLater('items')
         }
     }
     private _items: Readonly<Item[]> = defaultItems
 
-    public get selectedItem(): number {
-        return this._selectedItem
+    public get selectedIndex(): number {
+        return this._selectedIndex
     }
-    public set selectedItem(selectedItem: number) {
+    public set selectedIndex(selectedIndex: number) {
         /* tslint:disable-next-line:no-bitwise */
-        const int = selectedItem | 0
+        const int = selectedIndex | 0
         const max = this.items.length - 1
         const min = 0
         const index = Math.min(max, Math.max(min, int))
-        if (this._selectedItem !== index) {
-            this._selectedItem = index
-            this.emitLater('selectedItem')
+        if (this._selectedIndex !== index) {
+            this._selectedIndex = index
+            this.emitLater('selectedIndex')
         }
     }
-    private _selectedItem: number = defaultSelectedItem
+    private _selectedIndex: number = defaultSelectedIndex
 
     public get matchedText(): string {
         return this._matchedText
@@ -317,7 +317,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
     public accept(): void {
         const patternHandler = this.activePatternHandler
         if (patternHandler) {
-            const item = this.items[this.selectedItem]
+            const item = this.items[this.selectedIndex]
             if (item) {
                 patternHandler.accept(this, item)
             }
@@ -440,7 +440,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
                     !event.metaKey
                 ) {
                     event.preventDefault()
-                    this.selectedItem--
+                    this.selectedIndex--
                 }
                 break
             case 'Down': // IE11
@@ -454,7 +454,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
                     !event.metaKey
                 ) {
                     event.preventDefault()
-                    this.selectedItem++
+                    this.selectedIndex++
                 }
                 break
             case 'Esc': // IE11

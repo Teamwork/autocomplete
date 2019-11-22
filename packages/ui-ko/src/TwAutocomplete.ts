@@ -26,7 +26,7 @@ export class TwAutocomplete {
     public readonly loading: Observable<boolean>
     public readonly items: Observable<Readonly<Item[]>>
     public readonly matchedText: Observable<string>
-    public readonly selectedItem: Observable<number>
+    public readonly selectedIndex: Observable<number>
     public readonly caretVisible: PureComputed<boolean>
     public readonly visible: PureComputed<boolean>
     public readonly viewName: PureComputed<ViewName>
@@ -45,7 +45,7 @@ export class TwAutocomplete {
         this.loading = ko.observable(autocomplete.loading)
         this.items = ko.observable(autocomplete.items)
         this.matchedText = ko.observable(autocomplete.matchedText)
-        this.selectedItem = ko.observable(autocomplete.selectedItem)
+        this.selectedIndex = ko.observable(autocomplete.selectedIndex)
 
         this.autocomplete.on('active', this.activeListener)
         this.autocomplete.on('caretPosition', this.caretPositionListener)
@@ -54,7 +54,7 @@ export class TwAutocomplete {
         this.autocomplete.on('loading', this.loadingListener)
         this.autocomplete.on('items', this.itemsListener)
         this.autocomplete.on('matchedText', this.matchedTextListener)
-        this.autocomplete.on('selectedItem', this.selectedItemListener)
+        this.autocomplete.on('selectedIndex', this.selectedIndexListener)
         document.addEventListener('mousedown', this.onMouseButton, true)
         document.addEventListener('mouseup', this.onMouseButton, true)
 
@@ -92,7 +92,7 @@ export class TwAutocomplete {
         this.autocomplete.off('loading', this.loadingListener)
         this.autocomplete.off('items', this.itemsListener)
         this.autocomplete.off('matchedText', this.matchedTextListener)
-        this.autocomplete.off('selectedItem', this.selectedItemListener)
+        this.autocomplete.off('selectedIndex', this.selectedIndexListener)
         document.removeEventListener('mousedown', this.onMouseButton, true)
         document.removeEventListener('mouseup', this.onMouseButton, true)
     }
@@ -108,8 +108,8 @@ export class TwAutocomplete {
     private itemsListener = (): void => this.items(this.autocomplete.items)
     private matchedTextListener = (): void =>
         this.matchedText(this.autocomplete.matchedText)
-    private selectedItemListener = (): void =>
-        this.selectedItem(this.autocomplete.selectedItem)
+    private selectedIndexListener = (): void =>
+        this.selectedIndex(this.autocomplete.selectedIndex)
 
     private onMouseButton = (event: MouseEvent): void => {
         if (
@@ -171,11 +171,11 @@ export function createTemplate({
                     class="tw-autocomplete__list-item"
                     data-bind="
                         css: {
-                            'tw-autocomplete__list-item--selected': selectedItem() === $index()
+                            'tw-autocomplete__list-item--selected': selectedIndex() === $index()
                         },
                         event: {
                             click: function () {
-                                $data.autocomplete.selectedItem = $index()
+                                $data.autocomplete.selectedIndex = $index()
                                 $data.autocomplete.accept()
                             }
                         }

@@ -10,7 +10,7 @@ import {
     defaultItems,
     defaultMatchedText,
     defaultPosition,
-    defaultSelectedItem,
+    defaultSelectedIndex,
     EditorAdapter,
     EditorAdapterEvents,
     Item,
@@ -74,7 +74,7 @@ function expectNotActive(): void {
     expect(autocomplete.editorPosition).toBe(defaultPosition)
     expect(autocomplete.items).toBe(defaultItems)
     expect(autocomplete.matchedText).toBe(defaultMatchedText)
-    expect(autocomplete.selectedItem).toBe(defaultSelectedItem)
+    expect(autocomplete.selectedIndex).toBe(defaultSelectedIndex)
     expect(autocomplete.error).toBe(undefined)
     expect(autocomplete.loading).toBe(false)
 }
@@ -84,7 +84,7 @@ function expectActive({
     editorPosition = editorPosition1,
     items = letterItems,
     matchedText = 'def',
-    selectedItem = 0,
+    selectedIndex = 0,
     error,
     loading = false,
 }: {
@@ -92,7 +92,7 @@ function expectActive({
     editorPosition?: Position
     items?: Readonly<Item[]>
     matchedText?: string
-    selectedItem?: number
+    selectedIndex?: number
     error?: Error | undefined
     loading?: boolean
 } = {}): void {
@@ -101,7 +101,7 @@ function expectActive({
     expect(autocomplete.editorPosition).toBe(editorPosition)
     expect(autocomplete.items).toBe(items)
     expect(autocomplete.matchedText).toBe(matchedText)
-    expect(autocomplete.selectedItem).toBe(selectedItem)
+    expect(autocomplete.selectedIndex).toBe(selectedIndex)
     expect(autocomplete.error).toBe(error)
     expect(autocomplete.loading).toBe(loading)
 }
@@ -278,45 +278,45 @@ describe('updateCaretPosition', () => {
     })
 })
 
-describe('selectedItem', () => {
+describe('selectedIndex', () => {
     test('no items', () => {
         expect(autocomplete.items).toBe(defaultItems)
-        expect(autocomplete.selectedItem).toBe(defaultSelectedItem)
-        autocomplete.selectedItem++
-        expect(autocomplete.selectedItem).toBe(defaultSelectedItem)
-        autocomplete.selectedItem--
-        expect(autocomplete.selectedItem).toBe(defaultSelectedItem)
+        expect(autocomplete.selectedIndex).toBe(defaultSelectedIndex)
+        autocomplete.selectedIndex++
+        expect(autocomplete.selectedIndex).toBe(defaultSelectedIndex)
+        autocomplete.selectedIndex--
+        expect(autocomplete.selectedIndex).toBe(defaultSelectedIndex)
     })
     test('with items', async () => {
         autocomplete.match()
         await whenAnimationFrame()
         expect(autocomplete.items).toBe(letterItems)
         expect(autocomplete.items.length).toBe(3)
-        expect(autocomplete.selectedItem).toBe(0)
+        expect(autocomplete.selectedIndex).toBe(0)
 
-        autocomplete.selectedItem = -100
-        expect(autocomplete.selectedItem).toBe(0)
+        autocomplete.selectedIndex = -100
+        expect(autocomplete.selectedIndex).toBe(0)
 
-        autocomplete.selectedItem = 100
-        expect(autocomplete.selectedItem).toBe(2)
+        autocomplete.selectedIndex = 100
+        expect(autocomplete.selectedIndex).toBe(2)
 
-        autocomplete.selectedItem = 0
-        expect(autocomplete.selectedItem).toBe(0)
+        autocomplete.selectedIndex = 0
+        expect(autocomplete.selectedIndex).toBe(0)
 
-        autocomplete.selectedItem = 1
-        expect(autocomplete.selectedItem).toBe(1)
+        autocomplete.selectedIndex = 1
+        expect(autocomplete.selectedIndex).toBe(1)
 
-        autocomplete.selectedItem = 2
-        expect(autocomplete.selectedItem).toBe(2)
+        autocomplete.selectedIndex = 2
+        expect(autocomplete.selectedIndex).toBe(2)
 
-        autocomplete.selectedItem = 1.5
-        expect(autocomplete.selectedItem).toBe(1)
+        autocomplete.selectedIndex = 1.5
+        expect(autocomplete.selectedIndex).toBe(1)
 
-        autocomplete.selectedItem = NaN
-        expect(autocomplete.selectedItem).toBe(0)
+        autocomplete.selectedIndex = NaN
+        expect(autocomplete.selectedIndex).toBe(0)
 
-        autocomplete.selectedItem = '1' as any
-        expect(autocomplete.selectedItem).toBe(1)
+        autocomplete.selectedIndex = '1' as any
+        expect(autocomplete.selectedIndex).toBe(1)
     })
 })
 
@@ -334,24 +334,24 @@ describe('accept', () => {
         letterLoad.mockReturnValue(items)
         autocomplete.match()
         await whenAnimationFrame()
-        expectActive({ items, selectedItem: -1 })
+        expectActive({ items, selectedIndex: -1 })
 
         autocomplete.accept()
         expect(letterAccept).toHaveBeenCalledTimes(0)
         await whenAnimationFrame()
-        expectActive({ items, selectedItem: -1 })
+        expectActive({ items, selectedIndex: -1 })
     })
     test('some items', async () => {
         autocomplete.match()
         await whenAnimationFrame()
-        autocomplete.selectedItem = 1
-        expectActive({ selectedItem: 1 })
+        autocomplete.selectedIndex = 1
+        expectActive({ selectedIndex: 1 })
 
         autocomplete.accept()
         expect(letterAccept).toHaveBeenCalledTimes(1)
         expect(letterAccept).toHaveBeenCalledWith(autocomplete, letterItems[1])
         await whenAnimationFrame()
-        expectActive({ selectedItem: 1 })
+        expectActive({ selectedIndex: 1 })
     })
 })
 
@@ -359,7 +359,7 @@ describe('loading', () => {
     let onActive: jest.Mock
     let onMatchedText: jest.Mock
     let onItems: jest.Mock
-    let onSelectedItem: jest.Mock
+    let onSelectedIndex: jest.Mock
     let onCaretPosition: jest.Mock
     let onEditorPosition: jest.Mock
     let onError: jest.Mock
@@ -369,7 +369,7 @@ describe('loading', () => {
         autocomplete.on('active', (onActive = jest.fn()))
         autocomplete.on('matchedText', (onMatchedText = jest.fn()))
         autocomplete.on('items', (onItems = jest.fn()))
-        autocomplete.on('selectedItem', (onSelectedItem = jest.fn()))
+        autocomplete.on('selectedIndex', (onSelectedIndex = jest.fn()))
         autocomplete.on('caretPosition', (onCaretPosition = jest.fn()))
         autocomplete.on('editorPosition', (onEditorPosition = jest.fn()))
         autocomplete.on('error', (onError = jest.fn()))
@@ -384,7 +384,7 @@ describe('loading', () => {
         expect(onActive).toHaveBeenCalledTimes(1)
         expect(onMatchedText).toHaveBeenCalledTimes(1)
         expect(onItems).toHaveBeenCalledTimes(1)
-        expect(onSelectedItem).toHaveBeenCalledTimes(1)
+        expect(onSelectedIndex).toHaveBeenCalledTimes(1)
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
         expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(0)
@@ -397,12 +397,12 @@ describe('loading', () => {
         })
         autocomplete.match()
         await whenAnimationFrame()
-        expectActive({ error, items: defaultItems, selectedItem: -1 })
+        expectActive({ error, items: defaultItems, selectedIndex: -1 })
 
         expect(onActive).toHaveBeenCalledTimes(1)
         expect(onMatchedText).toHaveBeenCalledTimes(1)
         expect(onItems).toHaveBeenCalledTimes(0)
-        expect(onSelectedItem).toHaveBeenCalledTimes(0)
+        expect(onSelectedIndex).toHaveBeenCalledTimes(0)
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
         expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(1)
@@ -423,7 +423,7 @@ describe('loading', () => {
         expectActive({
             items: defaultItems,
             loading: true,
-            selectedItem: -1,
+            selectedIndex: -1,
         })
 
         // Record and wait for promise2.
@@ -432,7 +432,7 @@ describe('loading', () => {
         expectActive({
             items: defaultItems,
             loading: true,
-            selectedItem: -1,
+            selectedIndex: -1,
         })
 
         // Resolve the promises in the reversed order.
@@ -445,7 +445,7 @@ describe('loading', () => {
         expect(onActive).toHaveBeenCalledTimes(1)
         expect(onMatchedText).toHaveBeenCalledTimes(1)
         expect(onItems).toHaveBeenCalledTimes(1)
-        expect(onSelectedItem).toHaveBeenCalledTimes(1)
+        expect(onSelectedIndex).toHaveBeenCalledTimes(1)
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
         expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(0)
@@ -468,7 +468,7 @@ describe('loading', () => {
         expectActive({
             items: defaultItems,
             loading: true,
-            selectedItem: -1,
+            selectedIndex: -1,
         })
 
         // Record and wait for promise2.
@@ -477,7 +477,7 @@ describe('loading', () => {
         expectActive({
             items: defaultItems,
             loading: true,
-            selectedItem: -1,
+            selectedIndex: -1,
         })
 
         // Reject the promises in the reversed order.
@@ -489,13 +489,13 @@ describe('loading', () => {
         expectActive({
             error: error2,
             items: defaultItems,
-            selectedItem: -1,
+            selectedIndex: -1,
         })
 
         expect(onActive).toHaveBeenCalledTimes(1)
         expect(onMatchedText).toHaveBeenCalledTimes(1)
         expect(onItems).toHaveBeenCalledTimes(0)
-        expect(onSelectedItem).toHaveBeenCalledTimes(0)
+        expect(onSelectedIndex).toHaveBeenCalledTimes(0)
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
         expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(1)
@@ -512,7 +512,7 @@ describe('loading', () => {
         expectActive({
             items: defaultItems,
             loading: true,
-            selectedItem: -1,
+            selectedIndex: -1,
         })
 
         autocomplete.clear()
@@ -526,7 +526,7 @@ describe('loading', () => {
         expect(onActive).toHaveBeenCalledTimes(2)
         expect(onMatchedText).toHaveBeenCalledTimes(2)
         expect(onItems).toHaveBeenCalledTimes(0)
-        expect(onSelectedItem).toHaveBeenCalledTimes(0)
+        expect(onSelectedIndex).toHaveBeenCalledTimes(0)
         expect(onCaretPosition).toHaveBeenCalledTimes(2)
         expect(onEditorPosition).toHaveBeenCalledTimes(2)
         expect(onError).toHaveBeenCalledTimes(0)
@@ -603,7 +603,7 @@ describe('events', () => {
 
         describe.each(['Up', 'ArrowUp'])('%p', key => {
             beforeEach(() => {
-                autocomplete.selectedItem = 2
+                autocomplete.selectedIndex = 2
             })
             test('no state', async () => {
                 autocomplete.clear()
@@ -620,19 +620,19 @@ describe('events', () => {
                 letterLoad.mockReturnValue(items)
                 autocomplete.match()
                 await whenAnimationFrame()
-                expectActive({ items, selectedItem: -1 })
+                expectActive({ items, selectedIndex: -1 })
 
                 const event = createEvent({ key })
                 editorAdapter.emit('keyDown', editorAdapter, event)
                 await whenAnimationFrame()
-                expectActive({ items, selectedItem: -1 })
+                expectActive({ items, selectedIndex: -1 })
                 expect(event.defaultPrevented).toBe(false)
             })
             test('some items', async () => {
                 const event = createEvent({ key })
                 editorAdapter.emit('keyDown', editorAdapter, event)
                 await whenAnimationFrame()
-                expectActive({ selectedItem: 1 })
+                expectActive({ selectedIndex: 1 })
                 expect(event.defaultPrevented).toBe(true)
             })
             test.each(['ctrlKey', 'shiftKey', 'altKey', 'metaKey'])(
@@ -641,7 +641,7 @@ describe('events', () => {
                     const event = createEvent({ key, [modifier]: true })
                     editorAdapter.emit('keyDown', editorAdapter, event)
                     await whenAnimationFrame()
-                    expectActive({ selectedItem: 2 })
+                    expectActive({ selectedIndex: 2 })
                     expect(event.defaultPrevented).toBe(false)
                 },
             )
@@ -663,19 +663,19 @@ describe('events', () => {
                 letterLoad.mockReturnValue(items)
                 autocomplete.match()
                 await whenAnimationFrame()
-                expectActive({ items, selectedItem: -1 })
+                expectActive({ items, selectedIndex: -1 })
 
                 const event = createEvent({ key })
                 editorAdapter.emit('keyDown', editorAdapter, event)
                 await whenAnimationFrame()
-                expectActive({ items, selectedItem: -1 })
+                expectActive({ items, selectedIndex: -1 })
                 expect(event.defaultPrevented).toBe(false)
             })
             test('some items', async () => {
                 const event = createEvent({ key })
                 editorAdapter.emit('keyDown', editorAdapter, event)
                 await whenAnimationFrame()
-                expectActive({ selectedItem: 1 })
+                expectActive({ selectedIndex: 1 })
                 expect(event.defaultPrevented).toBe(true)
             })
             test.each(['ctrlKey', 'shiftKey', 'altKey', 'metaKey'])(
@@ -709,27 +709,27 @@ describe('events', () => {
                 letterLoad.mockReturnValue(items)
                 autocomplete.match()
                 await whenAnimationFrame()
-                expectActive({ items, selectedItem: -1 })
+                expectActive({ items, selectedIndex: -1 })
 
                 const event = createEvent({ key })
                 editorAdapter.emit('keyDown', editorAdapter, event)
                 await whenAnimationFrame()
-                expectActive({ items, selectedItem: -1 })
+                expectActive({ items, selectedIndex: -1 })
                 expect(event.defaultPrevented).toBe(false)
                 expect(letterAccept).toHaveBeenCalledTimes(0)
             })
 
-            test.each([0, 1, 2])('selectedItem = %d', async selectedItem => {
-                autocomplete.selectedItem = selectedItem
+            test.each([0, 1, 2])('selectedIndex = %d', async selectedIndex => {
+                autocomplete.selectedIndex = selectedIndex
                 const event = createEvent({ key })
                 editorAdapter.emit('keyDown', editorAdapter, event)
                 await whenAnimationFrame()
-                expectActive({ selectedItem })
+                expectActive({ selectedIndex })
                 expect(event.defaultPrevented).toBe(true)
                 expect(letterAccept).toHaveBeenCalledTimes(1)
                 expect(letterAccept).toHaveBeenCalledWith(
                     autocomplete,
-                    letterItems[selectedItem],
+                    letterItems[selectedIndex],
                 )
             })
 

@@ -36,6 +36,10 @@ class CodeMirrorEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         this.editor.off('keyHandled', this.onKeyHandled)
     }
 
+    public focus(): void {
+        this.editor.focus()
+    }
+
     public get textBeforeCaret(): string {
         const doc = this.editor.getDoc()
         const end = doc.getCursor('head')

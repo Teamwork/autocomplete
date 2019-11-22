@@ -30,6 +30,12 @@ afterEach(() => {
     document.body.removeChild(editor.getWrapperElement())
 })
 
+test('focus', () => {
+    expect(editor.hasFocus()).toBe(false)
+    editorAdapter.focus()
+    expect(editor.hasFocus()).toBe(true)
+})
+
 test('textBeforeCaret', () => {
     expect(editorAdapter.textBeforeCaret).toBe('sec')
     expect(editorAdapter.textAfterCaret).toBe('ond line')

@@ -48,6 +48,10 @@ export interface EditorAdapter
      */
     readonly editorPosition: Position
     /**
+     * Focuses the editor.
+     */
+    focus(): void
+    /**
      * Detaches this adapter from its editor.
      */
     destroy(): void

@@ -192,5 +192,6 @@ class PatternHandlerClass implements PatternHandler {
     public accept(autocomplete: Autocomplete, item: Item): void {
         this.replace(autocomplete, item.text)
         autocomplete.clear()
+        autocomplete.editorAdapter.focus()
     }
 }

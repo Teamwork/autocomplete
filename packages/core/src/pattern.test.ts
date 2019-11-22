@@ -32,6 +32,7 @@ class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         top: 0,
     }
     public destroy = noop
+    public focus = jest.fn()
 }
 
 const emptyPattern: Pattern = (_text: string) => 0
@@ -299,6 +300,7 @@ describe('PatternHandler', () => {
             expect(editorAdapter.textBeforeCaret).toBe('abxyz')
             expect(editorAdapter.textAfterCaret).toBe('23')
             expect(clear).toHaveBeenCalledTimes(1)
+            expect(editorAdapter.focus).toHaveBeenCalledTimes(1)
         })
         test('custom implementation', () => {
             const accept = jest.fn()
@@ -315,6 +317,7 @@ describe('PatternHandler', () => {
             expect(editorAdapter.textAfterCaret).toBe('123')
             expect(accept).toHaveBeenCalledWith(autocomplete, item)
             expect(clear).toHaveBeenCalledTimes(0)
+            expect(editorAdapter.focus).toHaveBeenCalledTimes(0)
         })
     })
 })

@@ -148,6 +148,9 @@ export const TwAutocomplete = Vue.extend({
                       },
                   },
                   [
+                      this.$scopedSlots.header?.({
+                          viewName: this.viewName,
+                      }),
                       this.viewName === ViewName.items
                           ? createElement(
                                 'div',
@@ -221,6 +224,9 @@ export const TwAutocomplete = Vue.extend({
                                 this.$scopedSlots.blank?.(undefined) ||
                                     'No content',
                             ),
+                      this.$scopedSlots.footer?.({
+                          viewName: this.viewName,
+                      }),
                   ],
               )
             : createElement()

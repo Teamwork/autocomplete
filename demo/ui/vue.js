@@ -13,6 +13,11 @@ export function initUI(autocomplete) {
         render(createElement) {
             return createElement('TwAutocomplete', {
                 ref: 'autocomplete',
+                scopedSlots: {
+                    header() {
+                        return 'Type something'
+                    },
+                },
             })
         },
     })

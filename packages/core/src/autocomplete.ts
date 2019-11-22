@@ -319,9 +319,8 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
         if (patternHandler) {
             const item = this.items[this.selectedItem]
             if (item) {
-                patternHandler.accept(this.editorAdapter, item)
+                patternHandler.accept(this, item)
             }
-            this.clear()
         }
     }
 
@@ -333,7 +332,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
 
     private matchNow(): void {
         for (const patternHandler of this.patternHandlers) {
-            const match = patternHandler.match(this.editorAdapter)
+            const match = patternHandler.match(this)
 
             if (match) {
                 this.activePatternHandler = patternHandler
@@ -341,10 +340,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
                 this.caretPosition = this.editorAdapter.caretPosition
                 this.editorPosition = this.editorAdapter.editorPosition
                 try {
-                    const itemsOrPomise = patternHandler.load(
-                        this.editorAdapter,
-                        match,
-                    )
+                    const itemsOrPomise = patternHandler.load(this, match)
                     if (Array.isArray(itemsOrPomise)) {
                         this.promise = undefined
                         this.items = itemsOrPomise

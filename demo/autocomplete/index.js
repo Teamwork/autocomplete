@@ -15,7 +15,7 @@ export function initAutocomplete(editorAdapter) {
                     /(?:^|\p{White_Space})(@[\p{Alphabetic}\p{gc=Mark}\p{gc=Decimal_Number}\p{gc=Connector_Punctuation}\p{Join_Control}]*)$/u,
                     1,
                 ),
-                async load(_editorAdapter, match) {
+                async load(_autocomplete, match) {
                     match = match.substring(1)
 
                     if (/^slow_/.test(match)) {

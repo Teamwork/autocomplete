@@ -1,5 +1,9 @@
+/**
+ * @jest-environment jsdom
+ */
 import { noop, TypedEventEmitter } from '@syncot/util'
 import {
+    Autocomplete,
     createPatternHandler,
     createRegexPattern,
     EditorAdapter,
@@ -8,6 +12,7 @@ import {
     Pattern,
     Position,
 } from '.'
+import { createAutocomplete } from './autocomplete'
 
 class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
     implements EditorAdapter {
@@ -31,9 +36,19 @@ class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
 
 const emptyPattern: Pattern = (_text: string) => 0
 let editorAdapter: MockEditorAdapter
+let autocomplete: Autocomplete
 
 beforeEach(() => {
     editorAdapter = new MockEditorAdapter()
+    autocomplete = createAutocomplete({
+        editorAdapter,
+        patternHandlers: [],
+    })
+})
+
+afterEach(() => {
+    autocomplete.destroy()
+    editorAdapter.destroy()
 })
 
 describe('createRegexPattern', () => {
@@ -68,7 +83,7 @@ describe('PatternHandler', () => {
             })
             editorAdapter.textBeforeCaret = 'abc'
             editorAdapter.textAfterCaret = 'def'
-            expect(patternHandler.match(editorAdapter)).toBe('')
+            expect(patternHandler.match(autocomplete)).toBe('')
         })
 
         test('match something before caret', () => {
@@ -77,7 +92,7 @@ describe('PatternHandler', () => {
                 patternBeforeCaret: createRegexPattern(/\w{3}$/),
             })
             editorAdapter.textBeforeCaret = 'abcdef'
-            expect(patternHandler.match(editorAdapter)).toBe('def')
+            expect(patternHandler.match(autocomplete)).toBe('def')
         })
 
         test('match something after caret', () => {
@@ -86,7 +101,7 @@ describe('PatternHandler', () => {
                 patternBeforeCaret: emptyPattern,
             })
             editorAdapter.textAfterCaret = '123456'
-            expect(patternHandler.match(editorAdapter)).toBe('123')
+            expect(patternHandler.match(autocomplete)).toBe('123')
         })
 
         test('match something before and after caret', () => {
@@ -96,7 +111,7 @@ describe('PatternHandler', () => {
             })
             editorAdapter.textAfterCaret = '123456'
             editorAdapter.textBeforeCaret = 'abcdef'
-            expect(patternHandler.match(editorAdapter)).toBe('def123')
+            expect(patternHandler.match(autocomplete)).toBe('def123')
         })
 
         test('match something with the default pattern after caret', () => {
@@ -105,7 +120,7 @@ describe('PatternHandler', () => {
             })
             editorAdapter.textBeforeCaret = 'abc'
             editorAdapter.textAfterCaret = ' def'
-            expect(patternHandler.match(editorAdapter)).toBe('abc')
+            expect(patternHandler.match(autocomplete)).toBe('abc')
         })
 
         test('match nothing before caret', () => {
@@ -114,7 +129,7 @@ describe('PatternHandler', () => {
                 patternBeforeCaret: createRegexPattern(/defg$/),
             })
             editorAdapter.textBeforeCaret = 'abcdef'
-            expect(patternHandler.match(editorAdapter)).toBe(undefined)
+            expect(patternHandler.match(autocomplete)).toBe(undefined)
         })
 
         test('match nothing after caret', () => {
@@ -123,7 +138,7 @@ describe('PatternHandler', () => {
                 patternBeforeCaret: emptyPattern,
             })
             editorAdapter.textAfterCaret = 'abcdef'
-            expect(patternHandler.match(editorAdapter)).toBe(undefined)
+            expect(patternHandler.match(autocomplete)).toBe(undefined)
         })
 
         test('match nothing with the default pattern before caret', () => {
@@ -132,7 +147,7 @@ describe('PatternHandler', () => {
             })
             editorAdapter.textBeforeCaret = 'abc'
             editorAdapter.textAfterCaret = 'def'
-            expect(patternHandler.match(editorAdapter)).toBe(undefined)
+            expect(patternHandler.match(autocomplete)).toBe(undefined)
         })
 
         test('match nothing with the default pattern after caret', () => {
@@ -141,7 +156,7 @@ describe('PatternHandler', () => {
             })
             editorAdapter.textBeforeCaret = 'abc'
             editorAdapter.textAfterCaret = 'def'
-            expect(patternHandler.match(editorAdapter)).toBe(undefined)
+            expect(patternHandler.match(autocomplete)).toBe(undefined)
         })
     })
 
@@ -153,7 +168,7 @@ describe('PatternHandler', () => {
             })
             editorAdapter.textBeforeCaret = 'abc'
             editorAdapter.textAfterCaret = 'def'
-            patternHandler.replace(editorAdapter, 'REPLACED')
+            patternHandler.replace(autocomplete, 'REPLACED')
             expect(editorAdapter.textBeforeCaret).toBe('abcREPLACED')
             expect(editorAdapter.textAfterCaret).toBe('def')
         })
@@ -164,7 +179,7 @@ describe('PatternHandler', () => {
                 patternBeforeCaret: createRegexPattern(/\w{3}$/),
             })
             editorAdapter.textBeforeCaret = 'abcdef'
-            patternHandler.replace(editorAdapter, 'REPLACED')
+            patternHandler.replace(autocomplete, 'REPLACED')
             expect(editorAdapter.textBeforeCaret).toBe('abcREPLACED')
             expect(editorAdapter.textAfterCaret).toBe('')
         })
@@ -175,7 +190,7 @@ describe('PatternHandler', () => {
                 patternBeforeCaret: emptyPattern,
             })
             editorAdapter.textAfterCaret = '123456'
-            patternHandler.replace(editorAdapter, 'REPLACED')
+            patternHandler.replace(autocomplete, 'REPLACED')
             expect(editorAdapter.textBeforeCaret).toBe('REPLACED')
             expect(editorAdapter.textAfterCaret).toBe('456')
         })
@@ -187,7 +202,7 @@ describe('PatternHandler', () => {
             })
             editorAdapter.textAfterCaret = '123456'
             editorAdapter.textBeforeCaret = 'abcdef'
-            patternHandler.replace(editorAdapter, 'REPLACED')
+            patternHandler.replace(autocomplete, 'REPLACED')
             expect(editorAdapter.textBeforeCaret).toBe('abcREPLACED')
             expect(editorAdapter.textAfterCaret).toBe('456')
         })
@@ -198,7 +213,7 @@ describe('PatternHandler', () => {
             })
             editorAdapter.textBeforeCaret = 'abc'
             editorAdapter.textAfterCaret = ' def'
-            patternHandler.replace(editorAdapter, 'REPLACED')
+            patternHandler.replace(autocomplete, 'REPLACED')
             expect(editorAdapter.textBeforeCaret).toBe('REPLACED')
             expect(editorAdapter.textAfterCaret).toBe(' def')
         })
@@ -209,7 +224,7 @@ describe('PatternHandler', () => {
                 patternBeforeCaret: createRegexPattern(/defg$/),
             })
             editorAdapter.textBeforeCaret = 'abcdef'
-            patternHandler.replace(editorAdapter, 'REPLACED')
+            patternHandler.replace(autocomplete, 'REPLACED')
             expect(editorAdapter.textBeforeCaret).toBe('abcdef')
             expect(editorAdapter.textAfterCaret).toBe('')
         })
@@ -220,7 +235,7 @@ describe('PatternHandler', () => {
                 patternBeforeCaret: emptyPattern,
             })
             editorAdapter.textAfterCaret = 'abcdef'
-            patternHandler.replace(editorAdapter, 'REPLACED')
+            patternHandler.replace(autocomplete, 'REPLACED')
             expect(editorAdapter.textBeforeCaret).toBe('')
             expect(editorAdapter.textAfterCaret).toBe('abcdef')
         })
@@ -231,7 +246,7 @@ describe('PatternHandler', () => {
             })
             editorAdapter.textBeforeCaret = 'abc'
             editorAdapter.textAfterCaret = 'def'
-            patternHandler.replace(editorAdapter, 'REPLACED')
+            patternHandler.replace(autocomplete, 'REPLACED')
             expect(editorAdapter.textBeforeCaret).toBe('abc')
             expect(editorAdapter.textAfterCaret).toBe('def')
         })
@@ -242,7 +257,7 @@ describe('PatternHandler', () => {
             })
             editorAdapter.textBeforeCaret = 'abc'
             editorAdapter.textAfterCaret = 'def'
-            patternHandler.replace(editorAdapter, 'REPLACED')
+            patternHandler.replace(autocomplete, 'REPLACED')
             expect(editorAdapter.textBeforeCaret).toBe('abc')
             expect(editorAdapter.textAfterCaret).toBe('def')
         })
@@ -253,7 +268,7 @@ describe('PatternHandler', () => {
             const matchedText = 'abc'
             const patternHandler = createPatternHandler()
             expect(
-                patternHandler.load(editorAdapter, matchedText),
+                patternHandler.load(autocomplete, matchedText),
             ).toStrictEqual([])
         })
         test('custom implementation', () => {
@@ -261,12 +276,17 @@ describe('PatternHandler', () => {
             const load = jest.fn().mockReturnValue(items)
             const matchedText = 'abc'
             const patternHandler = createPatternHandler({ load })
-            expect(patternHandler.load(editorAdapter, matchedText)).toBe(items)
-            expect(load).toHaveBeenCalledWith(editorAdapter, matchedText)
+            expect(patternHandler.load(autocomplete, matchedText)).toBe(items)
+            expect(load).toHaveBeenCalledWith(autocomplete, matchedText)
         })
     })
 
     describe('accept', () => {
+        let clear: jest.SpyInstance
+        beforeEach(() => {
+            clear = jest.spyOn(autocomplete, 'clear')
+        })
+
         test('default implementation', () => {
             const item: Item = { id: 0, text: 'xyz' }
             const patternHandler = createPatternHandler({
@@ -275,9 +295,10 @@ describe('PatternHandler', () => {
             })
             editorAdapter.textBeforeCaret = 'abc'
             editorAdapter.textAfterCaret = '123'
-            patternHandler.accept(editorAdapter, item)
+            patternHandler.accept(autocomplete, item)
             expect(editorAdapter.textBeforeCaret).toBe('abxyz')
             expect(editorAdapter.textAfterCaret).toBe('23')
+            expect(clear).toHaveBeenCalledTimes(1)
         })
         test('custom implementation', () => {
             const accept = jest.fn()
@@ -289,10 +310,11 @@ describe('PatternHandler', () => {
             })
             editorAdapter.textBeforeCaret = 'abc'
             editorAdapter.textAfterCaret = '123'
-            patternHandler.accept(editorAdapter, item)
+            patternHandler.accept(autocomplete, item)
             expect(editorAdapter.textBeforeCaret).toBe('abc')
             expect(editorAdapter.textAfterCaret).toBe('123')
-            expect(accept).toHaveBeenCalledWith(editorAdapter, item)
+            expect(accept).toHaveBeenCalledWith(autocomplete, item)
+            expect(clear).toHaveBeenCalledTimes(0)
         })
     })
 })

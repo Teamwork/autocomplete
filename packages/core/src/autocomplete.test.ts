@@ -58,10 +58,10 @@ class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
 
 let letterItems: Item[]
 let numberItems: Item[]
-let letterLoad: jest.Mock<Item[] | Promise<Item[]>, [EditorAdapter, string]>
-let numberLoad: jest.Mock<Item[] | Promise<Item[]>, [EditorAdapter, string]>
-let letterAccept: jest.Mock<void, [EditorAdapter, Item]>
-let numberAccept: jest.Mock<void, [EditorAdapter, Item]>
+let letterLoad: jest.Mock<Item[] | Promise<Item[]>, [Autocomplete, string]>
+let numberLoad: jest.Mock<Item[] | Promise<Item[]>, [Autocomplete, string]>
+let letterAccept: jest.Mock<void, [Autocomplete, Item]>
+let numberAccept: jest.Mock<void, [Autocomplete, Item]>
 let letterPatternHandler: PatternHandler
 let numberPatternHandler: PatternHandler
 let editorAdapter: MockEditorAdapter
@@ -159,7 +159,7 @@ describe('match', () => {
         await whenAnimationFrame()
         expectActive()
         expect(letterLoad).toHaveBeenCalledTimes(1)
-        expect(letterLoad).toHaveBeenCalledWith(editorAdapter, 'def')
+        expect(letterLoad).toHaveBeenCalledWith(autocomplete, 'def')
 
         // no match
         editorAdapter.textBeforeCaret = ''
@@ -338,7 +338,7 @@ describe('accept', () => {
         autocomplete.accept()
         expect(letterAccept).toHaveBeenCalledTimes(0)
         await whenAnimationFrame()
-        expectNotActive()
+        expectActive({ items, selectedItem: -1 })
     })
     test('some items', async () => {
         autocomplete.match()
@@ -348,9 +348,9 @@ describe('accept', () => {
 
         autocomplete.accept()
         expect(letterAccept).toHaveBeenCalledTimes(1)
-        expect(letterAccept).toHaveBeenCalledWith(editorAdapter, letterItems[1])
+        expect(letterAccept).toHaveBeenCalledWith(autocomplete, letterItems[1])
         await whenAnimationFrame()
-        expectNotActive()
+        expectActive({ selectedItem: 1 })
     })
 })
 
@@ -723,11 +723,11 @@ describe('events', () => {
                 const event = createEvent({ key })
                 editorAdapter.emit('keyDown', editorAdapter, event)
                 await whenAnimationFrame()
-                expectNotActive()
+                expectActive({ selectedItem })
                 expect(event.defaultPrevented).toBe(true)
                 expect(letterAccept).toHaveBeenCalledTimes(1)
                 expect(letterAccept).toHaveBeenCalledWith(
-                    editorAdapter,
+                    autocomplete,
                     letterItems[selectedItem],
                 )
             })

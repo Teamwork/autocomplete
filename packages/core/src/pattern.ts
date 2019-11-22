@@ -1,4 +1,4 @@
-import { EditorAdapter } from './adapter'
+import { Autocomplete } from './autocomplete'
 
 /**
  * A pattern used by `Matcher` to match text within `EditorAdapter`.
@@ -39,34 +39,37 @@ export interface Item {
  */
 export interface PatternHandler {
     /**
-     * Loads autocomplete items for the given editor and matched text.
-     * @param editorAdapter The editor for which to load the items.
-     * @param matchedText The text matched in the editor.
-     * @returns Autocomplete items.
+     * Loads items for the given Autocomplete instance and matched text.
+     * @param autocomplete An Autocomplete instance.
+     * @param matchedText Some text returned by `match`.
+     * @returns A list of items.
      */
     load(
-        editorAdapter: EditorAdapter,
+        autocomplete: Autocomplete,
         matchedText: string,
     ): Item[] | Promise<Item[]>
+
     /**
-     * Accepts the specified autocomplete item in the specified editor adapter.
-     * @param editorAdapter The editor in which to accept the item.
+     * Accepts the specified item in the specified Autocomplete instance.
+     * @param autocomplete An Autocomplete instance.
      * @param item An item returned by `load`.
      */
-    accept(editorAdapter: EditorAdapter, item: Item): void
+    accept(autocomplete: Autocomplete, item: Item): void
+
     /**
-     * Matches its associated autocomplete pattern in the specified editor adapter.
-     * @param editorAdapter The editor in which to look for a pattern match.
+     * Matches its associated autocomplete pattern in the specified Autocomplete instance.
+     * @param autocomplete An Autocomplete instance.
      * @returns The matched text, or `undefined`, if no match was found.
      */
-    match(editorAdapter: EditorAdapter): string | undefined
+    match(autocomplete: Autocomplete): string | undefined
+
     /**
-     * Finds a pattern match and replaces it with the specified text.
+     * Finds a pattern match for the Autocomplete instance and replaces it with the specified text.
      * Does nothing, if the pattern does not match.
-     * @param editorAdapter The editor in which to perform the replacement.
-     * @param text The text with should replace the matched text.
+     * @param autocomplete An Autocomplete instance.
+     * @param text The replacement text.
      */
-    replace(editorAdapter: EditorAdapter, text: string): void
+    replace(autocomplete: Autocomplete, text: string): void
 }
 
 /**
@@ -94,16 +97,16 @@ export interface CreatePatternHandlerOptions {
      */
     readonly load?: (
         this: PatternHandler,
-        editorAdapter: EditorAdapter,
+        autocomplete: Autocomplete,
         matchedText: string,
     ) => Item[] | Promise<Item[]>
     /**
      * Overrides `PatternHandler#accept`,
-     * which calls `this.replace(editorAdapter, item.text)` by default.
+     * which replaces the matched text with `item.text` by default.
      */
     readonly accept?: (
         this: PatternHandler,
-        editorAdapter: EditorAdapter,
+        autocomplete: Autocomplete,
         item: Item,
     ) => void
 }
@@ -142,7 +145,7 @@ class PatternHandlerClass implements PatternHandler {
         }
     }
 
-    public match(editorAdapter: EditorAdapter): string | undefined {
+    public match({ editorAdapter }: Autocomplete): string | undefined {
         const textBefore = editorAdapter.textBeforeCaret
         const lengthBefore = this.patternBeforeCaret(textBefore)
         if (lengthBefore < 0) {
@@ -161,7 +164,7 @@ class PatternHandlerClass implements PatternHandler {
         )
     }
 
-    public replace(editorAdapter: EditorAdapter, text: string): void {
+    public replace({ editorAdapter }: Autocomplete, text: string): void {
         const textBefore = editorAdapter.textBeforeCaret
         const lengthBefore = this.patternBeforeCaret(textBefore)
         if (lengthBefore < 0) {
@@ -180,13 +183,14 @@ class PatternHandlerClass implements PatternHandler {
     }
 
     public load(
-        _editorAdapter: EditorAdapter,
+        _autocomplete: Autocomplete,
         _matchedText: string,
     ): Item[] | Promise<Item[]> {
         return []
     }
 
-    public accept(editorAdapter: EditorAdapter, item: Item): void {
-        this.replace(editorAdapter, item.text)
+    public accept(autocomplete: Autocomplete, item: Item): void {
+        this.replace(autocomplete, item.text)
+        autocomplete.clear()
     }
 }

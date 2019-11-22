@@ -154,7 +154,12 @@ export const TwAutocomplete = Vue.extend({
                                 {
                                     class: 'tw-autocomplete__list',
                                 },
-                                this.items.map((item, index) =>
+                                this.items.map((item, index, items) => [
+                                    this.$scopedSlots.beforeItem?.({
+                                        index,
+                                        item,
+                                        items,
+                                    }),
                                     createElement(
                                         'div',
                                         {
@@ -176,10 +181,17 @@ export const TwAutocomplete = Vue.extend({
                                             },
                                         },
                                         this.$scopedSlots.item?.({
+                                            index,
                                             item,
+                                            items,
                                         }) || item.text,
                                     ),
-                                ),
+                                    this.$scopedSlots.afterItem?.({
+                                        index,
+                                        item,
+                                        items,
+                                    }),
+                                ]),
                             )
                           : this.viewName === ViewName.error
                           ? createElement(

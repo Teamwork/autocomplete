@@ -30,6 +30,9 @@ export const TwAutocomplete = Vue.extend({
                 caretPosition.right >= editorPosition.left
             )
         },
+        visible(): boolean {
+            return this.active && this.caretVisible
+        },
         viewName(): ViewName {
             if (this.error) {
                 return ViewName.error
@@ -116,9 +119,20 @@ export const TwAutocomplete = Vue.extend({
             })
         },
     },
+    mounted() {
+        const onMouseUp = (event: MouseEvent): void => {
+            if (this.active && !this.$el.contains(event.target as Node)) {
+                this.autocomplete.clear()
+            }
+        }
+        document.addEventListener('mouseup', onMouseUp, true)
+        this.$once('hook:beforeDestroy', () => {
+            document.removeEventListener('mouseup', onMouseUp, true)
+        })
+    },
     name: 'TwAutocomplete',
     render(createElement): VNode {
-        return this.active && this.caretVisible
+        return this.visible
             ? createElement(
                   'div',
                   {

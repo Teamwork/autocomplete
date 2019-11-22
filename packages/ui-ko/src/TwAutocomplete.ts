@@ -28,7 +28,9 @@ export class TwAutocomplete {
     public readonly matchedText: Observable<string>
     public readonly selectedItem: Observable<number>
     public readonly caretVisible: PureComputed<boolean>
+    public readonly visible: PureComputed<boolean>
     public readonly viewName: PureComputed<ViewName>
+    private node: Node | undefined = undefined
 
     /**
      * Creates a new TwAutocomplete component.
@@ -53,6 +55,7 @@ export class TwAutocomplete {
         this.autocomplete.on('items', this.itemsListener)
         this.autocomplete.on('matchedText', this.matchedTextListener)
         this.autocomplete.on('selectedItem', this.selectedItemListener)
+        document.addEventListener('mouseup', this.onMouseUp, true)
 
         this.caretVisible = ko.pureComputed(() => {
             const caretPosition = this.caretPosition()
@@ -64,6 +67,9 @@ export class TwAutocomplete {
                 caretPosition.right >= editorPosition.left
             )
         })
+        this.visible = ko.pureComputed(
+            () => this.active() && this.caretVisible(),
+        )
         this.viewName = ko.pureComputed(() => {
             if (this.error()) {
                 return ViewName.error
@@ -86,6 +92,7 @@ export class TwAutocomplete {
         this.autocomplete.off('items', this.itemsListener)
         this.autocomplete.off('matchedText', this.matchedTextListener)
         this.autocomplete.off('selectedItem', this.selectedItemListener)
+        document.removeEventListener('mouseup', this.onMouseUp, true)
     }
 
     private activeListener = (): void => this.active(this.autocomplete.active)
@@ -101,6 +108,16 @@ export class TwAutocomplete {
         this.matchedText(this.autocomplete.matchedText)
     private selectedItemListener = (): void =>
         this.selectedItem(this.autocomplete.selectedItem)
+
+    private onMouseUp = (event: MouseEvent): void => {
+        if (
+            this.active() &&
+            this.node &&
+            !this.node.contains(event.target as Node)
+        ) {
+            this.autocomplete.clear()
+        }
+    }
 }
 
 /**
@@ -123,7 +140,7 @@ export function createTemplate({
     loadingTemplate = 'Loading',
 }: CreateTemplateOptions = {}): string {
     return `
-<!-- ko if: active() && caretVisible() -->
+<!-- ko if: visible -->
     <div
         class="tw-autocomplete"
         data-bind="
@@ -134,6 +151,7 @@ export function createTemplate({
             css: {
                 'tw-autocomplete--loading': loading()
             },
+            let: ($component.node = $element, undefined)
         "
     >
         <!-- ko if: viewName() === 'items' -->

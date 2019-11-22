@@ -127,6 +127,8 @@ export class TwAutocomplete {
  * where each property specifies a template fragment.
  */
 export interface CreateTemplateOptions {
+    header?: string
+    footer?: string
     error?: string
     beforeItem?: string
     item?: string
@@ -139,6 +141,8 @@ export interface CreateTemplateOptions {
  * Creates a new component template with optional customizations.
  */
 export function createTemplate({
+    header = '',
+    footer = '',
     error = 'Loading failed',
     beforeItem = '',
     item = '<!-- ko text: item.text --><!-- /ko -->',
@@ -161,6 +165,7 @@ export function createTemplate({
             let: ($component.node = $element, undefined)
         "
     >
+        ${header}
         <!-- ko if: viewName() === 'items' -->
             <div
                 class='tw-autocomplete__list'
@@ -207,6 +212,7 @@ export function createTemplate({
                 ${blank}
             </div>
         <!-- /ko -->
+        ${footer}
     </div>
 <!-- /ko -->
 `

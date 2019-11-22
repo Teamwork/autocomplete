@@ -1,5 +1,5 @@
 import ko from 'knockout'
-import twAutocomplete from '@teamwork/autocomplete-ui-ko'
+import { TwAutocomplete, createTemplate } from '@teamwork/autocomplete-ui-ko'
 
 export function initUI(autocomplete) {
     const context = { autocomplete }
@@ -8,7 +8,12 @@ export function initUI(autocomplete) {
         'data-bind',
         'component:{name:"tw-autocomplete",params:autocomplete}',
     )
-    ko.components.register('tw-autocomplete', twAutocomplete)
+    ko.components.register('tw-autocomplete', {
+        viewModel: TwAutocomplete,
+        template: createTemplate({
+            header: 'Type something',
+        }),
+    })
     ko.applyBindings(context, node)
     const app = ko.contextFor(node)
     window.app = app

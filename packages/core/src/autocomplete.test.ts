@@ -295,9 +295,15 @@ describe('selectedIndex', () => {
         expect(autocomplete.selectedIndex).toBe(0)
 
         autocomplete.selectedIndex = -100
+        expect(autocomplete.selectedIndex).toBe(2)
+
+        autocomplete.selectedIndex = -3
         expect(autocomplete.selectedIndex).toBe(0)
 
-        autocomplete.selectedIndex = 100
+        autocomplete.selectedIndex = -2
+        expect(autocomplete.selectedIndex).toBe(1)
+
+        autocomplete.selectedIndex = -1
         expect(autocomplete.selectedIndex).toBe(2)
 
         autocomplete.selectedIndex = 0
@@ -308,6 +314,21 @@ describe('selectedIndex', () => {
 
         autocomplete.selectedIndex = 2
         expect(autocomplete.selectedIndex).toBe(2)
+
+        autocomplete.selectedIndex = 3
+        expect(autocomplete.selectedIndex).toBe(0)
+
+        autocomplete.selectedIndex = 4
+        expect(autocomplete.selectedIndex).toBe(1)
+
+        autocomplete.selectedIndex = 5
+        expect(autocomplete.selectedIndex).toBe(2)
+
+        autocomplete.selectedIndex = 6
+        expect(autocomplete.selectedIndex).toBe(0)
+
+        autocomplete.selectedIndex = 100
+        expect(autocomplete.selectedIndex).toBe(1)
 
         autocomplete.selectedIndex = 1.5
         expect(autocomplete.selectedIndex).toBe(1)

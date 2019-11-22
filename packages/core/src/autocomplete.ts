@@ -173,10 +173,12 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
     }
     public set selectedIndex(selectedIndex: number) {
         /* tslint:disable-next-line:no-bitwise */
-        const int = selectedIndex | 0
-        const max = this.items.length - 1
-        const min = 0
-        const index = Math.min(max, Math.max(min, int))
+        const number = selectedIndex | 0
+        const divisor = this.items.length
+        const index =
+            divisor > 0
+                ? ((number % divisor) + divisor) % divisor
+                : defaultSelectedIndex
         if (this._selectedIndex !== index) {
             this._selectedIndex = index
             this.emitLater('selectedIndex')

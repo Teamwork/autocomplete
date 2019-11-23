@@ -59,6 +59,11 @@ module.exports = {
             template: path.join(__dirname, 'demo', 'CodeMirror-Knockout.html'),
             chunks: ['CodeMirror-Knockout'],
         }),
+        new HtmlWebpackPlugin({
+            filename: '404.html',
+            template: path.join(__dirname, 'demo', '404.html'),
+            chunks: [],
+        }),
     ],
     devServer: {
         host: '0.0.0.0',

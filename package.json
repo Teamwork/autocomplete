@@ -50,8 +50,9 @@
     "tsc": "tsc -b packages/*",
     "test": "jest",
     "build": "run-s clean prettier tslint tsc test",
+    "demo": "webpack -p",
     "start": "run-p start:*",
-    "start:demo": "webpack-dev-server -d",
+    "start:demo": "webpack-dev-server -d --devtool=false",
     "start:tsc": "tsc -b -w packages/*"
   },
   "husky": {

@@ -1,16 +1,20 @@
 const path = require('path')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
     entry: {
         index: path.join(__dirname, 'demo', 'index.js'),
-        common: path.join(__dirname, 'demo', 'common', 'index.js'),
         'CodeMirror-Vue': path.join(__dirname, 'demo', 'CodeMirror-Vue.js'),
         'CodeMirror-Knockout': path.join(
             __dirname,
             'demo',
             'CodeMirror-Knockout.js',
         ),
+    },
+    output: {
+        filename: '[name].[contenthash].js',
+        path: path.join(__dirname, 'docs'),
     },
     module: {
         rules: [
@@ -39,20 +43,21 @@ module.exports = {
         ],
     },
     plugins: [
+        new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: path.join(__dirname, 'demo', 'index.html'),
-            chunks: ['common', 'index'],
+            chunks: ['index'],
         }),
         new HtmlWebpackPlugin({
             filename: 'CodeMirror-Vue.html',
             template: path.join(__dirname, 'demo', 'CodeMirror-Vue.html'),
-            chunks: ['common', 'CodeMirror-Vue'],
+            chunks: ['CodeMirror-Vue'],
         }),
         new HtmlWebpackPlugin({
             filename: 'CodeMirror-Knockout.html',
             template: path.join(__dirname, 'demo', 'CodeMirror-Knockout.html'),
-            chunks: ['common', 'CodeMirror-Knockout'],
+            chunks: ['CodeMirror-Knockout'],
         }),
     ],
     devServer: {

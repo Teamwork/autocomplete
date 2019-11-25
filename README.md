@@ -6,6 +6,8 @@ An autocomplete system designed to support virtually any text editor and UI fram
 
 This is just a trivial example using [CodeMirror](https://codemirror.net/) and [Vue](https://vuejs.org/), however, you can use any other editor and framework in a similar way - `@teamwork/autocomplete` supports a few out of the box and more can be implemented easily.
 
+Keep in mind that autocomplete component styles are not included - you can use `./demo/autocomplete/style.css` as an inspiration when defining your own.
+
 ```javascript
 import 'codemirror/lib/codemirror.css'
 import CodeMirror from 'codemirror'

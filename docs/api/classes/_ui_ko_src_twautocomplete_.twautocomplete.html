@@ -70,6 +70,30 @@
 					<div class="lead">
 						<p>A Knockout component displaying the state of an <code>Autocomplete</code> instance.</p>
 					</div>
+					<p>Registering the component with the default template.</p>
+					<pre><code class="language-javascript"> <span class="hljs-keyword">import</span> twAutocomplete <span class="hljs-keyword">from</span> <span class="hljs-string">'@teamwork/autocomplete-ui-ko'</span>
+ ko.components.register(<span class="hljs-string">'tw-autocomplete'</span>, twAutocomplete)</code></pre>
+					<p>Registering the component with a custom template.
+						The template fragments are evaluated in the context of the TwAutocomplete component,
+						so they have access to all properties of the TwAutocomplete component,
+					which are simply mapped from the component&#39;s Autocomplete instance.</p>
+					<pre><code class="language-javascript"> <span class="hljs-keyword">import</span> { TwAutocomplete, createTemplate } <span class="hljs-keyword">from</span> <span class="hljs-string">'@teamwork/autocomplete-ui-ko'</span>
+ ko.components.register(<span class="hljs-string">'tw-autocomplete'</span>, {
+     <span class="hljs-attr">viewModel</span>: TwAutocomplete,
+     <span class="hljs-attr">template</span>: createTemplate({
+         <span class="hljs-attr">header</span>: <span class="hljs-string">'...'</span>,
+         <span class="hljs-attr">beforeItem</span>: <span class="hljs-string">'...'</span>,
+         <span class="hljs-attr">item</span>: <span class="hljs-string">'...'</span>,
+         <span class="hljs-attr">afterItem</span>: <span class="hljs-string">'...'</span>,
+         <span class="hljs-attr">error</span>: <span class="hljs-string">'...'</span>,
+         <span class="hljs-attr">loading</span>: <span class="hljs-string">'...'</span>,
+         <span class="hljs-attr">blank</span>: <span class="hljs-string">'...'</span>,
+         <span class="hljs-attr">footer</span>: <span class="hljs-string">'...'</span>,
+     }),
+ })</code></pre>
+					<p> Using the component in a template.
+					An Autocomplete instance must be passed in as a parameter.</p>
+					<pre><code class="language-html"> <span class="hljs-comment">&lt;!-- ko component: { name: "tw-autocomplete", params: autocomplete } --&gt;</span><span class="hljs-comment">&lt;!-- /ko --&gt;</span></code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -128,7 +152,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L33">ui-ko/src/TwAutocomplete.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L69">ui-ko/src/TwAutocomplete.ts:69</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -160,7 +184,7 @@
 					<div class="tsd-signature tsd-kind-icon">active<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L22">ui-ko/src/TwAutocomplete.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L58">ui-ko/src/TwAutocomplete.ts:58</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -170,7 +194,7 @@
 					<div class="tsd-signature tsd-kind-icon">autocomplete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Autocomplete</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L21">ui-ko/src/TwAutocomplete.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L57">ui-ko/src/TwAutocomplete.ts:57</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -185,7 +209,7 @@
 					<div class="tsd-signature tsd-kind-icon">caret<wbr>Position<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Position</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L23">ui-ko/src/TwAutocomplete.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L59">ui-ko/src/TwAutocomplete.ts:59</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -195,7 +219,7 @@
 					<div class="tsd-signature tsd-kind-icon">caret<wbr>Visible<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PureComputed</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L30">ui-ko/src/TwAutocomplete.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L66">ui-ko/src/TwAutocomplete.ts:66</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -205,7 +229,7 @@
 					<div class="tsd-signature tsd-kind-icon">editor<wbr>Position<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Position</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L24">ui-ko/src/TwAutocomplete.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L60">ui-ko/src/TwAutocomplete.ts:60</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -215,7 +239,7 @@
 					<div class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L25">ui-ko/src/TwAutocomplete.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L61">ui-ko/src/TwAutocomplete.ts:61</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -225,7 +249,7 @@
 					<div class="tsd-signature tsd-kind-icon">items<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Item</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L27">ui-ko/src/TwAutocomplete.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L63">ui-ko/src/TwAutocomplete.ts:63</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -235,7 +259,7 @@
 					<div class="tsd-signature tsd-kind-icon">loading<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L26">ui-ko/src/TwAutocomplete.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L62">ui-ko/src/TwAutocomplete.ts:62</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -245,7 +269,7 @@
 					<div class="tsd-signature tsd-kind-icon">matched<wbr>Text<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L28">ui-ko/src/TwAutocomplete.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L64">ui-ko/src/TwAutocomplete.ts:64</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -255,7 +279,7 @@
 					<div class="tsd-signature tsd-kind-icon">selected<wbr>Index<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L29">ui-ko/src/TwAutocomplete.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L65">ui-ko/src/TwAutocomplete.ts:65</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -265,7 +289,7 @@
 					<div class="tsd-signature tsd-kind-icon">view<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PureComputed</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/_ui_ko_src_twautocomplete_.viewname.html" class="tsd-signature-type">ViewName</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L32">ui-ko/src/TwAutocomplete.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L68">ui-ko/src/TwAutocomplete.ts:68</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -275,7 +299,7 @@
 					<div class="tsd-signature tsd-kind-icon">visible<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PureComputed</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L31">ui-ko/src/TwAutocomplete.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L67">ui-ko/src/TwAutocomplete.ts:67</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -292,7 +316,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/138c380/packages/ui-ko/src/TwAutocomplete.ts#L87">ui-ko/src/TwAutocomplete.ts:87</a></li>
+									<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/5c329ca/packages/ui-ko/src/TwAutocomplete.ts#L123">ui-ko/src/TwAutocomplete.ts:123</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>

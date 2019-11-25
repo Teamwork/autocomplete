@@ -11,6 +11,43 @@ export const enum ViewName {
     blank = 'blank',
 }
 
+/**
+ * A Vue component displaying the state of an Autocomplete instance.
+ *
+ * Usage:
+ *
+ *  ```javascript
+ *  const vm = new Vue({
+ *      name: 'App',
+ *      el: '#autocomplete',
+ *      components: { TwAutocomplete },
+ *      mounted() {
+ *          // Important, `init` must be called exactly once
+ *          // to tell the component which Autocomplete instance to use.
+ *          this.$refs.autocomplete.init(autocomplete)
+ *      },
+ *      render(createElement) {
+ *          return createElement('TwAutocomplete', {
+ *              // All slots are optional.
+ *              scopedSlots: {
+ *                  header({ viewName }) {},
+ *                  beforeItem({ index, item, items }) {},
+ *                  item({ index, item, items, matchedText }) {},
+ *                  afterItem({ viewName }) {},
+ *                  error({ error }) {},
+ *                  loading() {},
+ *                  blank({ viewName }) {},
+ *                  footer({ viewName }) {},
+ *              }
+ *          }, {
+ *              // The `ref` is needed,
+ *              // so that the component can be initialized in `mounted`.
+ *              ref: 'autocomplete'
+ *          })
+ *      },
+ *  })
+ * ```
+ */
 /* tslint:disable-next-line:variable-name */
 export const TwAutocomplete = Vue.extend({
     computed: {

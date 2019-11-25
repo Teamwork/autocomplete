@@ -13,6 +13,42 @@ export const enum ViewName {
 
 /**
  * A Knockout component displaying the state of an `Autocomplete` instance.
+ *
+ * Registering the component with the default template.
+ *
+ *  ```javascript
+ *  import twAutocomplete from '@teamwork/autocomplete-ui-ko'
+ *  ko.components.register('tw-autocomplete', twAutocomplete)
+ *  ```
+ *
+ * Registering the component with a custom template.
+ * The template fragments are evaluated in the context of the TwAutocomplete component,
+ * so they have access to all properties of the TwAutocomplete component,
+ * which are simply mapped from the component's Autocomplete instance.
+ *
+ *  ```javascript
+ *  import { TwAutocomplete, createTemplate } from '@teamwork/autocomplete-ui-ko'
+ *  ko.components.register('tw-autocomplete', {
+ *      viewModel: TwAutocomplete,
+ *      template: createTemplate({
+ *          header: '...',
+ *          beforeItem: '...',
+ *          item: '...',
+ *          afterItem: '...',
+ *          error: '...',
+ *          loading: '...',
+ *          blank: '...',
+ *          footer: '...',
+ *      }),
+ *  })
+ *  ```
+ *
+ *  Using the component in a template.
+ *  An Autocomplete instance must be passed in as a parameter.
+ *
+ *  ```html
+ *  <!-- ko component: { name: "tw-autocomplete", params: autocomplete } --><!-- /ko -->
+ *  ```
  */
 export class TwAutocomplete {
     /**
@@ -138,7 +174,7 @@ export interface CreateTemplateOptions {
 }
 
 /**
- * Creates a new component template with optional customizations.
+ * Creates a new component template with optional template fragment overrides.
  */
 export function createTemplate({
     header = '',

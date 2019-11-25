@@ -1,3 +1,7 @@
+.menu {
+    background: #ddd;
+}
+
 .menu::after {
     content: '';
     clear: both;

@@ -1,10 +1,10 @@
 # @teamwork/autocomplete
 
-An autocomplete module for all text editors and frameworks.
+An autocomplete system designed to support virtually any text editor and UI framework with minimal effort.
 
 ## Usage
 
-This is just a trivial example using [CodeMirror](https://codemirror.net/) and [Vue](https://vuejs.org/), however, you can use any other editor and framework in a similar way - `@teamwork/autocomplete` supports a few out of the box and more can be implemented easily. Be sure to check the `./demo` folder for more exmples, which you can try at https://teamwork.github.io/autocomplete/index.html or by running `npm start`.
+This is just a trivial example using [CodeMirror](https://codemirror.net/) and [Vue](https://vuejs.org/), however, you can use any other editor and framework in a similar way - `@teamwork/autocomplete` supports a few out of the box and more can be implemented easily.
 
 ```javascript
 import 'codemirror/lib/codemirror.css'
@@ -48,3 +48,14 @@ const vm = new Vue({
     },
 })
 ```
+
+## Demo and API Docs
+
+Visit https://teamwork.github.io/autocomplete/ or run `npm start` locally.
+
+## Notable npm Scripts
+
+-   `npm start`: Compiles TypeScript in "watch" mode, runs the demo app with life reload and serves static API docs.
+-   `npm test`: Runs all unit tests.
+-   `npm run build`: Builds and tests all code. It runs automatically on commit.
+-   `npm run docs`: Generates the demo app and API docs in the `./docs` folder for [GitHub Pages](https://pages.github.com/).

@@ -19,6 +19,7 @@ import {
     default as twAutocomplete,
     template,
     TwAutocomplete,
+    ViewName,
 } from '.'
 
 const whenAnimationFrame = () =>
@@ -214,14 +215,14 @@ describe('TwAutocomplete', () => {
             editorAdapter.textBeforeCaret = 'abc'
             autocomplete.match()
             await whenAnimationFrame()
-            expect(component.viewName()).toBe('error')
+            expect(component.viewName()).toBe(ViewName.error)
         })
         test('items', async () => {
             component = new TwAutocomplete(autocomplete)
             editorAdapter.textBeforeCaret = 'abc'
             autocomplete.match()
             await whenAnimationFrame()
-            expect(component.viewName()).toBe('items')
+            expect(component.viewName()).toBe(ViewName.items)
         })
         test('loading', async () => {
             component = new TwAutocomplete(autocomplete)
@@ -229,7 +230,7 @@ describe('TwAutocomplete', () => {
             editorAdapter.textBeforeCaret = 'abc'
             autocomplete.match()
             await whenAnimationFrame()
-            expect(component.viewName()).toBe('loading')
+            expect(component.viewName()).toBe(ViewName.loading)
         })
         test('blank', async () => {
             component = new TwAutocomplete(autocomplete)
@@ -237,7 +238,7 @@ describe('TwAutocomplete', () => {
             editorAdapter.textBeforeCaret = 'abc'
             autocomplete.match()
             await whenAnimationFrame()
-            expect(component.viewName()).toBe('blank')
+            expect(component.viewName()).toBe(ViewName.blank)
         })
     })
 

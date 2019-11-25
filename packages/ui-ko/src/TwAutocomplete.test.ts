@@ -226,7 +226,7 @@ describe('TwAutocomplete', () => {
         })
         test('loading', async () => {
             component = new TwAutocomplete(autocomplete)
-            load.mockReturnValue(new Promise(() => undefined))
+            load.mockReturnValue(new Promise(noop))
             editorAdapter.textBeforeCaret = 'abc'
             autocomplete.match()
             await whenAnimationFrame()

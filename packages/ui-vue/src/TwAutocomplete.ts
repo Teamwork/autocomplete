@@ -253,16 +253,14 @@ export const TwAutocomplete = Vue.extend({
                                 {
                                     class: 'tw-autocomplete__loading',
                                 },
-                                this.$scopedSlots.loading?.(undefined) ||
-                                    'Loading',
+                                this.$scopedSlots.loading?.({}) || 'Loading',
                             )
                           : createElement(
                                 'div',
                                 {
                                     class: 'tw-autocomplete__blank',
                                 },
-                                this.$scopedSlots.blank?.(undefined) ||
-                                    'No content',
+                                this.$scopedSlots.blank?.({}) || 'No content',
                             ),
                       createElement(
                           'div',
@@ -278,6 +276,7 @@ export const TwAutocomplete = Vue.extend({
             : createElement()
     },
 })
+export type TwAutocomplete = typeof TwAutocomplete
 
 const defaultItems: Readonly<Item[]> = Object.freeze([])
 const defaultPosition: Position = Object.freeze({

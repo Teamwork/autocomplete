@@ -2,6 +2,7 @@ const path = require('path')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
+const isDevServer = process.argv[1].indexOf('webpack-dev-server') >= 0
 module.exports = {
     entry: {
         index: path.join(__dirname, 'demo', 'index.js'),
@@ -43,7 +44,6 @@ module.exports = {
         ],
     },
     plugins: [
-        new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: path.join(__dirname, 'demo', 'index.html'),
@@ -64,7 +64,7 @@ module.exports = {
             template: path.join(__dirname, 'demo', '404.html'),
             chunks: [],
         }),
-    ],
+    ].concat(isDevServer ? [] : new CleanWebpackPlugin()),
     devServer: {
         host: '0.0.0.0',
         port: 8023,

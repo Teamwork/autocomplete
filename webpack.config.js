@@ -2,15 +2,10 @@ const path = require('path')
 const express = require('express')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-module.exports = {
+const demoPages = ['CodeMirror-Vue', 'CodeMirror-Knockout', 'Textarea-Vue']
+const config = {
     entry: {
         index: path.join(__dirname, 'demo', 'index.js'),
-        'CodeMirror-Vue': path.join(__dirname, 'demo', 'CodeMirror-Vue.js'),
-        'CodeMirror-Knockout': path.join(
-            __dirname,
-            'demo',
-            'CodeMirror-Knockout.js',
-        ),
     },
     output: {
         filename: '[name].[contenthash].js',
@@ -49,16 +44,6 @@ module.exports = {
             chunks: ['index'],
         }),
         new HtmlWebpackPlugin({
-            filename: 'CodeMirror-Vue.html',
-            template: path.join(__dirname, 'demo', 'CodeMirror-Vue.html'),
-            chunks: ['CodeMirror-Vue'],
-        }),
-        new HtmlWebpackPlugin({
-            filename: 'CodeMirror-Knockout.html',
-            template: path.join(__dirname, 'demo', 'CodeMirror-Knockout.html'),
-            chunks: ['CodeMirror-Knockout'],
-        }),
-        new HtmlWebpackPlugin({
             filename: '404.html',
             template: path.join(__dirname, 'demo', '404.html'),
             chunks: [],
@@ -72,3 +57,16 @@ module.exports = {
         },
     },
 }
+
+demoPages.forEach(demoPage => {
+    config.entry[demoPage] = path.join(__dirname, 'demo', `${demoPage}.js`)
+    config.plugins.push(
+        new HtmlWebpackPlugin({
+            filename: `${demoPage}.html`,
+            template: path.join(__dirname, 'demo', `${demoPage}.html`),
+            chunks: [demoPage],
+        }),
+    )
+})
+
+module.exports = config

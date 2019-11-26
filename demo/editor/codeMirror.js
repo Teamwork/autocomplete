@@ -1,4 +1,5 @@
 import 'codemirror/lib/codemirror.css'
+import './codeMirror.css'
 import CodeMirror from 'codemirror'
 import { createEditorAdapter } from '@teamwork/autocomplete-editor-codemirror'
 

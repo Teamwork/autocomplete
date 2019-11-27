@@ -49,6 +49,11 @@ class TextareaEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
     }
 
     public focus(): void {
+        // Call blur first to ensure that the caret will be visible after focus.
+        // It is important when auto-completing in small input fields,
+        // as the inserted text could easily overflow the element.
+        this.editor.blur()
+
         this.editor.focus()
     }
 

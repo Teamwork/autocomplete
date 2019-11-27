@@ -32,6 +32,10 @@ class TextareaEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         this.editor.addEventListener('keydown', this.onKeyDown as EventListener)
         this.editor.addEventListener('input', this.onInput)
         this.editor.addEventListener('scroll', this.onScroll)
+        // Listen for the `wheel` event to,
+        // as Chrome and Safari do not fire `scroll` on input fields,
+        // see  https://bugs.chromium.org/p/chromium/issues/detail?id=1007153.
+        this.editor.addEventListener('wheel', this.onScroll)
         this.editor.addEventListener('resize', this.onResize)
         document.addEventListener('selectionchange', this.onSelectionChange)
     }
@@ -44,6 +48,7 @@ class TextareaEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         )
         this.editor.removeEventListener('input', this.onInput)
         this.editor.removeEventListener('scroll', this.onScroll)
+        this.editor.removeEventListener('wheel', this.onScroll)
         this.editor.removeEventListener('resize', this.onResize)
         document.removeEventListener('selectionchange', this.onSelectionChange)
     }

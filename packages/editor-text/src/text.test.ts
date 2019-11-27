@@ -107,17 +107,34 @@ describe.each(['textarea', 'input'])('%s', elementName => {
         expect(onInput).not.toHaveBeenCalled()
     })
 
-    test('scroll', () => {
-        const onScroll = jest.fn()
-        editorAdapter.on('scroll', onScroll)
-        const event = new Event('scroll')
-        editor.dispatchEvent(event)
-        expect(onScroll).toHaveBeenCalledWith(editorAdapter)
+    describe('scroll', () => {
+        test('triggered by scroll', () => {
+            const onScroll = jest.fn()
+            editorAdapter.on('scroll', onScroll)
+            const event = new Event('scroll')
+            editor.dispatchEvent(event)
+            expect(onScroll).toHaveBeenCalledWith(editorAdapter)
 
-        editorAdapter.destroy()
-        onScroll.mockClear()
-        editor.dispatchEvent(event)
-        expect(onScroll).not.toHaveBeenCalled()
+            editorAdapter.destroy()
+            onScroll.mockClear()
+            editor.dispatchEvent(event)
+            expect(onScroll).not.toHaveBeenCalled()
+        })
+
+        // Necessary as a workaround for
+        // https://bugs.chromium.org/p/chromium/issues/detail?id=1007153.
+        test('triggered by wheel', () => {
+            const onScroll = jest.fn()
+            editorAdapter.on('scroll', onScroll)
+            const event = new Event('wheel')
+            editor.dispatchEvent(event)
+            expect(onScroll).toHaveBeenCalledWith(editorAdapter)
+
+            editorAdapter.destroy()
+            onScroll.mockClear()
+            editor.dispatchEvent(event)
+            expect(onScroll).not.toHaveBeenCalled()
+        })
     })
 
     test('resize', () => {

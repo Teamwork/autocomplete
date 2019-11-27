@@ -3,17 +3,17 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>@teamwork/autocomplete-*</title>
+	<title>&quot;editor-text/src/index&quot; | @teamwork/autocomplete-*</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="assets/css/main.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
 <header>
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">@teamwork/autocomplete-*</a>
+					<a href="../index.html" class="title">@teamwork/autocomplete-*</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -49,125 +49,64 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="globals.html">Globals</a>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="_editor_text_src_index_.html">&quot;editor-text/src/index&quot;</a>
 				</li>
 			</ul>
-			<h1> @teamwork/autocomplete-*</h1>
+			<h1>External module &quot;editor-text/src/index&quot;</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<div class="tsd-panel tsd-typography">
-				<a href="#teamworkautocomplete" id="teamworkautocomplete" style="color: inherit; text-decoration: none;">
-					<h1>@teamwork/autocomplete</h1>
-				</a>
-				<p>An autocomplete system designed to support virtually any text editor and UI framework with minimal effort.</p>
-				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-					<h2>Usage</h2>
-				</a>
-				<p>This is just a trivial example using <a href="https://codemirror.net/">CodeMirror</a> and <a href="https://vuejs.org/">Vue</a>, however, you can use any other editor and framework in a similar way - <code>@teamwork/autocomplete</code> supports a few out of the box and more can be implemented easily.</p>
-				<p>Keep in mind that autocomplete component styles are not included - you can use <code>./demo/autocomplete/style.css</code> as an inspiration when defining your own.</p>
-				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> <span class="hljs-string">'codemirror/lib/codemirror.css'</span>
-<span class="hljs-keyword">import</span> CodeMirror <span class="hljs-keyword">from</span> <span class="hljs-string">'codemirror'</span>
-<span class="hljs-keyword">import</span> Vue <span class="hljs-keyword">from</span> <span class="hljs-string">'vue'</span>
-<span class="hljs-keyword">import</span> {
-    createAutocomplete,
-    createPatternHandler,
-    createRegexPattern,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">'@teamwork/autocomplete-core'</span>
-<span class="hljs-keyword">import</span> { createEditorAdapter } <span class="hljs-keyword">from</span> <span class="hljs-string">'@teamwork/autocomplete-editor-codemirror'</span>
-<span class="hljs-keyword">import</span> { TwAutocomplete } <span class="hljs-keyword">from</span> <span class="hljs-string">'@teamwork/autocomplete-ui-vue'</span>
-
-<span class="hljs-comment">// Prepare the editor.</span>
-<span class="hljs-keyword">const</span> node = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'editor'</span>)
-<span class="hljs-keyword">const</span> editor = CodeMirror(node)
-<span class="hljs-keyword">const</span> editorAdapter = createEditorAdapter(editor)
-
-<span class="hljs-comment">// Define the pattern(s) to search for and how to load autocomplete items.</span>
-<span class="hljs-keyword">const</span> mentionPatternHandler = createPatternHandler({
-    <span class="hljs-attr">patternBeforeCaret</span>: createRegexPattern(<span class="hljs-regexp">/(?:^|\s)(@\w*)$/</span>, <span class="hljs-number">1</span>),
-    load(_autocomplete, match) {
-        <span class="hljs-keyword">return</span> loadUsers(match.substring(<span class="hljs-number">1</span>))
-    },
-})
-<span class="hljs-keyword">const</span> autocomplete = createAutocomplete({
-    editorAdapter,
-    <span class="hljs-attr">patternHandlers</span>: [mentionPatternHandler],
-})
-
-<span class="hljs-comment">// Display an autocomplete list as needed.</span>
-<span class="hljs-keyword">const</span> vm = <span class="hljs-keyword">new</span> Vue({
-    <span class="hljs-attr">name</span>: <span class="hljs-string">'App'</span>,
-    <span class="hljs-attr">el</span>: <span class="hljs-string">'#autocomplete'</span>,
-    <span class="hljs-attr">components</span>: { TwAutocomplete },
-    mounted() {
-        <span class="hljs-keyword">this</span>.$refs.autocomplete.init(autocomplete)
-    },
-    render(createElement) {
-        <span class="hljs-keyword">return</span> createElement(<span class="hljs-string">'TwAutocomplete'</span>, { <span class="hljs-attr">ref</span>: <span class="hljs-string">'autocomplete'</span> })
-    },
-})</code></pre>
-				<a href="#demo-and-api-docs" id="demo-and-api-docs" style="color: inherit; text-decoration: none;">
-					<h2>Demo and API Docs</h2>
-				</a>
-				<p>Visit <a href="https://teamwork.github.io/autocomplete/">https://teamwork.github.io/autocomplete/</a> or run <code>npm start</code> locally.</p>
-				<a href="#notable-npm-scripts" id="notable-npm-scripts" style="color: inherit; text-decoration: none;">
-					<h2>Notable npm Scripts</h2>
-				</a>
-				<ul>
-					<li><code>npm start</code>: Compiles TypeScript in &quot;watch&quot; mode, runs the demo app with life reload and serves static API docs.</li>
-					<li><code>npm test</code>: Runs all unit tests.</li>
-					<li><code>npm run build</code>: Builds and tests all code. It runs automatically on commit.</li>
-					<li><code>npm run docs</code>: Generates the demo app and API docs in the <code>./docs</code> folder for <a href="https://pages.github.com/">GitHub Pages</a>.</li>
-				</ul>
-			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class="globals  ">
-						<a href="globals.html"><em>Globals</em></a>
+						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_core_src_adapter_.html">&quot;core/src/adapter&quot;</a>
+						<a href="_core_src_adapter_.html">&quot;core/src/adapter&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_core_src_autocomplete_.html">&quot;core/src/autocomplete&quot;</a>
+						<a href="_core_src_autocomplete_.html">&quot;core/src/autocomplete&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_core_src_index_.html">&quot;core/src/index&quot;</a>
+						<a href="_core_src_index_.html">&quot;core/src/index&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_core_src_pattern_.html">&quot;core/src/pattern&quot;</a>
+						<a href="_core_src_pattern_.html">&quot;core/src/pattern&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_editor_codemirror_src_codemirror_.html">&quot;editor-<wbr>codemirror/src/code<wbr>Mirror&quot;</a>
+						<a href="_editor_codemirror_src_codemirror_.html">&quot;editor-<wbr>codemirror/src/code<wbr>Mirror&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_editor_codemirror_src_index_.html">&quot;editor-<wbr>codemirror/src/index&quot;</a>
+						<a href="_editor_codemirror_src_index_.html">&quot;editor-<wbr>codemirror/src/index&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_editor_text_src_caretposition_.html">&quot;editor-<wbr>text/src/caret<wbr>Position&quot;</a>
+						<a href="_editor_text_src_caretposition_.html">&quot;editor-<wbr>text/src/caret<wbr>Position&quot;</a>
+					</li>
+					<li class="current tsd-kind-external-module">
+						<a href="_editor_text_src_index_.html">&quot;editor-<wbr>text/src/index&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_editor_text_src_index_.html">&quot;editor-<wbr>text/src/index&quot;</a>
+						<a href="_editor_text_src_text_.html">&quot;editor-<wbr>text/src/text&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_editor_text_src_text_.html">&quot;editor-<wbr>text/src/text&quot;</a>
+						<a href="_ui_ko_src_twautocomplete_.html">&quot;ui-<wbr>ko/src/<wbr>TwAutocomplete&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_ui_ko_src_twautocomplete_.html">&quot;ui-<wbr>ko/src/<wbr>TwAutocomplete&quot;</a>
+						<a href="_ui_ko_src_index_.html">&quot;ui-<wbr>ko/src/index&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_ui_ko_src_index_.html">&quot;ui-<wbr>ko/src/index&quot;</a>
+						<a href="_ui_vue_src_twautocomplete_.html">&quot;ui-<wbr>vue/src/<wbr>TwAutocomplete&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_ui_vue_src_twautocomplete_.html">&quot;ui-<wbr>vue/src/<wbr>TwAutocomplete&quot;</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_ui_vue_src_index_.html">&quot;ui-<wbr>vue/src/index&quot;</a>
+						<a href="_ui_vue_src_index_.html">&quot;ui-<wbr>vue/src/index&quot;</a>
 					</li>
 				</ul>
 			</nav>
@@ -242,7 +181,7 @@
 	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
-<script src="assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>

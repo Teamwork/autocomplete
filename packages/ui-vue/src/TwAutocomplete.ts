@@ -222,8 +222,10 @@ export const TwAutocomplete = Vue.extend({
                                                     this.autocomplete.accept()
                                                 },
                                             },
-                                            ref: 'itemElements',
-                                            refInFor: true,
+                                            ref:
+                                                this.selectedIndex === index
+                                                    ? 'selectedItemElement'
+                                                    : undefined,
                                         },
                                         this.$scopedSlots.item?.({
                                             index,
@@ -280,13 +282,7 @@ export const TwAutocomplete = Vue.extend({
     // Can't test this function properly because jsdom does not support layout.
     /* istanbul ignore next */
     updated() {
-        const { itemElements } = this.$refs as Refs
-
-        if (!itemElements) {
-            return
-        }
-
-        const selectedItemElement = itemElements[this.selectedIndex]
+        const { selectedItemElement } = this.$refs as Refs
 
         if (!selectedItemElement) {
             return
@@ -314,7 +310,7 @@ export const TwAutocomplete = Vue.extend({
 export type TwAutocomplete = typeof TwAutocomplete
 
 interface Refs {
-    itemElements?: HTMLElement[]
+    selectedItemElement?: HTMLElement
 }
 
 const defaultItems: Readonly<Item[]> = Object.freeze([])

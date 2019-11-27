@@ -1,5 +1,6 @@
 import { Position } from '@teamwork/autocomplete-core/src'
 import { WritableKeys } from 'ts-essentials'
+import { Editor } from './text'
 
 /**
  * Returns screen coordinates of a caret placed at the specified offset
@@ -15,10 +16,7 @@ import { WritableKeys } from 'ts-essentials'
  * @param offset The character offset within `element.value`.
  * @returns Screen coordinates.
  */
-export function getCaretPosition(
-    element: HTMLTextAreaElement | HTMLInputElement,
-    offset: number,
-): Position {
+export function getCaretPosition(element: Editor, offset: number): Position {
     // Content must have at least one character,
     // so we fall back to a zero-width space.
     const content = element.value || '\u200b'
@@ -64,7 +62,6 @@ export function getCaretPosition(
     range.setStart(mirror.firstChild!, startOffset)
     range.setEnd(mirror.firstChild!, endOffset)
     const position = range.getBoundingClientRect()
-    range.detach()
     document.body.removeChild(mirror)
 
     return {

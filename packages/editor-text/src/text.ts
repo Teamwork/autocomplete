@@ -9,7 +9,11 @@ import { getCaretPosition } from './caretPosition'
 /**
  * The editor's type.
  */
-export type Editor = HTMLTextAreaElement | HTMLInputElement
+export type Editor = HTMLElement &
+    Pick<
+        HTMLTextAreaElement & HTMLInputElement,
+        'value' | 'selectionStart' | 'selectionEnd'
+    >
 
 /**
  * Creates a new editor adapter for textarea and input[text].
@@ -50,12 +54,12 @@ class TextareaEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
 
     public get textBeforeCaret(): string {
         const content = this.editor.value
-        const offset = this.editor.selectionStart || 0
+        const offset = this.editor.selectionStart
         return content.substring(0, offset)
     }
     public set textBeforeCaret(text: string) {
         const content = this.editor.value
-        const offset = this.editor.selectionStart || 0
+        const offset = this.editor.selectionStart
         const textBeforeCaret = text
         const textAfterCaret = content.substring(offset)
         const caretOffset = textBeforeCaret.length
@@ -66,12 +70,12 @@ class TextareaEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
 
     public get textAfterCaret(): string {
         const content = this.editor.value
-        const offset = this.editor.selectionStart || 0
+        const offset = this.editor.selectionStart
         return content.substring(offset)
     }
     public set textAfterCaret(text: string) {
         const content = this.editor.value
-        const offset = this.editor.selectionStart || 0
+        const offset = this.editor.selectionStart
         const textBeforeCaret = content.substring(0, offset)
         const textAfterCaret = text
         const caretOffset = textBeforeCaret.length
@@ -81,7 +85,7 @@ class TextareaEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
     }
 
     public get caretPosition(): Position {
-        const offset = this.editor.selectionStart || 0
+        const offset = this.editor.selectionStart
         const position = getCaretPosition(this.editor, offset)
         return {
             bottom: Math.floor(position.bottom),

@@ -54,7 +54,7 @@
     "test": "jest",
     "build": "run-s clean prettier tslint tsc test",
     "start": "run-p start:*",
-    "start:demo": "webpack-dev-server -d --devtool=false",
+    "start:demo": "webpack-dev-server -d",
     "start:tsc": "tsc -b -w packages/*",
     "docs:clean": "rimraf docs",
     "docs:build:demo": "webpack -p",

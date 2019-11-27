@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import { noop, TypedEventEmitter } from '@syncot/util'
 import {
     Autocomplete,

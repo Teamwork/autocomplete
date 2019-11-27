@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import { noop } from '@syncot/util'
 import { EditorAdapter } from '@teamwork/autocomplete-core'
 import CodeMirror from 'codemirror'

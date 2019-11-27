@@ -12,7 +12,6 @@ module.exports = {
                     '^@teamwork/autocomplete-([-\\w]+)$':
                         '<rootDir>/packages/$1/src',
                 },
-                testEnvironment: 'node',
                 testMatch: [`<rootDir>/packages/${name}/src/**/*.test.ts`],
 
                 // This is necessary to transpile JS files containing ES modules.

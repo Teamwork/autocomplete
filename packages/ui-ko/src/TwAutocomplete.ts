@@ -66,7 +66,7 @@ export class TwAutocomplete {
     public readonly caretVisible: PureComputed<boolean>
     public readonly visible: PureComputed<boolean>
     public readonly viewName: PureComputed<ViewName>
-    private node: Node | undefined = undefined
+    private node: HTMLElement | undefined = undefined
 
     /**
      * Creates a new TwAutocomplete component.
@@ -118,6 +118,8 @@ export class TwAutocomplete {
                 return ViewName.blank
             }
         })
+
+        this.selectedIndex.subscribe(this.scheduleScrollList)
     }
 
     public dispose(): void {
@@ -131,6 +133,44 @@ export class TwAutocomplete {
         this.autocomplete.off('selectedIndex', this.selectedIndexListener)
         document.removeEventListener('mousedown', this.onMouseButton, true)
         document.removeEventListener('mouseup', this.onMouseButton, true)
+    }
+
+    private scheduleScrollList = (): void => {
+        requestAnimationFrame(this.scrollList)
+    }
+
+    // Can't test this function properly because jsdom does not support layout.
+    /* istanbul ignore next */
+    private scrollList = (): void => {
+        if (!this.node) {
+            return
+        }
+
+        const selectedItemElement = this.node.querySelector(
+            '.tw-autocomplete__list-item--selected',
+        ) as HTMLElement | null
+
+        if (!selectedItemElement) {
+            return
+        }
+
+        const offsetParentElement = selectedItemElement.offsetParent
+
+        if (!offsetParentElement) {
+            return
+        }
+
+        if (selectedItemElement.offsetTop < offsetParentElement.scrollTop) {
+            offsetParentElement.scrollTop = selectedItemElement.offsetTop
+        } else if (
+            selectedItemElement.offsetTop + selectedItemElement.offsetHeight >
+            offsetParentElement.scrollTop + offsetParentElement.clientHeight
+        ) {
+            offsetParentElement.scrollTop =
+                selectedItemElement.offsetTop +
+                selectedItemElement.offsetHeight -
+                offsetParentElement.clientHeight
+        }
     }
 
     private activeListener = (): void => this.active(this.autocomplete.active)

@@ -2,7 +2,12 @@ const path = require('path')
 const express = require('express')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-const demoPages = ['CodeMirror-Vue', 'CodeMirror-Knockout', 'Textarea-Vue']
+const demoPages = [
+    'CodeMirror-Vue',
+    'CodeMirror-Knockout',
+    'Textarea-Vue',
+    'Input-Vue',
+]
 const config = {
     entry: {
         index: path.join(__dirname, 'demo', 'index.js'),

@@ -10,6 +10,9 @@ export function initAutocomplete(editorAdapter) {
         editorAdapter,
         patternHandlers: [
             createPatternHandler({
+                patternAfterCaret: createRegexPattern(
+                    /^(?:$|\p{White_Space})/u,
+                ),
                 patternBeforeCaret: createRegexPattern(
                     // See http://unicode.org/reports/tr18/#word
                     /(?:^|\p{White_Space})(@[\p{Alphabetic}\p{gc=Mark}\p{gc=Decimal_Number}\p{gc=Connector_Punctuation}\p{Join_Control}]*)$/u,

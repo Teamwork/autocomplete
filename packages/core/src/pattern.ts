@@ -121,9 +121,7 @@ export interface CreatePatternHandlerOptions {
 }
 
 const defaultPatternBeforeCaret: Pattern = (_text: string) => -1
-const defaultPatternAfterCaret: Pattern = createRegexPattern(
-    /^(?=$|\p{White_Space})/u,
-)
+const defaultPatternAfterCaret: Pattern = createRegexPattern(/^(?=$|\s)/)
 
 /**
  * Creates a new `PatternHandler`.

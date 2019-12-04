@@ -30,14 +30,14 @@ export const enum ViewName {
  *          return createElement('TwAutocomplete', {
  *              // All slots are optional.
  *              scopedSlots: {
- *                  header({ viewName }) {},
- *                  beforeItem({ index, item, items }) {},
+ *                  header({ matchedText, viewName }) {},
+ *                  beforeItem({ index, item, items, matchedText }) {},
  *                  item({ index, item, items, matchedText }) {},
- *                  afterItem({ viewName }) {},
- *                  error({ error }) {},
- *                  loading() {},
- *                  blank({ viewName }) {},
- *                  footer({ viewName }) {},
+ *                  afterItem({ viewName, matchedText }) {},
+ *                  error({ error, matchedText }) {},
+ *                  loading({ matchedText }) {},
+ *                  blank({ matchedText }) {},
+ *                  footer({ matchedText, viewName }) {},
  *              }
  *          }, {
  *              // The `ref` is needed,

@@ -263,7 +263,7 @@ export function createTemplate({
                             title: item.title
                         },
                         css: {
-                            'tw-autocomplete__list-item--selected': selectedIndex() === $index()
+                            'tw-autocomplete__list-item--selected': $data.selectedIndex() === $index()
                         },
                         event: {
                             click: function () {

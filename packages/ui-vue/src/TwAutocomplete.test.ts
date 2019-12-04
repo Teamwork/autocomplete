@@ -268,43 +268,17 @@ describe('slots', () => {
         await Vue.nextTick()
         expect(wrapper.html()).toMatch(slotValue)
         expect(slot).toHaveBeenCalledWith({
+            matchedText: component.matchedText,
             viewName: component.viewName,
         })
     })
-    test.each(['afterItem', 'beforeItem'])('%s', async name => {
+    test.each(['afterItem', 'beforeItem', 'item'])('%s', async name => {
         const slotValue = `My "${name}" slot`
         const slot = jest.fn().mockReturnValue(slotValue)
         editorAdapter.textBeforeCaret = 'abc'
         autocomplete.match()
         await whenAnimationFrame()
         wrapper = mount(TwAutocomplete, { scopedSlots: { [name]: slot } })
-        component = wrapper.vm
-        component.init(autocomplete)
-        await Vue.nextTick()
-        expect(wrapper.html()).toMatch(slotValue)
-        expect(slot).toHaveBeenCalledWith({
-            index: 0,
-            item: items[0],
-            items,
-        })
-        expect(slot).toHaveBeenCalledWith({
-            index: 1,
-            item: items[1],
-            items,
-        })
-        expect(slot).toHaveBeenCalledWith({
-            index: 2,
-            item: items[2],
-            items,
-        })
-    })
-    test('item', async () => {
-        const slotValue = `My "item" slot`
-        const slot = jest.fn().mockReturnValue(slotValue)
-        editorAdapter.textBeforeCaret = 'abc'
-        autocomplete.match()
-        await whenAnimationFrame()
-        wrapper = mount(TwAutocomplete, { scopedSlots: { item: slot } })
         component = wrapper.vm
         component.init(autocomplete)
         await Vue.nextTick()
@@ -342,7 +316,10 @@ describe('slots', () => {
         component.init(autocomplete)
         await Vue.nextTick()
         expect(wrapper.html()).toMatch(slotValue)
-        expect(slot).toHaveBeenCalledWith({ error: component.error })
+        expect(slot).toHaveBeenCalledWith({
+            error: component.error,
+            matchedText: component.matchedText,
+        })
     })
     test('blank', async () => {
         const slotValue = `My "blank" slot`
@@ -356,7 +333,9 @@ describe('slots', () => {
         component.init(autocomplete)
         await Vue.nextTick()
         expect(wrapper.html()).toMatch(slotValue)
-        expect(slot).toHaveBeenCalledWith({})
+        expect(slot).toHaveBeenCalledWith({
+            matchedText: component.matchedText,
+        })
     })
     test('loading', async () => {
         const slotValue = `My "loading" slot`
@@ -370,6 +349,8 @@ describe('slots', () => {
         component.init(autocomplete)
         await Vue.nextTick()
         expect(wrapper.html()).toMatch(slotValue)
-        expect(slot).toHaveBeenCalledWith({})
+        expect(slot).toHaveBeenCalledWith({
+            matchedText: component.matchedText,
+        })
     })
 })

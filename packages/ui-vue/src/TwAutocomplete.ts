@@ -165,119 +165,127 @@ export const TwAutocomplete = Vue.extend({
     },
     name: 'TwAutocomplete',
     render(createElement): VNode {
-        return this.visible
-            ? createElement(
-                  'div',
-                  {
-                      class: {
-                          'tw-autocomplete': true,
-                          'tw-autocomplete--loading': this.loading,
-                      },
-                      style: {
-                          left: `${this.caretPosition.left}px`,
-                          top: `${this.caretPosition.bottom}px`,
-                      },
-                  },
-                  [
-                      createElement(
+        if (!this.visible) {
+            return createElement()
+        }
+        const { matchedText, viewName } = this
+        return createElement(
+            'div',
+            {
+                class: {
+                    'tw-autocomplete': true,
+                    'tw-autocomplete--loading': this.loading,
+                },
+                style: {
+                    left: `${this.caretPosition.left}px`,
+                    top: `${this.caretPosition.bottom}px`,
+                },
+            },
+            [
+                createElement(
+                    'div',
+                    {
+                        class: 'tw-autocomplete__header',
+                    },
+                    this.$scopedSlots.header?.({
+                        matchedText,
+                        viewName,
+                    }),
+                ),
+                viewName === ViewName.items
+                    ? createElement(
                           'div',
                           {
-                              class: 'tw-autocomplete__header',
+                              class: 'tw-autocomplete__list',
                           },
-                          this.$scopedSlots.header?.({
-                              viewName: this.viewName,
-                          }),
-                      ),
-                      this.viewName === ViewName.items
-                          ? createElement(
-                                'div',
-                                {
-                                    class: 'tw-autocomplete__list',
-                                },
-                                this.items.map((item, index, items) => [
-                                    this.$scopedSlots.beforeItem?.({
-                                        index,
-                                        item,
-                                        items,
-                                    }),
-                                    createElement(
-                                        'div',
-                                        {
-                                            attrs: {
-                                                title: item.title || '',
-                                            },
-                                            class: {
-                                                'tw-autocomplete__list-item': true,
-                                                'tw-autocomplete__list-item--selected':
-                                                    this.selectedIndex ===
-                                                    index,
-                                            },
-                                            key: item.id,
-                                            on: {
-                                                click: (
-                                                    event: MouseEvent,
-                                                ): void => {
-                                                    event.preventDefault()
-                                                    this.autocomplete.selectedIndex = index
-                                                    this.autocomplete.accept()
-                                                },
-                                            },
-                                            ref:
-                                                this.selectedIndex === index
-                                                    ? 'selectedItemElement'
-                                                    : undefined,
-                                        },
-                                        this.$scopedSlots.item?.({
-                                            index,
-                                            item,
-                                            items,
-                                            matchedText: this.matchedText,
-                                        }) || item.text,
-                                    ),
-                                    this.$scopedSlots.afterItem?.({
-                                        index,
-                                        item,
-                                        items,
-                                    }),
-                                ]),
-                            )
-                          : this.viewName === ViewName.error
-                          ? createElement(
-                                'div',
-                                {
-                                    class: 'tw-autocomplete__error',
-                                },
-                                this.$scopedSlots.error?.({
-                                    error: this.error,
-                                }) || 'Loading failed',
-                            )
-                          : this.viewName === ViewName.loading
-                          ? createElement(
-                                'div',
-                                {
-                                    class: 'tw-autocomplete__loading',
-                                },
-                                this.$scopedSlots.loading?.({}) || 'Loading',
-                            )
-                          : createElement(
-                                'div',
-                                {
-                                    class: 'tw-autocomplete__blank',
-                                },
-                                this.$scopedSlots.blank?.({}) || 'No content',
-                            ),
-                      createElement(
+                          this.items.map((item, index, items) => [
+                              this.$scopedSlots.beforeItem?.({
+                                  index,
+                                  item,
+                                  items,
+                                  matchedText,
+                              }),
+                              createElement(
+                                  'div',
+                                  {
+                                      attrs: {
+                                          title: item.title || '',
+                                      },
+                                      class: {
+                                          'tw-autocomplete__list-item': true,
+                                          'tw-autocomplete__list-item--selected':
+                                              this.selectedIndex === index,
+                                      },
+                                      key: item.id,
+                                      on: {
+                                          click: (event: MouseEvent): void => {
+                                              event.preventDefault()
+                                              this.autocomplete.selectedIndex = index
+                                              this.autocomplete.accept()
+                                          },
+                                      },
+                                      ref:
+                                          this.selectedIndex === index
+                                              ? 'selectedItemElement'
+                                              : undefined,
+                                  },
+                                  this.$scopedSlots.item?.({
+                                      index,
+                                      item,
+                                      items,
+                                      matchedText,
+                                  }) || item.text,
+                              ),
+                              this.$scopedSlots.afterItem?.({
+                                  index,
+                                  item,
+                                  items,
+                                  matchedText,
+                              }),
+                          ]),
+                      )
+                    : viewName === ViewName.error
+                    ? createElement(
                           'div',
                           {
-                              class: 'tw-autocomplete__footer',
+                              class: 'tw-autocomplete__error',
                           },
-                          this.$scopedSlots.footer?.({
-                              viewName: this.viewName,
-                          }),
+                          this.$scopedSlots.error?.({
+                              error: this.error,
+                              matchedText,
+                          }) || 'Loading failed',
+                      )
+                    : viewName === ViewName.loading
+                    ? createElement(
+                          'div',
+                          {
+                              class: 'tw-autocomplete__loading',
+                          },
+                          this.$scopedSlots.loading?.({
+                              matchedText,
+                          }) || 'Loading',
+                      )
+                    : createElement(
+                          'div',
+                          {
+                              class: 'tw-autocomplete__blank',
+                          },
+                          this.$scopedSlots.blank?.({
+                              matchedText,
+                          }) || 'No content',
                       ),
-                  ],
-              )
-            : createElement()
+                createElement(
+                    'div',
+                    {
+                        class: 'tw-autocomplete__footer',
+                    },
+                    this.$scopedSlots.footer?.({
+                        matchedText,
+                        viewName,
+                    }),
+                ),
+            ],
+        )
     },
     // Can't test this function properly because jsdom does not support layout.
     /* istanbul ignore next */

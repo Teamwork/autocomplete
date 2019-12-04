@@ -221,7 +221,7 @@ export function createTemplate({
     footer = '',
     error = 'Loading failed',
     beforeItem = '',
-    item = '<!-- ko text: item.text --><!-- /ko -->',
+    item = '<!-- ko text: text --><!-- /ko -->',
     afterItem = '',
     blank = 'No items',
     loading = 'Loading',
@@ -247,28 +247,22 @@ export function createTemplate({
         <!-- ko if: viewName() === 'items' -->
             <div
                 class='tw-autocomplete__list'
-                data-bind="
-                    foreach: {
-                        data: items,
-                        as: 'item',
-                        noChildContext: true
-                    }
-                "
+                data-bind="foreach: items"
             >
                 ${beforeItem}
                 <div
                     class="tw-autocomplete__list-item"
                     data-bind="
                         attr: {
-                            title: item.title
+                            title: title
                         },
                         css: {
-                            'tw-autocomplete__list-item--selected': $data.selectedIndex() === $index()
+                            'tw-autocomplete__list-item--selected': $component.selectedIndex() === $index()
                         },
                         event: {
                             click: function () {
-                                $data.autocomplete.selectedIndex = $index()
-                                $data.autocomplete.accept()
+                                $component.autocomplete.selectedIndex = $index()
+                                $component.autocomplete.accept()
                             }
                         }
                     "

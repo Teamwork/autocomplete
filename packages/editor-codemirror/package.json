@@ -23,7 +23,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@syncot/util": "^0.1.0",
+    "@syncot/events": "^0.1.0",
     "@teamwork/autocomplete-core": "file:../core",
     "@types/codemirror": "^0.0.80",
     "tslib": "^1.9.3"

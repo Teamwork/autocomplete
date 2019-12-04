@@ -1,4 +1,5 @@
-import { noop, TypedEventEmitter } from '@syncot/util'
+import { TypedEventEmitter } from '@syncot/events'
+import { noop } from '@syncot/util'
 import {
     Autocomplete,
     createAutocomplete,

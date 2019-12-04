@@ -1,4 +1,4 @@
-import { EmitterInterface, TypedEventEmitter } from '@syncot/util'
+import { EmitterInterface, TypedEventEmitter } from '@syncot/events'
 
 /**
  * The type representing a position in a coordinate system.

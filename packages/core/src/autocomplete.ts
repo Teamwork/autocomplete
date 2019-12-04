@@ -1,4 +1,4 @@
-import { EmitterInterface, TypedEventEmitter } from '@syncot/util'
+import { EmitterInterface, TypedEventEmitter } from '@syncot/events'
 import { EditorAdapter, Position } from './adapter'
 import { Item, PatternHandler } from './pattern'
 

@@ -1,4 +1,4 @@
-import { TypedEventEmitter } from '@syncot/util'
+import { TypedEventEmitter } from '@syncot/events'
 import {
     EditorAdapter,
     EditorAdapterEvents,

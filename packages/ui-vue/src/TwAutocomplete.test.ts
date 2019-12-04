@@ -1,4 +1,5 @@
-import { noop, TypedEventEmitter } from '@syncot/util'
+import { TypedEventEmitter } from '@syncot/events'
+import { noop } from '@syncot/util'
 import {
     Autocomplete,
     createAutocomplete,
@@ -11,6 +12,7 @@ import {
     Position,
 } from '@teamwork/autocomplete-core'
 import { mount, Wrapper } from '@vue/test-utils'
+import Vue from 'vue'
 import { TwAutocomplete, ViewName } from '.'
 
 const whenAnimationFrame = () =>
@@ -263,6 +265,7 @@ describe('slots', () => {
         wrapper = mount(TwAutocomplete, { scopedSlots: { [name]: slot } })
         component = wrapper.vm
         component.init(autocomplete)
+        await Vue.nextTick()
         expect(wrapper.html()).toMatch(slotValue)
         expect(slot).toHaveBeenCalledWith({
             viewName: component.viewName,
@@ -277,6 +280,7 @@ describe('slots', () => {
         wrapper = mount(TwAutocomplete, { scopedSlots: { [name]: slot } })
         component = wrapper.vm
         component.init(autocomplete)
+        await Vue.nextTick()
         expect(wrapper.html()).toMatch(slotValue)
         expect(slot).toHaveBeenCalledWith({
             index: 0,
@@ -303,6 +307,7 @@ describe('slots', () => {
         wrapper = mount(TwAutocomplete, { scopedSlots: { item: slot } })
         component = wrapper.vm
         component.init(autocomplete)
+        await Vue.nextTick()
         expect(wrapper.html()).toMatch(slotValue)
         expect(slot).toHaveBeenCalledWith({
             index: 0,
@@ -335,6 +340,7 @@ describe('slots', () => {
         wrapper = mount(TwAutocomplete, { scopedSlots: { error: slot } })
         component = wrapper.vm
         component.init(autocomplete)
+        await Vue.nextTick()
         expect(wrapper.html()).toMatch(slotValue)
         expect(slot).toHaveBeenCalledWith({ error: component.error })
     })
@@ -348,6 +354,7 @@ describe('slots', () => {
         wrapper = mount(TwAutocomplete, { scopedSlots: { blank: slot } })
         component = wrapper.vm
         component.init(autocomplete)
+        await Vue.nextTick()
         expect(wrapper.html()).toMatch(slotValue)
         expect(slot).toHaveBeenCalledWith({})
     })
@@ -361,6 +368,7 @@ describe('slots', () => {
         wrapper = mount(TwAutocomplete, { scopedSlots: { loading: slot } })
         component = wrapper.vm
         component.init(autocomplete)
+        await Vue.nextTick()
         expect(wrapper.html()).toMatch(slotValue)
         expect(slot).toHaveBeenCalledWith({})
     })

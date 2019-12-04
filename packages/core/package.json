@@ -23,7 +23,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@syncot/util": "^0.1.0",
+    "@syncot/events": "^0.1.0",
     "tslib": "^1.9.3"
   }
 }

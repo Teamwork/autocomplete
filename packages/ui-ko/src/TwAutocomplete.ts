@@ -33,6 +33,7 @@ export const enum ViewName {
  *      template: createTemplate({
  *          header: '...',
  *          beforeItem: '...',
+ *          blockName: '...',
  *          item: '...',
  *          afterItem: '...',
  *          error: '...',

@@ -62,7 +62,8 @@
     "docs:build:demo": "webpack -p",
     "docs:build:api": "typedoc --name '@teamwork/autocomplete-*' --excludeExternals --excludePrivate --excludeNotExported --exclude '**/*.test.ts' --out docs/api packages/*",
     "docs:build:nojekyll": "touch docs/.nojekyll",
-    "docs": "run-s docs:clean docs:build:*"
+    "docs": "run-s docs:clean docs:build:*",
+    "gh-pages": "./scripts/gh-pages.sh"
   },
   "husky": {
     "hooks": {

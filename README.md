@@ -61,3 +61,4 @@ Visit https://teamwork.github.io/autocomplete/ or run `npm start` locally.
 -   `npm test`: Runs all unit tests.
 -   `npm run build`: Builds and tests all code. It runs automatically on commit.
 -   `npm run docs`: Generates the demo app and API docs in the `./docs` folder for [GitHub Pages](https://pages.github.com/).
+-   `npm run gh-pages`: Builds API docs and demo, and then pushes them to gh-pages branch.

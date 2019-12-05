@@ -74,6 +74,7 @@ describe('createTemplate', () => {
             afterItem: 'my "afterItem"',
             beforeItem: 'my "beforeItem"',
             blank: 'my "blank"',
+            blockName: 'my-custom-element',
             error: 'my "error"',
             footer: 'my "footer"',
             header: 'my "header"',
@@ -85,6 +86,7 @@ describe('createTemplate', () => {
         expect(customTemplate).toMatch(options.afterItem)
         expect(customTemplate).toMatch(options.beforeItem)
         expect(customTemplate).toMatch(options.blank)
+        expect(customTemplate).toMatch(options.blockName)
         expect(customTemplate).toMatch(options.error)
         expect(customTemplate).toMatch(options.footer)
         expect(customTemplate).toMatch(options.header)

@@ -199,17 +199,53 @@ export class TwAutocomplete {
 }
 
 /**
- * The options expected by the `createTemplate` function,
- * where each property specifies a template fragment.
+ * The options expected by the `createTemplate` function.
  */
 export interface CreateTemplateOptions {
+    /**
+     * The "Block" in the "Block Element Modifier" methodology, see http://getbem.com/.
+     * Defaults to `'tw-autocomplete'`.
+     */
+    blockName?: string
+    /**
+     * Template fragment for header.
+     * Defaults to `''`.
+     */
     header?: string
+    /**
+     * Template fragment for footer.
+     * Defaults to `''`.
+     */
     footer?: string
+    /**
+     * Template fragment for error.
+     * Defaults to `'Loading failed'`.
+     */
     error?: string
+    /**
+     * Template fragment displayed before each item.
+     * Defaults to `''`.
+     */
     beforeItem?: string
+    /**
+     * Template fragment for a single item.
+     * Defaults to `'<!-- ko text: text --><!-- /ko -->'`.
+     */
     item?: string
+    /**
+     * Template fragment displayed after each item.
+     * Defaults to `''`.
+     */
     afterItem?: string
+    /**
+     * Template fragment for a situation where no matching items are found.
+     * Defaults to `'No items'`.
+     */
     blank?: string
+    /**
+     * Template fragment displayed while loading items.
+     * Defaults to `'Loading'`.
+     */
     loading?: string
 }
 
@@ -217,6 +253,7 @@ export interface CreateTemplateOptions {
  * Creates a new component template with optional template fragment overrides.
  */
 export function createTemplate({
+    blockName = 'tw-autocomplete',
     header = '',
     footer = '',
     error = 'Loading failed',
@@ -229,35 +266,35 @@ export function createTemplate({
     return `
 <!-- ko if: visible -->
     <div
-        class="tw-autocomplete"
+        class="${blockName}"
         data-bind="
             style: {
                 left: caretPosition().left + 'px',
                 top: caretPosition().bottom + 'px'
             },
             css: {
-                'tw-autocomplete--loading': loading()
+                '${blockName}--loading': loading()
             },
             let: ($component.node = $element, undefined)
         "
     >
-        <div class="tw-autocomplete__header">
+        <div class="${blockName}__header">
             ${header}
         </div>
         <!-- ko if: viewName() === 'items' -->
             <div
-                class='tw-autocomplete__list'
+                class='${blockName}__list'
                 data-bind="foreach: items"
             >
                 ${beforeItem}
                 <div
-                    class="tw-autocomplete__list-item"
+                    class="${blockName}__list-item"
                     data-bind="
                         attr: {
                             title: title
                         },
                         css: {
-                            'tw-autocomplete__list-item--selected': $component.selectedIndex() === $index()
+                            '${blockName}__list-item--selected': $component.selectedIndex() === $index()
                         },
                         event: {
                             click: function () {
@@ -273,21 +310,21 @@ export function createTemplate({
             </div>
         <!-- /ko -->
         <!-- ko if: viewName() === 'error' -->
-            <div class="tw-autocomplete__error">
+            <div class="${blockName}__error">
                 ${error}
             </div>
         <!-- /ko -->
         <!-- ko if: viewName() === 'loading' -->
-            <div class="tw-autocomplete__loading">
+            <div class="${blockName}__loading">
                 ${loading}
             </div>
         <!-- /ko -->
         <!-- ko if: viewName() === 'blank' -->
-            <div class="tw-autocomplete__blank">
+            <div class="${blockName}__blank">
                 ${blank}
             </div>
         <!-- /ko -->
-        <div class="tw-autocomplete__footer">
+        <div class="${blockName}__footer">
             ${footer}
         </div>
     </div>

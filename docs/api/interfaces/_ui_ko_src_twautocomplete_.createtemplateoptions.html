@@ -68,8 +68,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The options expected by the <code>createTemplate</code> function,
-						where each property specifies a template fragment.</p>
+						<p>The options expected by the <code>createTemplate</code> function.</p>
 					</div>
 				</div>
 			</section>
@@ -91,6 +90,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_ui_ko_src_twautocomplete_.createtemplateoptions.html#afteritem" class="tsd-kind-icon">after<wbr>Item</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_ui_ko_src_twautocomplete_.createtemplateoptions.html#beforeitem" class="tsd-kind-icon">before<wbr>Item</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_ui_ko_src_twautocomplete_.createtemplateoptions.html#blank" class="tsd-kind-icon">blank</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_ui_ko_src_twautocomplete_.createtemplateoptions.html#blockname" class="tsd-kind-icon">block<wbr>Name</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_ui_ko_src_twautocomplete_.createtemplateoptions.html#error" class="tsd-kind-icon">error</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_ui_ko_src_twautocomplete_.createtemplateoptions.html#footer" class="tsd-kind-icon">footer</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_ui_ko_src_twautocomplete_.createtemplateoptions.html#header" class="tsd-kind-icon">header</a></li>
@@ -109,9 +109,15 @@
 					<div class="tsd-signature tsd-kind-icon">after<wbr>Item<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/80f2826/packages/ui-ko/src/TwAutocomplete.ts#L211">ui-ko/src/TwAutocomplete.ts:211</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/8ed053a/packages/ui-ko/src/TwAutocomplete.ts#L239">ui-ko/src/TwAutocomplete.ts:239</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Template fragment displayed after each item.
+							Defaults to <code>&#39;&#39;</code>.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="beforeitem" class="tsd-anchor"></a>
@@ -119,9 +125,15 @@
 					<div class="tsd-signature tsd-kind-icon">before<wbr>Item<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/80f2826/packages/ui-ko/src/TwAutocomplete.ts#L209">ui-ko/src/TwAutocomplete.ts:209</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/8ed053a/packages/ui-ko/src/TwAutocomplete.ts#L229">ui-ko/src/TwAutocomplete.ts:229</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Template fragment displayed before each item.
+							Defaults to <code>&#39;&#39;</code>.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="blank" class="tsd-anchor"></a>
@@ -129,9 +141,31 @@
 					<div class="tsd-signature tsd-kind-icon">blank<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/80f2826/packages/ui-ko/src/TwAutocomplete.ts#L212">ui-ko/src/TwAutocomplete.ts:212</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/8ed053a/packages/ui-ko/src/TwAutocomplete.ts#L244">ui-ko/src/TwAutocomplete.ts:244</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Template fragment for a situation where no matching items are found.
+							Defaults to <code>&#39;No items&#39;</code>.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="blockname" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> block<wbr>Name</h3>
+					<div class="tsd-signature tsd-kind-icon">block<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/8ed053a/packages/ui-ko/src/TwAutocomplete.ts#L209">ui-ko/src/TwAutocomplete.ts:209</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The &quot;Block&quot; in the &quot;Block Element Modifier&quot; methodology, see <a href="http://getbem.com/">http://getbem.com/</a>.
+							Defaults to <code>&#39;tw-autocomplete&#39;</code>.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="error" class="tsd-anchor"></a>
@@ -139,9 +173,15 @@
 					<div class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/80f2826/packages/ui-ko/src/TwAutocomplete.ts#L208">ui-ko/src/TwAutocomplete.ts:208</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/8ed053a/packages/ui-ko/src/TwAutocomplete.ts#L224">ui-ko/src/TwAutocomplete.ts:224</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Template fragment for error.
+							Defaults to <code>&#39;Loading failed&#39;</code>.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="footer" class="tsd-anchor"></a>
@@ -149,9 +189,15 @@
 					<div class="tsd-signature tsd-kind-icon">footer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/80f2826/packages/ui-ko/src/TwAutocomplete.ts#L207">ui-ko/src/TwAutocomplete.ts:207</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/8ed053a/packages/ui-ko/src/TwAutocomplete.ts#L219">ui-ko/src/TwAutocomplete.ts:219</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Template fragment for footer.
+							Defaults to <code>&#39;&#39;</code>.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="header" class="tsd-anchor"></a>
@@ -159,9 +205,15 @@
 					<div class="tsd-signature tsd-kind-icon">header<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/80f2826/packages/ui-ko/src/TwAutocomplete.ts#L206">ui-ko/src/TwAutocomplete.ts:206</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/8ed053a/packages/ui-ko/src/TwAutocomplete.ts#L214">ui-ko/src/TwAutocomplete.ts:214</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Template fragment for header.
+							Defaults to <code>&#39;&#39;</code>.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="item" class="tsd-anchor"></a>
@@ -169,9 +221,15 @@
 					<div class="tsd-signature tsd-kind-icon">item<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/80f2826/packages/ui-ko/src/TwAutocomplete.ts#L210">ui-ko/src/TwAutocomplete.ts:210</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/8ed053a/packages/ui-ko/src/TwAutocomplete.ts#L234">ui-ko/src/TwAutocomplete.ts:234</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Template fragment for a single item.
+							Defaults to <code>&#39;&lt;!-- ko text: text --&gt;&lt;!-- /ko --&gt;&#39;</code>.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="loading" class="tsd-anchor"></a>
@@ -179,9 +237,15 @@
 					<div class="tsd-signature tsd-kind-icon">loading<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/80f2826/packages/ui-ko/src/TwAutocomplete.ts#L213">ui-ko/src/TwAutocomplete.ts:213</a></li>
+							<li>Defined in <a href="https://github.com/Teamwork/autocomplete/blob/8ed053a/packages/ui-ko/src/TwAutocomplete.ts#L249">ui-ko/src/TwAutocomplete.ts:249</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Template fragment displayed while loading items.
+							Defaults to <code>&#39;Loading&#39;</code>.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -253,6 +317,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="_ui_ko_src_twautocomplete_.createtemplateoptions.html#blank" class="tsd-kind-icon">blank</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_ui_ko_src_twautocomplete_.createtemplateoptions.html#blockname" class="tsd-kind-icon">block<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="_ui_ko_src_twautocomplete_.createtemplateoptions.html#error" class="tsd-kind-icon">error</a>

@@ -97,8 +97,7 @@ export interface Autocomplete
      */
     updatePosition(): void
     /**
-     * Accepts the currently selected autocomplete item, if it exists,
-     * and then clears the autocomplete state, if it exists.
+     * Accepts the currently selected autocomplete item, if it exists.
      */
     accept(): void
     /**

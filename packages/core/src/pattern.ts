@@ -110,8 +110,11 @@ export interface CreatePatternHandlerOptions {
         matchedText: string,
     ) => Item[] | Promise<Item[]>
     /**
-     * Overrides `PatternHandler#accept`,
-     * which replaces the matched text with `item.text` by default.
+     * Overrides `PatternHandler#accept`, which defaults to:
+     *
+     * 1. Replace the matched text with `item.text`.
+     * 2. Clear the autocomplete state.
+     * 3. Focus the editor.
      */
     readonly accept?: (
         this: PatternHandler,

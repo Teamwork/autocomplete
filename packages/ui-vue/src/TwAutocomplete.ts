@@ -28,6 +28,11 @@ export const enum ViewName {
  *      },
  *      render(createElement) {
  *          return createElement('TwAutocomplete', {
+ *              props: {
+ *                  // The "Block" in the "Block Element Modifier" methodology,
+ *                  // see http://getbem.com/. Optional.
+ *                  blockName: 'tw-autocomplete'
+ *              },
  *              // All slots are optional.
  *              scopedSlots: {
  *                  header({ matchedText, viewName }) {},
@@ -164,6 +169,16 @@ export const TwAutocomplete = Vue.extend({
         })
     },
     name: 'TwAutocomplete',
+    props: {
+        /**
+         * The "Block" in the "Block Element Modifier" methodology, see http://getbem.com/.
+         * Defaults to `'tw-autocomplete'`.
+         */
+        blockName: {
+            default: 'tw-autocomplete',
+            type: String,
+        },
+    },
     render(createElement): VNode {
         if (!this.visible) {
             return createElement()
@@ -173,8 +188,8 @@ export const TwAutocomplete = Vue.extend({
             'div',
             {
                 class: {
-                    'tw-autocomplete': true,
-                    'tw-autocomplete--loading': this.loading,
+                    [this.blockName]: true,
+                    [`${this.blockName}--loading`]: this.loading,
                 },
                 style: {
                     left: `${this.caretPosition.left}px`,
@@ -185,7 +200,7 @@ export const TwAutocomplete = Vue.extend({
                 createElement(
                     'div',
                     {
-                        class: 'tw-autocomplete__header',
+                        class: `${this.blockName}__header`,
                     },
                     this.$scopedSlots.header?.({
                         matchedText,
@@ -196,7 +211,7 @@ export const TwAutocomplete = Vue.extend({
                     ? createElement(
                           'div',
                           {
-                              class: 'tw-autocomplete__list',
+                              class: `${this.blockName}__list`,
                           },
                           this.items.map((item, index, items) => [
                               this.$scopedSlots.beforeItem?.({
@@ -212,8 +227,8 @@ export const TwAutocomplete = Vue.extend({
                                           title: item.title || '',
                                       },
                                       class: {
-                                          'tw-autocomplete__list-item': true,
-                                          'tw-autocomplete__list-item--selected':
+                                          [`${this.blockName}__list-item`]: true,
+                                          [`${this.blockName}__list-item--selected`]:
                                               this.selectedIndex === index,
                                       },
                                       key: item.id,
@@ -248,7 +263,7 @@ export const TwAutocomplete = Vue.extend({
                     ? createElement(
                           'div',
                           {
-                              class: 'tw-autocomplete__error',
+                              class: `${this.blockName}__error`,
                           },
                           this.$scopedSlots.error?.({
                               error: this.error,
@@ -259,7 +274,7 @@ export const TwAutocomplete = Vue.extend({
                     ? createElement(
                           'div',
                           {
-                              class: 'tw-autocomplete__loading',
+                              class: `${this.blockName}__loading`,
                           },
                           this.$scopedSlots.loading?.({
                               matchedText,
@@ -268,7 +283,7 @@ export const TwAutocomplete = Vue.extend({
                     : createElement(
                           'div',
                           {
-                              class: 'tw-autocomplete__blank',
+                              class: `${this.blockName}__blank`,
                           },
                           this.$scopedSlots.blank?.({
                               matchedText,
@@ -277,7 +292,7 @@ export const TwAutocomplete = Vue.extend({
                 createElement(
                     'div',
                     {
-                        class: 'tw-autocomplete__footer',
+                        class: `${this.blockName}__footer`,
                     },
                     this.$scopedSlots.footer?.({
                         matchedText,

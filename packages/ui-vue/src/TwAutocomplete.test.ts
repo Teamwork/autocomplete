@@ -256,16 +256,23 @@ describe('component', () => {
 })
 
 describe('slots', () => {
+    const blockName = 'my-block-name'
+    const propsData = { blockName }
+
     test.each(['footer', 'header'])('%s', async name => {
         const slotValue = `My "${name}" slot`
         const slot = jest.fn().mockReturnValue(slotValue)
         editorAdapter.textBeforeCaret = 'abc'
         autocomplete.match()
         await whenAnimationFrame()
-        wrapper = mount(TwAutocomplete, { scopedSlots: { [name]: slot } })
+        wrapper = mount(TwAutocomplete, {
+            propsData,
+            scopedSlots: { [name]: slot },
+        })
         component = wrapper.vm
         component.init(autocomplete)
         await Vue.nextTick()
+        expect(wrapper.html()).toMatch(blockName)
         expect(wrapper.html()).toMatch(slotValue)
         expect(slot).toHaveBeenCalledWith({
             matchedText: component.matchedText,
@@ -278,10 +285,14 @@ describe('slots', () => {
         editorAdapter.textBeforeCaret = 'abc'
         autocomplete.match()
         await whenAnimationFrame()
-        wrapper = mount(TwAutocomplete, { scopedSlots: { [name]: slot } })
+        wrapper = mount(TwAutocomplete, {
+            propsData,
+            scopedSlots: { [name]: slot },
+        })
         component = wrapper.vm
         component.init(autocomplete)
         await Vue.nextTick()
+        expect(wrapper.html()).toMatch(blockName)
         expect(wrapper.html()).toMatch(slotValue)
         expect(slot).toHaveBeenCalledWith({
             index: 0,
@@ -311,10 +322,14 @@ describe('slots', () => {
         editorAdapter.textBeforeCaret = 'abc'
         autocomplete.match()
         await whenAnimationFrame()
-        wrapper = mount(TwAutocomplete, { scopedSlots: { error: slot } })
+        wrapper = mount(TwAutocomplete, {
+            propsData,
+            scopedSlots: { error: slot },
+        })
         component = wrapper.vm
         component.init(autocomplete)
         await Vue.nextTick()
+        expect(wrapper.html()).toMatch(blockName)
         expect(wrapper.html()).toMatch(slotValue)
         expect(slot).toHaveBeenCalledWith({
             error: component.error,
@@ -328,10 +343,14 @@ describe('slots', () => {
         editorAdapter.textBeforeCaret = 'abc'
         autocomplete.match()
         await whenAnimationFrame()
-        wrapper = mount(TwAutocomplete, { scopedSlots: { blank: slot } })
+        wrapper = mount(TwAutocomplete, {
+            propsData,
+            scopedSlots: { blank: slot },
+        })
         component = wrapper.vm
         component.init(autocomplete)
         await Vue.nextTick()
+        expect(wrapper.html()).toMatch(blockName)
         expect(wrapper.html()).toMatch(slotValue)
         expect(slot).toHaveBeenCalledWith({
             matchedText: component.matchedText,
@@ -344,10 +363,14 @@ describe('slots', () => {
         editorAdapter.textBeforeCaret = 'abc'
         autocomplete.match()
         await whenAnimationFrame()
-        wrapper = mount(TwAutocomplete, { scopedSlots: { loading: slot } })
+        wrapper = mount(TwAutocomplete, {
+            propsData,
+            scopedSlots: { loading: slot },
+        })
         component = wrapper.vm
         component.init(autocomplete)
         await Vue.nextTick()
+        expect(wrapper.html()).toMatch(blockName)
         expect(wrapper.html()).toMatch(slotValue)
         expect(slot).toHaveBeenCalledWith({
             matchedText: component.matchedText,

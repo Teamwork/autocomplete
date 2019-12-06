@@ -273,7 +273,12 @@ export function createTemplate({
                 left: caretPosition().left + 'px',
                 top: caretPosition().bottom + 'px'
             },
-            class: '${blockName}--' + viewName(),
+            css: {
+                '${blockName}--blank': viewName() === 'blank',
+                '${blockName}--loading': viewName() === 'loading',
+                '${blockName}--items': viewName() === 'items',
+                '${blockName}--error': viewName() === 'error'
+            },
             let: ($component.node = $element, undefined)
         "
     >

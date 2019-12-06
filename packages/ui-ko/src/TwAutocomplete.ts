@@ -230,7 +230,7 @@ export interface CreateTemplateOptions {
     beforeItem?: string
     /**
      * Template fragment for a single item.
-     * Defaults to `'<!-- ko text: text --><!-- /ko -->'`.
+     * Defaults to `'<!-- ko text: $data.text --><!-- /ko -->'`.
      */
     item?: string
     /**
@@ -259,7 +259,7 @@ export function createTemplate({
     footer = '',
     error = 'Loading failed',
     beforeItem = '',
-    item = '<!-- ko text: text --><!-- /ko -->',
+    item = '<!-- ko text: $data.text --><!-- /ko -->',
     afterItem = '',
     blank = 'No items',
     loading = 'Loading',
@@ -292,7 +292,7 @@ export function createTemplate({
                     class="${blockName}__list-item"
                     data-bind="
                         attr: {
-                            title: title
+                            title: $data.title
                         },
                         css: {
                             '${blockName}__list-item--selected': $component.selectedIndex() === $index()

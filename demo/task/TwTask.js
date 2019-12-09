@@ -499,41 +499,82 @@ const estimatedTimeItems = matchedText => {
     ]
 }
 
-const staticDateItems = [
-    {
-        id: 'today',
-        text: 'Today',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '')
-            autocomplete.clear()
-            autocomplete.editorAdapter.focus()
-            component.startDate = new Date(Date.now())
-            component.name = autocomplete.editorAdapter.editor.value
+const staticDateItems = {
+    startDate: [
+        {
+            id: 'today',
+            text: 'Today',
+            accept(autocomplete, patternHandler, component) {
+                patternHandler.replace(autocomplete, '')
+                autocomplete.clear()
+                autocomplete.editorAdapter.focus()
+                component.startDate = new Date(Date.now())
+                component.name = autocomplete.editorAdapter.editor.value
+            },
         },
-    },
-    {
-        id: 'tomorrow',
-        text: 'Tomorrow',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '')
-            autocomplete.clear()
-            autocomplete.editorAdapter.focus()
-            component.startDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
-            component.name = autocomplete.editorAdapter.editor.value
+        {
+            id: 'tomorrow',
+            text: 'Tomorrow',
+            accept(autocomplete, patternHandler, component) {
+                patternHandler.replace(autocomplete, '')
+                autocomplete.clear()
+                autocomplete.editorAdapter.focus()
+                component.startDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
+                component.name = autocomplete.editorAdapter.editor.value
+            },
         },
-    },
-    {
-        id: 'nextweek',
-        text: 'Next Week',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '')
-            autocomplete.clear()
-            autocomplete.editorAdapter.focus()
-            component.startDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-            component.name = autocomplete.editorAdapter.editor.value
+        {
+            id: 'nextweek',
+            text: 'Next Week',
+            accept(autocomplete, patternHandler, component) {
+                patternHandler.replace(autocomplete, '')
+                autocomplete.clear()
+                autocomplete.editorAdapter.focus()
+                component.startDate = new Date(
+                    Date.now() + 7 * 24 * 60 * 60 * 1000,
+                )
+                component.name = autocomplete.editorAdapter.editor.value
+            },
         },
-    },
-]
+    ],
+    dueDate: [
+        {
+            id: 'today',
+            text: 'Today',
+            accept(autocomplete, patternHandler, component) {
+                patternHandler.replace(autocomplete, '')
+                autocomplete.clear()
+                autocomplete.editorAdapter.focus()
+                component.dueDate = new Date(Date.now())
+                component.name = autocomplete.editorAdapter.editor.value
+            },
+        },
+        {
+            id: 'tomorrow',
+            text: 'Tomorrow',
+            accept(autocomplete, patternHandler, component) {
+                patternHandler.replace(autocomplete, '')
+                autocomplete.clear()
+                autocomplete.editorAdapter.focus()
+                component.dueDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
+                component.name = autocomplete.editorAdapter.editor.value
+            },
+        },
+        {
+            id: 'nextweek',
+            text: 'Next Week',
+            accept(autocomplete, patternHandler, component) {
+                patternHandler.replace(autocomplete, '')
+                autocomplete.clear()
+                autocomplete.editorAdapter.focus()
+                component.dueDate = new Date(
+                    Date.now() + 7 * 24 * 60 * 60 * 1000,
+                )
+                component.name = autocomplete.editorAdapter.editor.value
+            },
+        },
+    ],
+}
 
 const dateItems = propertyName => matchedText => {
     const dateMatch = /^(\d{1,2})(?:\/(\d{0,2})(?:\/(\d{0,4}))?)?$/.exec(
@@ -560,7 +601,7 @@ const dateItems = propertyName => matchedText => {
             },
         ]
     } else {
-        return filterItems(staticDateItems, matchedText)
+        return filterItems(staticDateItems[propertyName], matchedText)
     }
 }
 

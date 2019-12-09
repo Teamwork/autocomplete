@@ -1,0 +1,37 @@
+.tw-task__input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tw-task__properties {
+    border-collapse: collapse;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 1em 0;
+}
+.tw-task__property-name,
+.tw-task__property-value {
+    border: 1px solid black;
+    padding: 0.5em;
+}
+.tw-task__property-name {
+    white-space: nowrap;
+    text-align: left;
+}
+.tw-task__property-value {
+    white-space: pre-wrap;
+    width: 100%;
+}
+
+.tw-task__description-editor {
+    border: 1px solid black;
+    padding: 0.5em;
+    margin: 1em 0;
+}
+
+.tw-task__description-editor-textarea {
+    display: block;
+    width: 100%;
+    min-height: 5em;
+    box-sizing: border-box;
+}

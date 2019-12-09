@@ -7,6 +7,7 @@ const demoPages = [
     'CodeMirror-Knockout',
     'Textarea-Vue',
     'Input-Vue',
+    'Task',
 ]
 const config = {
     entry: {

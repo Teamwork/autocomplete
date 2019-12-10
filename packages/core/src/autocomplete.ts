@@ -1,6 +1,68 @@
 import { EmitterInterface, TypedEventEmitter } from '@syncot/events'
 import { EditorAdapter, Position } from './adapter'
-import { Item, PatternHandler } from './pattern'
+
+/**
+ * An immutable autocomplete item.
+ */
+export interface Item {
+    /**
+     * The item's ID.
+     * Used by default by some UI frameworks to identify nodes when diffing virtual DOM,
+     * for example the `key` specifal attribute in Vue.
+     */
+    readonly id: string | number
+    /**
+     * The item's text.
+     * Used by default to populate the content of the item's DOM element
+     * and for pattern replacement.
+     */
+    readonly text: string
+    /**
+     * The item's title.
+     * Used by default to populate the `title` attribute on the item's DOM element.
+     */
+    readonly title?: string
+}
+
+/**
+ * An immutable list of `Item`s.
+ */
+export type Items = Readonly<Item[]>
+
+/**
+ * @param textBeforeCaret The text before the caret in an editor.
+ * @param textAfterCaret The text after the caret in an editor.
+ * @returns The number of matched characters
+ *
+ * - at the end of `textBeforeCaret` as the first array element.
+ * - at the beginning of `textAfterCaret` as the second array element.
+ *
+ * Negative numbers indicate a failed match.
+ */
+export type Match = (
+    textBeforeCaret: string,
+    textAfterCaret: string,
+) => Readonly<[number, number]>
+
+/**
+ * Loads autocomplete items for the given text.
+ * @param matchedText The text matched in an editor.
+ * @returns The autocomplete items.
+ */
+export type Load = (matchedText: string) => Items | Promise<Items>
+
+/**
+ * Accepts the specified autocomplete item.
+ * @param item The item to accept.
+ * @returns If `undefined` is returned, `Autocomplete` will do nothing.
+ *
+ * If a string is returned, `Autocomplete` will:
+ *
+ * - use it as a replacement for the currently matched text
+ * - clear autocomplete state
+ * - focus the editor
+ */
+export type Accept = (item: Item) => string | undefined
 
 /**
  * The events emitted by `Autocomplete`.
@@ -56,7 +118,7 @@ export interface Autocomplete
     /**
      * The autocomplete items for the matched text.
      */
-    readonly items: Readonly<Item[]>
+    readonly items: Items
     /**
      * The index of the selected item in `items`.
      */
@@ -101,6 +163,11 @@ export interface Autocomplete
      */
     accept(): void
     /**
+     * Replaces the currently matched text with the specified text.
+     * @param text The replacement text.
+     */
+    replace(text: string): void
+    /**
      * Destroys this object and removes its event listeners.
      * It does NOT destroy the `editorAdapter` though, which should be destroyed separately when appropriate.
      */
@@ -116,23 +183,24 @@ export interface CreateAutocompleteOptions {
      */
     editorAdapter: EditorAdapter
     /**
-     * A list of pattern handlers. At least one is necessary for the system to work.
+     * Matches autocomplete patterns.
+     * Defaults to return no match.
      */
-    patternHandlers: PatternHandler[]
-}
-
-/**
- * Creates an Autocomplete instace with the specified options.
- */
-export function createAutocomplete({
-    editorAdapter,
-    patternHandlers,
-}: CreateAutocompleteOptions): Autocomplete {
-    return new AutocompleteClass(editorAdapter, patternHandlers)
+    match?: Match
+    /**
+     * Loads autocomplete items.
+     * Defaults to return an empty array.
+     */
+    load?: Load
+    /**
+     * Accepts autocomplete items.
+     * Defaults to return `item.text`.
+     */
+    accept?: Accept
 }
 
 const defaultMatchedText = ''
-const defaultItems: Readonly<Item[]> = Object.freeze([])
+const defaultItems: Items = Object.freeze([])
 const defaultSelectedIndex = -1
 const defaultPosition: Position = Object.freeze({
     bottom: 0,
@@ -140,20 +208,36 @@ const defaultPosition: Position = Object.freeze({
     right: 0,
     top: 0,
 })
+const noMatch = Object.freeze([-1, -1]) as ReturnType<Match>
+const defaultMatch = () => noMatch
+const defaultLoad = () => defaultItems
+const defaultAccept = (item: Item) => item.text
+
+/**
+ * Creates an Autocomplete instace with the specified options.
+ */
+export function createAutocomplete({
+    editorAdapter,
+    match = defaultMatch,
+    load = defaultLoad,
+    accept = defaultAccept,
+}: CreateAutocompleteOptions): Autocomplete {
+    return new AutocompleteClass(editorAdapter, match, load, accept)
+}
 
 class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
     implements Autocomplete {
-    public get items(): Readonly<Item[]> {
+    public get items(): Items {
         return this._items
     }
-    public set items(items: Readonly<Item[]>) {
+    public set items(items: Items) {
         if (this._items !== items) {
             this._items = items
             this.selectedIndex = 0
             this.emitLater('items')
         }
     }
-    private _items: Readonly<Item[]> = defaultItems
+    private _items: Items = defaultItems
 
     public get selectedIndex(): number {
         return this._selectedIndex
@@ -218,30 +302,23 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
     private _error: Error | undefined = undefined
 
     public get active(): boolean {
-        return !!this.activePatternHandler
+        return this._active
     }
-    private get activePatternHandler(): PatternHandler | undefined {
-        return this._activePatternHandler
-    }
-    private set activePatternHandler(
-        activePatternHandler: PatternHandler | undefined,
-    ) {
-        const oldActive = this.active
-        this._activePatternHandler = activePatternHandler
-        const newActive = this.active
-        if (oldActive !== newActive) {
+    public set active(active: boolean) {
+        if (this._active !== active) {
+            this._active = active
             this.emitLater('active')
         }
     }
-    private _activePatternHandler: PatternHandler | undefined = undefined
+    private _active: boolean = false
 
     public get loading(): boolean {
         return !!this.promise
     }
-    private get promise(): Promise<Item[]> | undefined {
+    private get promise(): Promise<Items> | undefined {
         return this._promise
     }
-    private set promise(promise: Promise<Item[]> | undefined) {
+    private set promise(promise: Promise<Items> | undefined) {
         const oldLoading = this.loading
         this._promise = promise
         const newLoading = this.loading
@@ -249,7 +326,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
             this.emitLater('loading')
         }
     }
-    private _promise: Promise<Item[]> | undefined = undefined
+    private _promise: Promise<Items> | undefined = undefined
 
     private pending:
         | 'matchNow'
@@ -259,7 +336,9 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
 
     public constructor(
         public readonly editorAdapter: EditorAdapter,
-        private readonly patternHandlers: Array<Required<PatternHandler>>,
+        private readonly _match: Match,
+        private readonly _load: Load,
+        private readonly _accept: Accept,
     ) {
         super()
         document.addEventListener('scroll', this.onScroll)
@@ -304,13 +383,31 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
     }
 
     public accept(): void {
-        const patternHandler = this.activePatternHandler
-        if (patternHandler) {
-            const item = this.items[this.selectedIndex]
-            if (item) {
-                patternHandler.accept(this, item)
+        const item = this.items[this.selectedIndex]
+        if (item) {
+            const text = this._accept(item)
+            if (typeof text === 'string') {
+                this.replace(text)
+                this.clear()
+                this.editorAdapter.focus()
             }
         }
+    }
+
+    public replace(text: string): void {
+        const textBefore = this.editorAdapter.textBeforeCaret
+        const textAfter = this.editorAdapter.textAfterCaret
+        const match = this._match(textBefore, textAfter)
+        const lengthBefore = match[0]
+        const lengthAfter = match[1]
+
+        if (lengthBefore < 0 || lengthAfter < 0) {
+            return
+        }
+
+        this.editorAdapter.textBeforeCaret =
+            textBefore.substring(0, textBefore.length - lengthBefore) + text
+        this.editorAdapter.textAfterCaret = textAfter.substring(lengthAfter)
     }
 
     private onAnimationFrame = (): void => {
@@ -319,54 +416,47 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
         this[action]()
     }
 
-    private matchNow(): void {
-        for (const patternHandler of this.patternHandlers) {
-            const match = patternHandler.match(this)
+    private async matchNow(): Promise<void> {
+        const textBefore = this.editorAdapter.textBeforeCaret
+        const textAfter = this.editorAdapter.textAfterCaret
+        const match = this._match(textBefore, textAfter)
+        const lengthBefore = match[0]
+        const lengthAfter = match[1]
 
-            if (match) {
-                this.activePatternHandler = patternHandler
-                this.matchedText = match
-                this.caretPosition = this.editorAdapter.caretPosition
-                this.editorPosition = this.editorAdapter.editorPosition
-                try {
-                    const itemsOrPomise = patternHandler.load(this, match)
-                    if (Array.isArray(itemsOrPomise)) {
-                        this.promise = undefined
-                        this.items = itemsOrPomise
-                        this.error = undefined
-                    } else {
-                        this.promise = itemsOrPomise
-                        itemsOrPomise.then(
-                            items => {
-                                if (this.promise === itemsOrPomise) {
-                                    this.promise = undefined
-                                    this.items = items
-                                    this.error = undefined
-                                }
-                            },
-                            error => {
-                                if (this.promise === itemsOrPomise) {
-                                    this.promise = undefined
-                                    this.items = defaultItems
-                                    this.error = error
-                                }
-                            },
-                        )
-                    }
-                } catch (error) {
-                    this.promise = undefined
-                    this.items = defaultItems
-                    this.error = error
-                }
-                return
-            }
+        if (lengthBefore < 0 || lengthAfter < 0) {
+            this.clearNow()
+            return
         }
 
-        this.clearNow()
+        const matchedText =
+            textBefore.substring(textBefore.length - lengthBefore) +
+            textAfter.substring(0, lengthAfter)
+        const pomise = this.loadItems(matchedText)
+
+        this.active = true
+        this.matchedText = matchedText
+        this.caretPosition = this.editorAdapter.caretPosition
+        this.editorPosition = this.editorAdapter.editorPosition
+        this.promise = pomise
+
+        try {
+            const items = await pomise
+            if (this.promise === pomise) {
+                this.promise = undefined
+                this.items = items
+                this.error = undefined
+            }
+        } catch (error) {
+            if (this.promise === pomise) {
+                this.promise = undefined
+                this.items = defaultItems
+                this.error = error
+            }
+        }
     }
 
     private clearNow(): void {
-        this.activePatternHandler = undefined
+        this.active = false
         this.matchedText = defaultMatchedText
         this.caretPosition = defaultPosition
         this.editorPosition = defaultPosition
@@ -380,6 +470,11 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
             this.caretPosition = this.editorAdapter.caretPosition
             this.editorPosition = this.editorAdapter.editorPosition
         }
+    }
+
+    private async loadItems(matchedText: string): Promise<Items> {
+        const items = await this._load(matchedText)
+        return Array.isArray(items) ? items : defaultItems
     }
 
     private onScroll = (): void => {

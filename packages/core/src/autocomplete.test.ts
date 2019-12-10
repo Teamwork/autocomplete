@@ -3,12 +3,9 @@ import { noop, whenNextTick } from '@syncot/util'
 import {
     Autocomplete,
     createAutocomplete,
-    createPatternHandler,
-    createRegexPattern,
     EditorAdapter,
     EditorAdapterEvents,
     Item,
-    PatternHandler,
     Position,
 } from '.'
 
@@ -59,12 +56,9 @@ class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
 
 let letterItems: Item[]
 let numberItems: Item[]
-let letterLoad: jest.Mock<Item[] | Promise<Item[]>, [Autocomplete, string]>
-let numberLoad: jest.Mock<Item[] | Promise<Item[]>, [Autocomplete, string]>
-let letterAccept: jest.Mock<void, [Autocomplete, Item]>
-let numberAccept: jest.Mock<void, [Autocomplete, Item]>
-let letterPatternHandler: PatternHandler
-let numberPatternHandler: PatternHandler
+let match: jest.Mock<[number, number], [string, string]>
+let load: jest.Mock<Item[] | Promise<Item[]>, [string]>
+let accept: jest.Mock<string | undefined, [Item]>
 let editorAdapter: MockEditorAdapter
 let autocomplete: Autocomplete
 
@@ -117,26 +111,20 @@ beforeEach(() => {
         { id: 1, text: 'Number item 1' },
         { id: 2, text: 'Number item 2' },
     ]
-    letterLoad = jest.fn().mockReturnValue(letterItems)
-    numberLoad = jest.fn().mockReturnValue(numberItems)
-    letterAccept = jest.fn()
-    numberAccept = jest.fn()
-    letterPatternHandler = createPatternHandler({
-        accept: letterAccept,
-        load: letterLoad,
-        patternBeforeCaret: createRegexPattern(/[a-zA-Z]+$/),
+    match = jest.fn((textBeforeCaret, _textAfterCaret) => {
+        const matchBeforeCaret = /([a-zA-Z]+|[0-9]+)$/.exec(textBeforeCaret)
+        const countBeforeCaret = matchBeforeCaret
+            ? matchBeforeCaret[0].length
+            : -1
+        return [countBeforeCaret, 0]
     })
-    numberPatternHandler = createPatternHandler({
-        accept: numberAccept,
-        load: numberLoad,
-        patternBeforeCaret: createRegexPattern(/[0-9]+$/),
-    })
+    load = jest.fn(matchedText =>
+        /^[0-9]/.test(matchedText) ? numberItems : letterItems,
+    )
+    accept = jest.fn()
 
     editorAdapter = new MockEditorAdapter()
-    autocomplete = createAutocomplete({
-        editorAdapter,
-        patternHandlers: [letterPatternHandler, numberPatternHandler],
-    })
+    autocomplete = createAutocomplete({ accept, editorAdapter, load, match })
     editorAdapter.textBeforeCaret = 'abc def'
 })
 
@@ -159,8 +147,8 @@ describe('match', () => {
         expectNotActive()
         await whenAnimationFrame()
         expectActive()
-        expect(letterLoad).toHaveBeenCalledTimes(1)
-        expect(letterLoad).toHaveBeenCalledWith(autocomplete, 'def')
+        expect(load).toHaveBeenCalledTimes(1)
+        expect(load).toHaveBeenCalledWith('def')
 
         // no match
         editorAdapter.textBeforeCaret = ''
@@ -211,6 +199,14 @@ describe('match', () => {
         autocomplete.match()
         await whenAnimationFrame()
         expectActive()
+    })
+
+    test('default match function', async () => {
+        autocomplete.destroy()
+        autocomplete = createAutocomplete({ editorAdapter, load, accept })
+        autocomplete.match()
+        await whenAnimationFrame()
+        expectNotActive()
     })
 })
 
@@ -346,19 +342,19 @@ describe('accept', () => {
         expectNotActive()
 
         autocomplete.accept()
-        expect(letterAccept).toHaveBeenCalledTimes(0)
+        expect(accept).toHaveBeenCalledTimes(0)
         await whenAnimationFrame()
         expectNotActive()
     })
     test('no items', async () => {
         const items: Item[] = []
-        letterLoad.mockReturnValue(items)
+        load.mockReturnValue(items)
         autocomplete.match()
         await whenAnimationFrame()
         expectActive({ items, selectedIndex: -1 })
 
         autocomplete.accept()
-        expect(letterAccept).toHaveBeenCalledTimes(0)
+        expect(accept).toHaveBeenCalledTimes(0)
         await whenAnimationFrame()
         expectActive({ items, selectedIndex: -1 })
     })
@@ -369,10 +365,100 @@ describe('accept', () => {
         expectActive({ selectedIndex: 1 })
 
         autocomplete.accept()
-        expect(letterAccept).toHaveBeenCalledTimes(1)
-        expect(letterAccept).toHaveBeenCalledWith(autocomplete, letterItems[1])
+        expect(accept).toHaveBeenCalledTimes(1)
+        expect(accept).toHaveBeenCalledWith(letterItems[1])
         await whenAnimationFrame()
         expectActive({ selectedIndex: 1 })
+    })
+    test('return an empty string', async () => {
+        autocomplete.match()
+        await whenAnimationFrame()
+
+        accept.mockReturnValue('')
+        autocomplete.accept()
+        await whenAnimationFrame()
+        expectNotActive()
+        expect(editorAdapter.textBeforeCaret).toBe('abc ')
+        expect(editorAdapter.textAfterCaret).toBe('')
+    })
+    test('return a non-empty string', async () => {
+        autocomplete.match()
+        await whenAnimationFrame()
+
+        accept.mockReturnValue('REPLACED')
+        autocomplete.accept()
+        await whenAnimationFrame()
+        expectNotActive()
+        expect(editorAdapter.textBeforeCaret).toBe('abc REPLACED')
+        expect(editorAdapter.textAfterCaret).toBe('')
+    })
+    test('default accept function', async () => {
+        autocomplete.destroy()
+        autocomplete = createAutocomplete({ editorAdapter, load, match })
+        autocomplete.match()
+        await whenAnimationFrame()
+
+        autocomplete.accept()
+        await whenAnimationFrame()
+        expectNotActive()
+        expect(editorAdapter.textBeforeCaret).toBe('abc Letter item 0')
+        expect(editorAdapter.textAfterCaret).toBe('')
+    })
+})
+
+describe('replace', () => {
+    beforeEach(() => {
+        editorAdapter.textBeforeCaret = 'abcdef'
+        editorAdapter.textAfterCaret = '123456'
+    })
+
+    test('replace an empty string', () => {
+        match.mockReturnValue([0, 0])
+        autocomplete.replace('REPLACED')
+        expect(editorAdapter.textBeforeCaret).toBe('abcdefREPLACED')
+        expect(editorAdapter.textAfterCaret).toBe('123456')
+    })
+
+    test('replace something before caret', () => {
+        match.mockReturnValue([3, 0])
+        autocomplete.replace('REPLACED')
+        expect(editorAdapter.textBeforeCaret).toBe('abcREPLACED')
+        expect(editorAdapter.textAfterCaret).toBe('123456')
+    })
+
+    test('replace something after caret', () => {
+        match.mockReturnValue([0, 3])
+        autocomplete.replace('REPLACED')
+        expect(editorAdapter.textBeforeCaret).toBe('abcdefREPLACED')
+        expect(editorAdapter.textAfterCaret).toBe('456')
+    })
+
+    test('replace something before and after caret', () => {
+        match.mockReturnValue([3, 3])
+        autocomplete.replace('REPLACED')
+        expect(editorAdapter.textBeforeCaret).toBe('abcREPLACED')
+        expect(editorAdapter.textAfterCaret).toBe('456')
+    })
+
+    test('replace nothing before caret', () => {
+        match.mockReturnValue([-1, 0])
+        autocomplete.replace('REPLACED')
+        expect(editorAdapter.textBeforeCaret).toBe('abcdef')
+        expect(editorAdapter.textAfterCaret).toBe('123456')
+    })
+
+    test('replace nothing after caret', () => {
+        match.mockReturnValue([0, -1])
+        autocomplete.replace('REPLACED')
+        expect(editorAdapter.textBeforeCaret).toBe('abcdef')
+        expect(editorAdapter.textAfterCaret).toBe('123456')
+    })
+
+    test('replace nothing before and after caret', () => {
+        match.mockReturnValue([-1, -1])
+        autocomplete.replace('REPLACED')
+        expect(editorAdapter.textBeforeCaret).toBe('abcdef')
+        expect(editorAdapter.textAfterCaret).toBe('123456')
     })
 })
 
@@ -409,11 +495,12 @@ describe('loading', () => {
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
         expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(0)
-        expect(onLoading).toHaveBeenCalledTimes(0)
+        expect(onLoading).toHaveBeenCalledTimes(2)
     })
+
     test('sync error', async () => {
         const error = new Error('test error')
-        letterLoad.mockImplementation(() => {
+        load.mockImplementation(() => {
             throw error
         })
         autocomplete.match()
@@ -427,16 +514,17 @@ describe('loading', () => {
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
         expect(onEditorPosition).toHaveBeenCalledTimes(1)
         expect(onError).toHaveBeenCalledTimes(1)
-        expect(onLoading).toHaveBeenCalledTimes(0)
+        expect(onLoading).toHaveBeenCalledTimes(2)
     })
+
     test('async success', async () => {
         let resolve1: (items: Item[]) => void
         const promise1: Promise<Item[]> = new Promise(r => (resolve1 = r))
         let resolve2: (items: Item[]) => void
         const promise2: Promise<Item[]> = new Promise(r => (resolve2 = r))
-        letterLoad.mockReset()
-        letterLoad.mockImplementationOnce(() => promise1)
-        letterLoad.mockImplementationOnce(() => promise2)
+        load.mockReset()
+        load.mockImplementationOnce(() => promise1)
+        load.mockImplementationOnce(() => promise2)
 
         // Record and wait for promise1.
         autocomplete.match()
@@ -472,6 +560,7 @@ describe('loading', () => {
         expect(onError).toHaveBeenCalledTimes(0)
         expect(onLoading).toHaveBeenCalledTimes(2)
     })
+
     test('async error', async () => {
         const error1 = new Error('test error 1')
         let reject1: (error: Error) => void
@@ -479,9 +568,9 @@ describe('loading', () => {
         const error2 = new Error('test error 2')
         let reject2: (error: Error) => void
         const promise2: Promise<Item[]> = new Promise((_, r) => (reject2 = r))
-        letterLoad.mockReset()
-        letterLoad.mockImplementationOnce(() => promise1)
-        letterLoad.mockImplementationOnce(() => promise2)
+        load.mockReset()
+        load.mockImplementationOnce(() => promise1)
+        load.mockImplementationOnce(() => promise2)
 
         // Record and wait for promise1.
         autocomplete.match()
@@ -522,11 +611,12 @@ describe('loading', () => {
         expect(onError).toHaveBeenCalledTimes(1)
         expect(onLoading).toHaveBeenCalledTimes(2)
     })
+
     test('clear when loading=true', async () => {
         let resolve: (items: Item[]) => void
         const promise: Promise<Item[]> = new Promise(r => (resolve = r))
-        letterLoad.mockReset()
-        letterLoad.mockImplementationOnce(() => promise)
+        load.mockReset()
+        load.mockImplementationOnce(() => promise)
 
         autocomplete.match()
         await whenAnimationFrame()
@@ -552,6 +642,28 @@ describe('loading', () => {
         expect(onEditorPosition).toHaveBeenCalledTimes(2)
         expect(onError).toHaveBeenCalledTimes(0)
         expect(onLoading).toHaveBeenCalledTimes(2)
+    })
+
+    test('load undefined sync', async () => {
+        load.mockReturnValue(undefined as any)
+        autocomplete.match()
+        await whenAnimationFrame()
+        expectActive({ items: [], selectedIndex: -1 })
+    })
+
+    test('load undefined async', async () => {
+        load.mockResolvedValue(undefined as any)
+        autocomplete.match()
+        await whenAnimationFrame()
+        expectActive({ items: [], selectedIndex: -1 })
+    })
+
+    test('default load function', async () => {
+        autocomplete.destroy()
+        autocomplete = createAutocomplete({ editorAdapter, match, accept })
+        autocomplete.match()
+        await whenAnimationFrame()
+        expectActive({ items: [], selectedIndex: -1 })
     })
 })
 
@@ -638,7 +750,7 @@ describe('events', () => {
             })
             test('no items', async () => {
                 const items: Item[] = []
-                letterLoad.mockReturnValue(items)
+                load.mockReturnValue(items)
                 autocomplete.match()
                 await whenAnimationFrame()
                 expectActive({ items, selectedIndex: -1 })
@@ -681,7 +793,7 @@ describe('events', () => {
             })
             test('no items', async () => {
                 const items: Item[] = []
-                letterLoad.mockReturnValue(items)
+                load.mockReturnValue(items)
                 autocomplete.match()
                 await whenAnimationFrame()
                 expectActive({ items, selectedIndex: -1 })
@@ -722,12 +834,12 @@ describe('events', () => {
                 await whenAnimationFrame()
                 expectNotActive()
                 expect(event.defaultPrevented).toBe(false)
-                expect(letterAccept).toHaveBeenCalledTimes(0)
+                expect(accept).toHaveBeenCalledTimes(0)
             })
 
             test('no items', async () => {
                 const items: Item[] = []
-                letterLoad.mockReturnValue(items)
+                load.mockReturnValue(items)
                 autocomplete.match()
                 await whenAnimationFrame()
                 expectActive({ items, selectedIndex: -1 })
@@ -737,7 +849,7 @@ describe('events', () => {
                 await whenAnimationFrame()
                 expectActive({ items, selectedIndex: -1 })
                 expect(event.defaultPrevented).toBe(false)
-                expect(letterAccept).toHaveBeenCalledTimes(0)
+                expect(accept).toHaveBeenCalledTimes(0)
             })
 
             test.each([0, 1, 2])('selectedIndex = %d', async selectedIndex => {
@@ -747,11 +859,8 @@ describe('events', () => {
                 await whenAnimationFrame()
                 expectActive({ selectedIndex })
                 expect(event.defaultPrevented).toBe(true)
-                expect(letterAccept).toHaveBeenCalledTimes(1)
-                expect(letterAccept).toHaveBeenCalledWith(
-                    autocomplete,
-                    letterItems[selectedIndex],
-                )
+                expect(accept).toHaveBeenCalledTimes(1)
+                expect(accept).toHaveBeenCalledWith(letterItems[selectedIndex])
             })
 
             test.each(['ctrlKey', 'shiftKey', 'altKey', 'metaKey'])(
@@ -762,7 +871,7 @@ describe('events', () => {
                     await whenAnimationFrame()
                     expectActive()
                     expect(event.defaultPrevented).toBe(false)
-                    expect(letterAccept).toHaveBeenCalledTimes(0)
+                    expect(accept).toHaveBeenCalledTimes(0)
                 },
             )
         })

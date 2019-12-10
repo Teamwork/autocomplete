@@ -3,12 +3,9 @@ import { noop } from '@syncot/util'
 import {
     Autocomplete,
     createAutocomplete,
-    createPatternHandler,
-    createRegexPattern,
     EditorAdapter,
     EditorAdapterEvents,
     Item,
-    PatternHandler,
     Position,
 } from '@teamwork/autocomplete-core'
 import {
@@ -98,8 +95,8 @@ describe('createTemplate', () => {
 describe('TwAutocomplete', () => {
     let editorAdapter: MockEditorAdapter
     let items: Item[]
+    let match: jest.Mock
     let load: jest.Mock
-    let patternHandler: PatternHandler
     let autocomplete: Autocomplete
     let component: TwAutocomplete
 
@@ -110,16 +107,9 @@ describe('TwAutocomplete', () => {
             { id: 1, text: 'Letter item 1' },
             { id: 2, text: 'Letter item 2' },
         ]
-        load = jest.fn()
-        load.mockReturnValue(items)
-        patternHandler = createPatternHandler({
-            load,
-            patternBeforeCaret: createRegexPattern(/[a-zA-Z]+$/),
-        })
-        autocomplete = createAutocomplete({
-            editorAdapter,
-            patternHandlers: [patternHandler],
-        })
+        match = jest.fn().mockReturnValue([3, 0])
+        load = jest.fn().mockReturnValue(items)
+        autocomplete = createAutocomplete({ editorAdapter, load, match })
     })
 
     afterEach(() => {

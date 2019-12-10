@@ -189,7 +189,10 @@ export const TwAutocomplete = Vue.extend({
             {
                 class: {
                     [this.blockName]: true,
-                    [`${this.blockName}--${viewName}`]: true,
+                    [`${this.blockName}--loading`]: this.loading,
+                    [`${this.blockName}--blank`]: viewName === ViewName.blank,
+                    [`${this.blockName}--items`]: viewName === ViewName.items,
+                    [`${this.blockName}--error`]: viewName === ViewName.error,
                 },
                 style: {
                     left: `${this.caretPosition.left}px`,

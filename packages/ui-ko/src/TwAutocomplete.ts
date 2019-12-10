@@ -274,8 +274,8 @@ export function createTemplate({
                 top: caretPosition().bottom + 'px'
             },
             css: {
+                '${blockName}--loading': loading(),
                 '${blockName}--blank': viewName() === 'blank',
-                '${blockName}--loading': viewName() === 'loading',
                 '${blockName}--items': viewName() === 'items',
                 '${blockName}--error': viewName() === 'error'
             },

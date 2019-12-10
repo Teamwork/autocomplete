@@ -1,11 +1,7 @@
 import '../autocomplete/style.css'
 import './TwTask.css'
 import Vue from 'vue'
-import {
-    createAutocomplete,
-    createPatternHandler,
-    createRegexPattern,
-} from '@teamwork/autocomplete-core'
+import { createAutocomplete } from '@teamwork/autocomplete-core'
 import { createEditorAdapter } from '@teamwork/autocomplete-editor-text'
 import { TwAutocomplete } from '@teamwork/autocomplete-ui-vue'
 import { focus } from './directives/focus'
@@ -13,6 +9,12 @@ import { focus } from './directives/focus'
 export const TwTask = Vue.extend({
     components: { TwAutocomplete },
     directives: { focus },
+    props: {
+        blockName: {
+            type: String,
+            default: 'tw-task',
+        },
+    },
     data() {
         return {
             name: '',
@@ -76,86 +78,52 @@ export const TwTask = Vue.extend({
         },
     },
     mounted() {
-        const component = this
         const editorAdapter = createEditorAdapter(this.$refs.input)
         const autocomplete = createAutocomplete({
             editorAdapter,
-            patternHandlers: [
-                createPatternHandler({
-                    patternBeforeCaret: createRegexPattern(
-                        /(?:^|\s)(#\w*)$/,
-                        1,
-                    ),
-                    load(_autocomplete, matchedText) {
-                        return tagItems(
-                            matchedText.substring(1).toLocaleLowerCase(),
-                            component,
-                        )
-                    },
-                    accept(autocomplete, tag) {
-                        tag.accept(autocomplete, this, component)
-                    },
-                }),
-                createPatternHandler({
-                    patternBeforeCaret: createRegexPattern(
-                        /(?:^|\s)(@\w*)$/,
-                        1,
-                    ),
-                    load(_autocomplete, matchedText) {
-                        return userItems(
-                            matchedText.substring(1).toLocaleLowerCase(),
-                            component,
-                        )
-                    },
-                    accept(autocomplete, user) {
-                        user.accept(autocomplete, this, component)
-                    },
-                }),
-                createPatternHandler({
-                    patternBeforeCaret: createRegexPattern(
-                        /(?:^|\s)(\/[\w:\/]*)$/,
-                        1,
-                    ),
-                    load(_autocomplete, matchedText) {
-                        matchedText = matchedText
-                            .substring(1)
-                            .toLocaleLowerCase()
+            match: (textBeforeCaret, textAfterCaret) => {
+                const matchBeforeCaret = /(?:^|\s)([@#/][\w:/]*)$/.exec(
+                    textBeforeCaret,
+                )
+                const matchAfterCaret = /^(?:$|\s)/.exec(textAfterCaret)
+                return [
+                    matchBeforeCaret ? matchBeforeCaret[1].length : -1,
+                    matchAfterCaret ? 0 : -1,
+                ]
+            },
+            load: matchedText => {
+                const firstChar = matchedText[0]
+                matchedText = matchedText.substring(1).toLocaleLowerCase()
+                const subcommandIndex = matchedText.indexOf(':') + 1
 
-                        const index = matchedText.indexOf(':')
-                        if (index >= 0) {
-                            // Subcommand.
-                            const command = findItem(
-                                commandItems,
-                                matchedText.substring(0, index + 1),
-                            )
-                            return command
-                                ? command.items(
-                                      matchedText.substring(index + 1),
-                                      component,
-                                  )
-                                : []
-                        } else {
-                            // Top-level command.
-                            return filterItems(commandItems, matchedText)
-                        }
-                    },
-                    accept(autocomplete, command) {
-                        command.accept(autocomplete, this, component)
-                    },
-                }),
-            ],
+                if (firstChar === '#') {
+                    return tagItems(matchedText, this)
+                } else if (firstChar === '@') {
+                    return userItems(matchedText, this)
+                } else if (subcommandIndex > 0) {
+                    const commandId = matchedText.substring(0, subcommandIndex)
+                    const subcommandId = matchedText.substring(subcommandIndex)
+                    const command = findItem(staticCommandItems, commandId)
+                    return command ? command.items(subcommandId, this) : []
+                } else {
+                    return commandItems(matchedText, this)
+                }
+            },
+            accept: item => {
+                const text = item.accept(autocomplete, this)
+                if (typeof text === 'string') {
+                    autocomplete.replace(text)
+                    autocomplete.clear()
+                    editorAdapter.focus()
+                }
+                this.name = this.$refs.input.value
+            },
         })
         this.$refs.autocomplete.init(autocomplete)
         this.$once('hook:beforeDestroy', () => {
             autocomplete.destroy()
             editorAdapter.destroy()
         })
-    },
-    props: {
-        blockName: {
-            type: String,
-            default: 'tw-task',
-        },
     },
     render(createElement) {
         return createElement('div', { class: this.blockName }, [
@@ -286,17 +254,34 @@ const taskProperties = [
     { name: 'assignees', displayName: 'Assignees' },
 ]
 
+const today = () => new Date()
+const tomorrow = () => new Date(Date.now() + 24 * 60 * 60 * 1000)
+const nextWeek = () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
 const filterItems = (items, matchedText) =>
     items.filter(item => item.id.indexOf(matchedText) >= 0)
 
 const findItem = (items, id) => items.find(item => item.id === id)
 
-function acceptTag(autocomplete, patternHandler, component) {
-    patternHandler.replace(autocomplete, '')
-    autocomplete.clear()
-    autocomplete.editorAdapter.focus()
+function acceptTag(autocomplete, component) {
     component.tags.push(this)
-    component.name = autocomplete.editorAdapter.editor.value
+    return ''
+}
+
+function acceptUser(autocomplete, component) {
+    component.assignees.push(this)
+    return ''
+}
+
+function acceptPriority(autocomplete, component) {
+    component.priority = this.text
+    return ''
+}
+
+const acceptParentCommand = text => autocomplete => {
+    autocomplete.replace(text)
+    autocomplete.editorAdapter.focus()
+    requestAnimationFrame(() => autocomplete.match())
 }
 
 const staticTagItems = [
@@ -326,14 +311,6 @@ const tagItems = (matchedText, component) =>
         tag =>
             tag.id.indexOf(matchedText) >= 0 && component.tags.indexOf(tag) < 0,
     )
-
-function acceptUser(autocomplete, patternHandler, component) {
-    patternHandler.replace(autocomplete, '')
-    autocomplete.clear()
-    autocomplete.editorAdapter.focus()
-    component.assignees.push(this)
-    component.name = autocomplete.editorAdapter.editor.value
-}
 
 const staticUserItems = [
     'Zabel Patel',
@@ -411,39 +388,9 @@ const userItems = (matchedText, component) =>
     )
 
 const staticPriorityItems = [
-    {
-        id: 'high',
-        text: 'High',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '')
-            autocomplete.clear()
-            autocomplete.editorAdapter.focus()
-            component.priority = 'High'
-            component.name = autocomplete.editorAdapter.editor.value
-        },
-    },
-    {
-        id: 'medium',
-        text: 'Medium',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '')
-            autocomplete.clear()
-            autocomplete.editorAdapter.focus()
-            component.priority = 'Medium'
-            component.name = autocomplete.editorAdapter.editor.value
-        },
-    },
-    {
-        id: 'low',
-        text: 'Low',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '')
-            autocomplete.clear()
-            autocomplete.editorAdapter.focus()
-            component.priority = 'Low'
-            component.name = autocomplete.editorAdapter.editor.value
-        },
-    },
+    { id: 'high', text: 'High', accept: acceptPriority },
+    { id: 'medium', text: 'Medium', accept: acceptPriority },
+    { id: 'low', text: 'Low', accept: acceptPriority },
 ]
 
 const priorityItems = matchedText =>
@@ -455,12 +402,9 @@ const progressItems = matchedText => {
         {
             id: '',
             text: `${progress}%`,
-            accept(autocomplete, patternHandler, component) {
-                patternHandler.replace(autocomplete, '')
-                autocomplete.clear()
-                autocomplete.editorAdapter.focus()
+            accept(autocomplete, component) {
                 component.progress = progress
-                component.name = autocomplete.editorAdapter.editor.value
+                return ''
             },
         },
     ]
@@ -488,12 +432,9 @@ const estimatedTimeItems = matchedText => {
         {
             id: '',
             text,
-            accept(autocomplete, patternHandler, component) {
-                patternHandler.replace(autocomplete, '')
-                autocomplete.clear()
-                autocomplete.editorAdapter.focus()
+            accept(autocomplete, component) {
                 component.estimatedTime = text
-                component.name = autocomplete.editorAdapter.editor.value
+                return ''
             },
         },
     ]
@@ -504,36 +445,25 @@ const staticDateItems = {
         {
             id: 'today',
             text: 'Today',
-            accept(autocomplete, patternHandler, component) {
-                patternHandler.replace(autocomplete, '')
-                autocomplete.clear()
-                autocomplete.editorAdapter.focus()
-                component.startDate = new Date(Date.now())
-                component.name = autocomplete.editorAdapter.editor.value
+            accept(autocomplete, component) {
+                component.startDate = today()
+                return ''
             },
         },
         {
             id: 'tomorrow',
             text: 'Tomorrow',
-            accept(autocomplete, patternHandler, component) {
-                patternHandler.replace(autocomplete, '')
-                autocomplete.clear()
-                autocomplete.editorAdapter.focus()
-                component.startDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
-                component.name = autocomplete.editorAdapter.editor.value
+            accept(autocomplete, component) {
+                component.startDate = tomorrow()
+                return ''
             },
         },
         {
             id: 'nextweek',
             text: 'Next Week',
-            accept(autocomplete, patternHandler, component) {
-                patternHandler.replace(autocomplete, '')
-                autocomplete.clear()
-                autocomplete.editorAdapter.focus()
-                component.startDate = new Date(
-                    Date.now() + 7 * 24 * 60 * 60 * 1000,
-                )
-                component.name = autocomplete.editorAdapter.editor.value
+            accept(autocomplete, component) {
+                component.startDate = nextWeek()
+                return ''
             },
         },
     ],
@@ -541,36 +471,25 @@ const staticDateItems = {
         {
             id: 'today',
             text: 'Today',
-            accept(autocomplete, patternHandler, component) {
-                patternHandler.replace(autocomplete, '')
-                autocomplete.clear()
-                autocomplete.editorAdapter.focus()
-                component.dueDate = new Date(Date.now())
-                component.name = autocomplete.editorAdapter.editor.value
+            accept(autocomplete, component) {
+                component.dueDate = today()
+                return ''
             },
         },
         {
             id: 'tomorrow',
             text: 'Tomorrow',
-            accept(autocomplete, patternHandler, component) {
-                patternHandler.replace(autocomplete, '')
-                autocomplete.clear()
-                autocomplete.editorAdapter.focus()
-                component.dueDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
-                component.name = autocomplete.editorAdapter.editor.value
+            accept(autocomplete, component) {
+                component.dueDate = tomorrow()
+                return ''
             },
         },
         {
             id: 'nextweek',
             text: 'Next Week',
-            accept(autocomplete, patternHandler, component) {
-                patternHandler.replace(autocomplete, '')
-                autocomplete.clear()
-                autocomplete.editorAdapter.focus()
-                component.dueDate = new Date(
-                    Date.now() + 7 * 24 * 60 * 60 * 1000,
-                )
-                component.name = autocomplete.editorAdapter.editor.value
+            accept(autocomplete, component) {
+                component.dueDate = nextWeek()
+                return ''
             },
         },
     ],
@@ -591,12 +510,9 @@ const dateItems = propertyName => matchedText => {
             {
                 id: '',
                 text: date.toDateString(),
-                accept(autocomplete, patternHandler, component) {
-                    patternHandler.replace(autocomplete, '')
-                    autocomplete.clear()
-                    autocomplete.editorAdapter.focus()
+                accept(autocomplete, component) {
                     component[propertyName] = date
-                    component.name = autocomplete.editorAdapter.editor.value
+                    return ''
                 },
             },
         ]
@@ -605,93 +521,57 @@ const dateItems = propertyName => matchedText => {
     }
 }
 
-const commandItems = [
+const staticCommandItems = [
     {
         id: 'description',
         text: 'Description',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '')
-            autocomplete.clear()
-            autocomplete.editorAdapter.focus()
+        accept(_autocomplete, component) {
             component.editDescription()
-            component.name = autocomplete.editorAdapter.editor.value
+            return ''
         },
     },
     {
         id: 'priority:',
         text: 'Priority',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '/Priority:')
-            component.name = autocomplete.editorAdapter.editor.value
-            autocomplete.editorAdapter.focus()
-            requestAnimationFrame(() => autocomplete.match())
-        },
+        accept: acceptParentCommand('/Priority:'),
         items: priorityItems,
     },
     {
         id: 'progress:',
         text: 'Progress',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '/Progress:')
-            component.name = autocomplete.editorAdapter.editor.value
-            autocomplete.editorAdapter.focus()
-            requestAnimationFrame(() => autocomplete.match())
-        },
+        accept: acceptParentCommand('/Progress:'),
         items: progressItems,
     },
     {
         id: 'estimatedtime:',
         text: 'Estimated Time',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '/EstimatedTime:')
-            component.name = autocomplete.editorAdapter.editor.value
-            autocomplete.editorAdapter.focus()
-            requestAnimationFrame(() => autocomplete.match())
-        },
+        accept: acceptParentCommand('/EstimatedTime:'),
         items: estimatedTimeItems,
     },
     {
         id: 'startdate:',
         text: 'Start Date',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '/StartDate:')
-            component.name = autocomplete.editorAdapter.editor.value
-            autocomplete.editorAdapter.focus()
-            requestAnimationFrame(() => autocomplete.match())
-        },
+        accept: acceptParentCommand('/StartDate:'),
         items: dateItems('startDate'),
     },
     {
         id: 'duedate:',
         text: 'Due Date',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '/DueDate:')
-            component.name = autocomplete.editorAdapter.editor.value
-            autocomplete.editorAdapter.focus()
-            requestAnimationFrame(() => autocomplete.match())
-        },
+        accept: acceptParentCommand('/DueDate:'),
         items: dateItems('dueDate'),
     },
     {
         id: 'assign:',
         text: 'Assign',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '/Assign:')
-            component.name = autocomplete.editorAdapter.editor.value
-            autocomplete.editorAdapter.focus()
-            requestAnimationFrame(() => autocomplete.match())
-        },
+        accept: acceptParentCommand('/Assign:'),
         items: userItems,
     },
     {
         id: 'tag:',
         text: 'Tag',
-        accept(autocomplete, patternHandler, component) {
-            patternHandler.replace(autocomplete, '/Tag:')
-            component.name = autocomplete.editorAdapter.editor.value
-            autocomplete.editorAdapter.focus()
-            requestAnimationFrame(() => autocomplete.match())
-        },
+        accept: acceptParentCommand('/Tag:'),
         items: tagItems,
     },
 ]
+
+const commandItems = matchedText => filterItems(staticCommandItems, matchedText)

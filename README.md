@@ -12,11 +12,7 @@ Keep in mind that autocomplete component styles are not included - you can use `
 import 'codemirror/lib/codemirror.css'
 import CodeMirror from 'codemirror'
 import Vue from 'vue'
-import {
-    createAutocomplete,
-    createPatternHandler,
-    createRegexPattern,
-} from '@teamwork/autocomplete-core'
+import { createAutocomplete } from '@teamwork/autocomplete-core'
 import { createEditorAdapter } from '@teamwork/autocomplete-editor-codemirror'
 import { TwAutocomplete } from '@teamwork/autocomplete-ui-vue'
 
@@ -25,16 +21,26 @@ const node = document.getElementById('editor')
 const editor = CodeMirror(node)
 const editorAdapter = createEditorAdapter(editor)
 
-// Define the pattern(s) to search for and how to load autocomplete items.
-const mentionPatternHandler = createPatternHandler({
-    patternBeforeCaret: createRegexPattern(/(?:^|\s)(@\w*)$/, 1),
-    load(_autocomplete, match) {
-        return loadUsers(match.substring(1))
-    },
-})
+// Configure autocomplete.
 const autocomplete = createAutocomplete({
     editorAdapter,
-    patternHandlers: [mentionPatternHandler],
+    match(textBeforeCaret, textAfterCaret) {
+        // Match `@\w*` before caret surrounded by white space or end of string.
+        const match = /(?:^|\s)(@\w*)$/.exec(textBeforeCaret)
+        if (match && /^($|\s)/.test(textAfterCaret)) {
+            return [match[1].length, 0]
+        } else {
+            return [-1, -1]
+        }
+    },
+    load(matchedText) {
+        // Load users filtered by the matched text.
+        return loadUsers(match.substring(1))
+    },
+    accept(user) {
+        // Autocomplete with the user's first and last names.
+        return `${user.firstName} ${user.lastName}`
+    },
 })
 
 // Display an autocomplete list as needed.

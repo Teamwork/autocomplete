@@ -68,6 +68,7 @@ export class TwAutocomplete {
     public readonly visible: KnockoutComputed<boolean>
     public readonly viewName: KnockoutComputed<ViewName>
     private node: HTMLElement | undefined = undefined
+    private selectedNode: HTMLElement | undefined = undefined
 
     /**
      * Creates a new TwAutocomplete component.
@@ -143,33 +144,25 @@ export class TwAutocomplete {
     // Can't test this function properly because jsdom does not support layout.
     /* istanbul ignore next */
     private scrollList = (): void => {
-        if (!this.node) {
+        if (!this.selectedNode) {
             return
         }
 
-        const selectedItemElement = this.node.querySelector(
-            '.tw-autocomplete__list-item--selected',
-        ) as HTMLElement | null
-
-        if (!selectedItemElement) {
-            return
-        }
-
-        const offsetParentElement = selectedItemElement.offsetParent
+        const offsetParentElement = this.selectedNode.offsetParent
 
         if (!offsetParentElement) {
             return
         }
 
-        if (selectedItemElement.offsetTop < offsetParentElement.scrollTop) {
-            offsetParentElement.scrollTop = selectedItemElement.offsetTop
+        if (this.selectedNode.offsetTop < offsetParentElement.scrollTop) {
+            offsetParentElement.scrollTop = this.selectedNode.offsetTop
         } else if (
-            selectedItemElement.offsetTop + selectedItemElement.offsetHeight >
+            this.selectedNode.offsetTop + this.selectedNode.offsetHeight >
             offsetParentElement.scrollTop + offsetParentElement.clientHeight
         ) {
             offsetParentElement.scrollTop =
-                selectedItemElement.offsetTop +
-                selectedItemElement.offsetHeight -
+                this.selectedNode.offsetTop +
+                this.selectedNode.offsetHeight -
                 offsetParentElement.clientHeight
         }
     }
@@ -305,7 +298,8 @@ export function createTemplate({
                                 $component.autocomplete.selectedIndex = $index()
                                 $component.autocomplete.accept()
                             }
-                        }
+                        },
+                        if: ($component.selectedIndex() === $index() && ($component.selectedNode = $element), true)
                     "
                 >
                     ${item}

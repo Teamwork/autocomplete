@@ -1,6 +1,6 @@
 {
   "name": "@teamwork/autocomplete-ui-ko",
-  "version": "1.0.0-alpha.9",
+  "version": "1.0.0-alpha.10",
   "description": "The autocomplete UI in Knockout.",
   "keywords": [
     "autocomplete ui knockout"

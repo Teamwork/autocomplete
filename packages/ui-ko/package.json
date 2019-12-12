@@ -27,6 +27,7 @@
     "tslib": "^1.9.3"
   },
   "peerDependencies": {
-    "knockout": "^3.5.1"
+    "@types/knockout": "^3.4.66",
+    "knockout": "^3.4.1"
   }
 }

@@ -1,5 +1,5 @@
 import { Autocomplete, Item, Position } from '@teamwork/autocomplete-core'
-import ko, { Observable, PureComputed } from 'knockout'
+import ko from 'knockout'
 
 /**
  * The possible view names.
@@ -56,17 +56,17 @@ export class TwAutocomplete {
      * The Autocomplete instance acting as the source of truth.
      */
     public readonly autocomplete: Autocomplete
-    public readonly active: Observable<boolean>
-    public readonly caretPosition: Observable<Position>
-    public readonly editorPosition: Observable<Position>
-    public readonly error: Observable<Error | undefined>
-    public readonly loading: Observable<boolean>
-    public readonly items: Observable<Readonly<Item[]>>
-    public readonly matchedText: Observable<string>
-    public readonly selectedIndex: Observable<number>
-    public readonly caretVisible: PureComputed<boolean>
-    public readonly visible: PureComputed<boolean>
-    public readonly viewName: PureComputed<ViewName>
+    public readonly active: KnockoutObservable<boolean>
+    public readonly caretPosition: KnockoutObservable<Position>
+    public readonly editorPosition: KnockoutObservable<Position>
+    public readonly error: KnockoutObservable<Error | undefined>
+    public readonly loading: KnockoutObservable<boolean>
+    public readonly items: KnockoutObservable<Readonly<Item[]>>
+    public readonly matchedText: KnockoutObservable<string>
+    public readonly selectedIndex: KnockoutObservable<number>
+    public readonly caretVisible: KnockoutComputed<boolean>
+    public readonly visible: KnockoutComputed<boolean>
+    public readonly viewName: KnockoutComputed<ViewName>
     private node: HTMLElement | undefined = undefined
 
     /**
@@ -279,7 +279,7 @@ export function createTemplate({
                 '${blockName}--items': viewName() === 'items',
                 '${blockName}--error': viewName() === 'error'
             },
-            let: ($component.node = $element, undefined)
+            if: ($component.node = $element, true)
         "
     >
         <div class="${blockName}__header">

@@ -19,11 +19,11 @@ export const TwTask = Vue.extend({
         return {
             name: '',
             description: '',
-            startDate: null,
-            dueDate: null,
-            priority: 0,
-            estimatedTime: 0,
-            progress: 0,
+            startDate: '',
+            dueDate: '',
+            priority: '',
+            estimatedTime: '',
+            progress: '',
             tags: [],
             assignees: [],
             descriptionEditorVisible: false,
@@ -119,6 +119,11 @@ export const TwTask = Vue.extend({
                 this.name = this.$refs.input.value
             },
         })
+        autocomplete.on('error', () => {
+            if (autocomplete.error) {
+                console.error(autocomplete.error)
+            }
+        })
         this.$refs.autocomplete.init(autocomplete)
         this.$once('hook:beforeDestroy', () => {
             autocomplete.destroy()
@@ -157,7 +162,7 @@ export const TwTask = Vue.extend({
                             : matchedText.startsWith('/progress:')
                             ? 'Set Progress'
                             : matchedText.startsWith('/estimatedtime:')
-                            ? 'Set Estimated Time (units: d, h)'
+                            ? 'Set Estimated Time'
                             : matchedText.startsWith('/startdate:')
                             ? 'Set Start Date (dd/mm/yyyy)'
                             : matchedText.startsWith('/duedate:')
@@ -237,8 +242,6 @@ export const TwTask = Vue.extend({
 function taskPropertyValuetoString(property) {
     return Array.isArray(property)
         ? property.map(item => item.text).join(', ')
-        : property instanceof Date
-        ? property.toDateString()
         : '' + property
 }
 
@@ -254,9 +257,10 @@ const taskProperties = [
     { name: 'assignees', displayName: 'Assignees' },
 ]
 
-const today = () => new Date()
-const tomorrow = () => new Date(Date.now() + 24 * 60 * 60 * 1000)
-const nextWeek = () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+const today = () => new Date().toDateString()
+const tomorrow = () => new Date(Date.now() + 24 * 60 * 60 * 1000).toDateString()
+const nextWeek = () =>
+    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toDateString()
 
 const filterItems = (items, matchedText) =>
     items.filter(item => item.id.indexOf(matchedText) >= 0)
@@ -277,6 +281,12 @@ function acceptPriority(autocomplete, component) {
     component.priority = this.text
     return ''
 }
+
+const acceptDate = propertyName =>
+    function(autocomplete, component) {
+        component[propertyName] = this.date
+        return ''
+    }
 
 const acceptParentCommand = text => autocomplete => {
     autocomplete.replace(text)
@@ -393,11 +403,20 @@ const staticPriorityItems = [
     { id: 'low', text: 'Low', accept: acceptPriority },
 ]
 
-const priorityItems = matchedText =>
-    filterItems(staticPriorityItems, matchedText)
+const priorityItems = (matchedText, component) =>
+    filterItems(staticPriorityItems, matchedText).sort((item1, item2) =>
+        item1.text === component.priority
+            ? -1
+            : item2.text === component.priority
+            ? 1
+            : 0,
+    )
 
-const progressItems = matchedText => {
-    const progress = Math.min(100, Math.max(0, matchedText | 0))
+const progressItems = (matchedText, component) => {
+    const progress = Math.min(
+        100,
+        Math.max(0, (matchedText || parseInt(component.progress, 10)) | 0),
+    )
     return [
         {
             id: '',
@@ -410,30 +429,18 @@ const progressItems = matchedText => {
     ]
 }
 
-const estimatedTimeItems = matchedText => {
-    const estimateMatch = /^(\d+)([dh]?)$/.exec(matchedText)
-    let estimatedTime = 0
-    if (estimateMatch) {
-        const value = estimateMatch[1] | 0
-        const unit = estimateMatch[2]
-        estimatedTime = unit === 'd' ? value * 8 : value
-    }
-
-    const days = (estimatedTime / 8) | 0
-    const hours = estimatedTime % 8
-    const text =
-        days > 0 && hours > 0
-            ? `${days} days and ${hours} hours`
-            : days > 0
-            ? `${days} days`
-            : `${hours} hours`
+const estimatedTimeItems = (matchedText, component) => {
+    const estimatedTime = Math.max(
+        0,
+        (matchedText || parseInt(component.estimatedTime, 10)) | 0,
+    )
 
     return [
         {
             id: '',
-            text,
+            text: `${estimatedTime} hour${estimatedTime === 1 ? '' : 's'}`,
             accept(autocomplete, component) {
-                component.estimatedTime = text
+                component.estimatedTime = estimatedTime
                 return ''
             },
         },
@@ -445,57 +452,45 @@ const staticDateItems = {
         {
             id: 'today',
             text: 'Today',
-            accept(autocomplete, component) {
-                component.startDate = today()
-                return ''
-            },
+            date: today(),
+            accept: acceptDate('startDate'),
         },
         {
             id: 'tomorrow',
             text: 'Tomorrow',
-            accept(autocomplete, component) {
-                component.startDate = tomorrow()
-                return ''
-            },
+            date: tomorrow(),
+            accept: acceptDate('startDate'),
         },
         {
             id: 'nextweek',
             text: 'Next Week',
-            accept(autocomplete, component) {
-                component.startDate = nextWeek()
-                return ''
-            },
+            date: nextWeek(),
+            accept: acceptDate('startDate'),
         },
     ],
     dueDate: [
         {
             id: 'today',
             text: 'Today',
-            accept(autocomplete, component) {
-                component.dueDate = today()
-                return ''
-            },
+            date: today(),
+            accept: acceptDate('dueDate'),
         },
         {
             id: 'tomorrow',
             text: 'Tomorrow',
-            accept(autocomplete, component) {
-                component.dueDate = tomorrow()
-                return ''
-            },
+            date: tomorrow(),
+            accept: acceptDate('dueDate'),
         },
         {
             id: 'nextweek',
             text: 'Next Week',
-            accept(autocomplete, component) {
-                component.dueDate = nextWeek()
-                return ''
-            },
+            date: nextWeek(),
+            accept: acceptDate('dueDate'),
         },
     ],
 }
 
-const dateItems = propertyName => matchedText => {
+const dateItems = propertyName => (matchedText, component) => {
     const dateMatch = /^(\d{1,2})(?:\/(\d{0,2})(?:\/(\d{0,4}))?)?$/.exec(
         matchedText,
     )
@@ -505,19 +500,26 @@ const dateItems = propertyName => matchedText => {
         const day = dateMatch[1] | 0
         const month = dateMatch[2] ? (dateMatch[2] | 0) - 1 : now.getMonth()
         const year = dateMatch[3] ? dateMatch[3] | 0 : now.getFullYear()
-        const date = new Date(year, month, day)
+        const date = new Date(year, month, day).toDateString()
         return [
             {
                 id: '',
-                text: date.toDateString(),
-                accept(autocomplete, component) {
-                    component[propertyName] = date
-                    return ''
-                },
+                text: date,
+                date: date,
+                accept: acceptDate(propertyName),
             },
         ]
     } else {
-        return filterItems(staticDateItems[propertyName], matchedText)
+        const items = filterItems(staticDateItems[propertyName], matchedText)
+        if (!matchedText && component[propertyName]) {
+            items.unshift({
+                id: '',
+                text: component[propertyName],
+                date: component[propertyName],
+                accept: acceptDate(propertyName),
+            })
+        }
+        return items
     }
 }
 

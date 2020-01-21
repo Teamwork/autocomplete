@@ -5,7 +5,11 @@ import { createEditorAdapter } from '@teamwork/autocomplete-editor-codemirror'
 
 export function initEditor() {
     const node = document.getElementById('editor')
-    const options = { autofocus: true, lineWrapping: true }
+    const options = {
+        autofocus: true,
+        inputStyle: 'contenteditable',
+        lineWrapping: true,
+    }
     const editor = CodeMirror(node, options)
     const editorAdapter = createEditorAdapter(editor)
     window.editor = editor

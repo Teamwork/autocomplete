@@ -387,9 +387,9 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
         if (item) {
             const text = this._accept(item)
             if (typeof text === 'string') {
+                this.editorAdapter.focus()
                 this.replace(text)
                 this.clear()
-                this.editorAdapter.focus()
             }
         }
     }

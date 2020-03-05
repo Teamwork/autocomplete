@@ -12,6 +12,22 @@ export const enum ViewName {
 }
 
 /**
+ * The options expected by the TwAutocomplete component.
+ */
+export interface TwAutocompleteOptions {
+    /**
+     * The Autocomplete instance to use as the source of truth.
+     */
+    autocomplete: Autocomplete
+    /**
+     * Determines if `autocomplete.clear()` should be called automatically when
+     * pointerdown or pointerup is emitted when the pointer is outside this component.
+     * Defaults to `true`.
+     */
+    clearOnPointerOutside?: boolean
+}
+
+/**
  * A Knockout component displaying the state of an `Autocomplete` instance.
  *
  * Registering the component with the default template.
@@ -69,12 +85,16 @@ export class TwAutocomplete {
     public readonly viewName: KnockoutComputed<ViewName>
     private node: HTMLElement | undefined = undefined
     private selectedNode: HTMLElement | undefined = undefined
+    private readonly clearOnPointerOutside: boolean
 
     /**
      * Creates a new TwAutocomplete component.
-     * @param autocomplete The Autocomplete instance to use as the source of truth.
      */
-    public constructor(autocomplete: Autocomplete) {
+    public constructor({
+        autocomplete,
+        clearOnPointerOutside = true,
+    }: TwAutocompleteOptions) {
+        this.clearOnPointerOutside = clearOnPointerOutside
         this.autocomplete = autocomplete
         this.active = ko.observable(autocomplete.active)
         this.caretPosition = ko.observable(autocomplete.caretPosition)
@@ -93,8 +113,8 @@ export class TwAutocomplete {
         this.autocomplete.on('items', this.itemsListener)
         this.autocomplete.on('matchedText', this.matchedTextListener)
         this.autocomplete.on('selectedIndex', this.selectedIndexListener)
-        document.addEventListener('mousedown', this.onMouseButton, true)
-        document.addEventListener('mouseup', this.onMouseButton, true)
+        document.addEventListener('pointerdown', this.handlePointer, true)
+        document.addEventListener('pointerup', this.handlePointer, true)
 
         this.caretVisible = ko.pureComputed(() => {
             const caretPosition = this.caretPosition()
@@ -133,8 +153,8 @@ export class TwAutocomplete {
         this.autocomplete.off('items', this.itemsListener)
         this.autocomplete.off('matchedText', this.matchedTextListener)
         this.autocomplete.off('selectedIndex', this.selectedIndexListener)
-        document.removeEventListener('mousedown', this.onMouseButton, true)
-        document.removeEventListener('mouseup', this.onMouseButton, true)
+        document.removeEventListener('pointerdown', this.handlePointer, true)
+        document.removeEventListener('pointerup', this.handlePointer, true)
     }
 
     private scheduleScrollList = (): void => {
@@ -181,13 +201,17 @@ export class TwAutocomplete {
     private selectedIndexListener = (): void =>
         this.selectedIndex(this.autocomplete.selectedIndex)
 
-    private onMouseButton = (event: MouseEvent): void => {
-        if (
-            this.active() &&
-            this.node &&
-            !this.node.contains(event.target as Node)
-        ) {
-            this.autocomplete.clear()
+    // Can't test this function properly because jsdom does not support layout.
+    /* istanbul ignore next */
+    private handlePointer = (event: PointerEvent): void => {
+        if (this.clearOnPointerOutside && this.active && this.node) {
+            const target = document.elementFromPoint(
+                event.clientX,
+                event.clientY,
+            )
+            if (!target || !this.node.contains(target)) {
+                this.autocomplete.clear()
+            }
         }
     }
 }

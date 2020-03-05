@@ -6,7 +6,7 @@ export function initUI(autocomplete) {
     const node = document.getElementById('autocomplete')
     node.setAttribute(
         'data-bind',
-        'component:{name:"tw-autocomplete",params:autocomplete}',
+        'component:{name:"tw-autocomplete",params:{autocomplete}}',
     )
     ko.components.register('tw-autocomplete', {
         viewModel: TwAutocomplete,

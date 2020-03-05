@@ -119,7 +119,7 @@ describe('TwAutocomplete', () => {
     test('initial data (inactive)', async () => {
         expect(autocomplete.active).toBe(false)
 
-        component = new TwAutocomplete(autocomplete)
+        component = new TwAutocomplete({ autocomplete })
         expect(component.caretPosition()).toBe(autocomplete.caretPosition)
         expect(component.editorPosition()).toBe(autocomplete.editorPosition)
         expect(component.error()).toBe(autocomplete.error)
@@ -135,7 +135,7 @@ describe('TwAutocomplete', () => {
         await whenAnimationFrame()
         expect(autocomplete.active).toBe(true)
 
-        component = new TwAutocomplete(autocomplete)
+        component = new TwAutocomplete({ autocomplete })
         expect(component.caretPosition()).toBe(autocomplete.caretPosition)
         expect(component.editorPosition()).toBe(autocomplete.editorPosition)
         expect(component.error()).toBe(autocomplete.error)
@@ -146,7 +146,7 @@ describe('TwAutocomplete', () => {
     })
 
     test('data update', async () => {
-        component = new TwAutocomplete(autocomplete)
+        component = new TwAutocomplete({ autocomplete })
 
         editorAdapter.textBeforeCaret = 'abc'
         autocomplete.match()
@@ -168,7 +168,7 @@ describe('TwAutocomplete', () => {
             autocomplete.match()
             await whenAnimationFrame()
 
-            component = new TwAutocomplete(autocomplete)
+            component = new TwAutocomplete({ autocomplete })
             expect(component.caretVisible()).toBe(true)
             expect(component.visible()).toBe(true)
         })
@@ -184,13 +184,13 @@ describe('TwAutocomplete', () => {
             autocomplete.match()
             await whenAnimationFrame()
 
-            component = new TwAutocomplete(autocomplete)
+            component = new TwAutocomplete({ autocomplete })
             expect(component.caretVisible()).toBe(false)
             expect(component.visible()).toBe(false)
         })
 
         test('visible === false && caretVisible === true', async () => {
-            component = new TwAutocomplete(autocomplete)
+            component = new TwAutocomplete({ autocomplete })
             expect(component.caretVisible()).toBe(true)
             expect(component.visible()).toBe(false)
         })
@@ -198,7 +198,7 @@ describe('TwAutocomplete', () => {
 
     describe('viewName', () => {
         test('error', async () => {
-            component = new TwAutocomplete(autocomplete)
+            component = new TwAutocomplete({ autocomplete })
             load.mockImplementation(() => {
                 throw new Error('test error')
             })
@@ -208,14 +208,14 @@ describe('TwAutocomplete', () => {
             expect(component.viewName()).toBe(ViewName.error)
         })
         test('items', async () => {
-            component = new TwAutocomplete(autocomplete)
+            component = new TwAutocomplete({ autocomplete })
             editorAdapter.textBeforeCaret = 'abc'
             autocomplete.match()
             await whenAnimationFrame()
             expect(component.viewName()).toBe(ViewName.items)
         })
         test('loading', async () => {
-            component = new TwAutocomplete(autocomplete)
+            component = new TwAutocomplete({ autocomplete })
             load.mockReturnValue(new Promise(noop))
             editorAdapter.textBeforeCaret = 'abc'
             autocomplete.match()
@@ -223,60 +223,12 @@ describe('TwAutocomplete', () => {
             expect(component.viewName()).toBe(ViewName.loading)
         })
         test('blank', async () => {
-            component = new TwAutocomplete(autocomplete)
+            component = new TwAutocomplete({ autocomplete })
             load.mockReturnValue([])
             editorAdapter.textBeforeCaret = 'abc'
             autocomplete.match()
             await whenAnimationFrame()
             expect(component.viewName()).toBe(ViewName.blank)
-        })
-    })
-
-    describe('mouse events', () => {
-        const textNode = document.createTextNode('test')
-        const componentNode = document.createElement('div')
-        componentNode.appendChild(textNode)
-
-        beforeAll(() => {
-            document.body.appendChild(componentNode)
-        })
-
-        afterAll(() => {
-            document.body.removeChild(componentNode)
-        })
-
-        beforeEach(async () => {
-            editorAdapter.textBeforeCaret = 'abc'
-            autocomplete.match()
-            await whenAnimationFrame()
-            component = new TwAutocomplete(autocomplete)
-            ;(component as any).node = componentNode
-            expect(component.active()).toBe(true)
-        })
-
-        test('mousedown outside', async () => {
-            const event = new MouseEvent('mousedown')
-            document.dispatchEvent(event)
-            await whenAnimationFrame()
-            expect(component.active()).toBe(false)
-        })
-        test('mouseup outside', async () => {
-            const event = new MouseEvent('mouseup')
-            document.dispatchEvent(event)
-            await whenAnimationFrame()
-            expect(component.active()).toBe(false)
-        })
-        test('mousedown inside', async () => {
-            const event = new MouseEvent('mousedown')
-            textNode.dispatchEvent(event)
-            await whenAnimationFrame()
-            expect(component.active()).toBe(true)
-        })
-        test('mouseup inside', async () => {
-            const event = new MouseEvent('mouseup')
-            textNode.dispatchEvent(event)
-            await whenAnimationFrame()
-            expect(component.active()).toBe(true)
         })
     })
 })

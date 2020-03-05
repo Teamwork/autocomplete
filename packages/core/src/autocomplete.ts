@@ -351,7 +351,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
         private readonly _match: Match,
         private readonly _load: Load,
         private readonly _accept: Accept,
-        private readonly _clearOnSelectionChange: boolean,
+        private readonly clearOnSelectionChange: boolean,
     ) {
         super()
         document.addEventListener('scroll', this.onScroll)
@@ -499,8 +499,16 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
     }
 
     private onSelectionChange = (): void => {
-        if (this._clearOnSelectionChange && this.pending !== 'matchNow') {
-            this.clear()
+        if (this.active) {
+            if (this.clearOnSelectionChange) {
+                if (this.pending !== 'matchNow') {
+                    this.clear()
+                }
+            } else {
+                if (this.pending !== 'clearNow') {
+                    this.match()
+                }
+            }
         }
     }
 

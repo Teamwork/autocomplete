@@ -964,28 +964,46 @@ describe('events', () => {
     })
 
     describe('selectionChange', () => {
-        test('pendingAction === "match"', async () => {
-            autocomplete.match()
-            editorAdapter.emit('selectionChange', editorAdapter)
-            await whenAnimationFrame()
-            expectActive()
-        })
-        test('pendingAction === "clear"', async () => {
-            autocomplete.clear()
-            editorAdapter.emit('selectionChange', editorAdapter)
-            await whenAnimationFrame()
-            expectNotActive()
-        })
-        test('pendingAction === "updateCaretPosition"', async () => {
-            autocomplete.updatePosition()
-            editorAdapter.emit('selectionChange', editorAdapter)
-            await whenAnimationFrame()
-            expectNotActive()
-        })
-        test('pendingAction === undefined', async () => {
-            editorAdapter.emit('selectionChange', editorAdapter)
-            await whenAnimationFrame()
-            expectNotActive()
+        describe('clearOnSelectionChange === true', () => {
+            beforeEach(() => {
+                match.mockClear()
+            })
+            test('active === false', async () => {
+                autocomplete.clear()
+                await whenAnimationFrame()
+                expectNotActive()
+                editorAdapter.emit('selectionChange', editorAdapter)
+                await whenAnimationFrame()
+                expectNotActive()
+                expect(match).toHaveBeenCalledTimes(0)
+            })
+            test('pendingAction === "match"', async () => {
+                autocomplete.match()
+                editorAdapter.emit('selectionChange', editorAdapter)
+                await whenAnimationFrame()
+                expectActive()
+                expect(match).toHaveBeenCalledTimes(1)
+            })
+            test('pendingAction === "clear"', async () => {
+                autocomplete.clear()
+                editorAdapter.emit('selectionChange', editorAdapter)
+                await whenAnimationFrame()
+                expectNotActive()
+                expect(match).toHaveBeenCalledTimes(0)
+            })
+            test('pendingAction === "updateCaretPosition"', async () => {
+                autocomplete.updatePosition()
+                editorAdapter.emit('selectionChange', editorAdapter)
+                await whenAnimationFrame()
+                expectNotActive()
+                expect(match).toHaveBeenCalledTimes(0)
+            })
+            test('pendingAction === undefined', async () => {
+                editorAdapter.emit('selectionChange', editorAdapter)
+                await whenAnimationFrame()
+                expectNotActive()
+                expect(match).toHaveBeenCalledTimes(0)
+            })
         })
         describe('clearOnSelectionChange === false', () => {
             beforeEach(async () => {
@@ -1000,29 +1018,43 @@ describe('events', () => {
                 autocomplete.match()
                 await whenAnimationFrame()
                 expectActive()
+                match.mockClear()
+            })
+            test('active === false', async () => {
+                autocomplete.clear()
+                await whenAnimationFrame()
+                expectNotActive()
+                editorAdapter.emit('selectionChange', editorAdapter)
+                await whenAnimationFrame()
+                expectNotActive()
+                expect(match).toHaveBeenCalledTimes(0)
             })
             test('pendingAction === "match"', async () => {
                 autocomplete.match()
                 editorAdapter.emit('selectionChange', editorAdapter)
                 await whenAnimationFrame()
                 expectActive()
+                expect(match).toHaveBeenCalledTimes(1)
             })
             test('pendingAction === "clear"', async () => {
                 autocomplete.clear()
                 editorAdapter.emit('selectionChange', editorAdapter)
                 await whenAnimationFrame()
                 expectNotActive()
+                expect(match).toHaveBeenCalledTimes(0)
             })
             test('pendingAction === "updateCaretPosition"', async () => {
                 autocomplete.updatePosition()
                 editorAdapter.emit('selectionChange', editorAdapter)
                 await whenAnimationFrame()
                 expectActive()
+                expect(match).toHaveBeenCalledTimes(1)
             })
             test('pendingAction === undefined', async () => {
                 editorAdapter.emit('selectionChange', editorAdapter)
                 await whenAnimationFrame()
                 expectActive()
+                expect(match).toHaveBeenCalledTimes(1)
             })
         })
     })

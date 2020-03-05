@@ -197,6 +197,11 @@ export interface CreateAutocompleteOptions {
      * Defaults to return `item.text`.
      */
     accept?: Accept
+    /**
+     * Determines if `Autocomplete#clear` should be called automatically on selection change.
+     * Defaults to `true`.
+     */
+    clearOnSelectionChange?: boolean
 }
 
 const defaultMatchedText = ''
@@ -221,8 +226,15 @@ export function createAutocomplete({
     match = defaultMatch,
     load = defaultLoad,
     accept = defaultAccept,
+    clearOnSelectionChange = true,
 }: CreateAutocompleteOptions): Autocomplete {
-    return new AutocompleteClass(editorAdapter, match, load, accept)
+    return new AutocompleteClass(
+        editorAdapter,
+        match,
+        load,
+        accept,
+        clearOnSelectionChange,
+    )
 }
 
 class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
@@ -339,6 +351,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
         private readonly _match: Match,
         private readonly _load: Load,
         private readonly _accept: Accept,
+        private readonly _clearOnSelectionChange: boolean,
     ) {
         super()
         document.addEventListener('scroll', this.onScroll)
@@ -486,7 +499,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
     }
 
     private onSelectionChange = (): void => {
-        if (this.pending !== 'matchNow') {
+        if (this._clearOnSelectionChange && this.pending !== 'matchNow') {
             this.clear()
         }
     }

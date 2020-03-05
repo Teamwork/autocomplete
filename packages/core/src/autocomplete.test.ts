@@ -235,7 +235,7 @@ describe('clear', () => {
     })
 })
 
-describe('updateCaretPosition', () => {
+describe('updatePosition', () => {
     test('no state', async () => {
         autocomplete.updatePosition()
         await whenAnimationFrame()
@@ -986,6 +986,44 @@ describe('events', () => {
             editorAdapter.emit('selectionChange', editorAdapter)
             await whenAnimationFrame()
             expectNotActive()
+        })
+        describe('clearOnSelectionChange === false', () => {
+            beforeEach(async () => {
+                autocomplete.destroy()
+                autocomplete = createAutocomplete({
+                    accept,
+                    clearOnSelectionChange: false,
+                    editorAdapter,
+                    load,
+                    match,
+                })
+                autocomplete.match()
+                await whenAnimationFrame()
+                expectActive()
+            })
+            test('pendingAction === "match"', async () => {
+                autocomplete.match()
+                editorAdapter.emit('selectionChange', editorAdapter)
+                await whenAnimationFrame()
+                expectActive()
+            })
+            test('pendingAction === "clear"', async () => {
+                autocomplete.clear()
+                editorAdapter.emit('selectionChange', editorAdapter)
+                await whenAnimationFrame()
+                expectNotActive()
+            })
+            test('pendingAction === "updateCaretPosition"', async () => {
+                autocomplete.updatePosition()
+                editorAdapter.emit('selectionChange', editorAdapter)
+                await whenAnimationFrame()
+                expectActive()
+            })
+            test('pendingAction === undefined', async () => {
+                editorAdapter.emit('selectionChange', editorAdapter)
+                await whenAnimationFrame()
+                expectActive()
+            })
         })
     })
 })

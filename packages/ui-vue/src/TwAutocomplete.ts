@@ -156,16 +156,24 @@ export const TwAutocomplete = Vue.extend({
         },
     },
     mounted() {
-        const onMouseButton = (event: MouseEvent): void => {
-            if (this.active && !this.$el.contains(event.target as Node)) {
-                this.autocomplete.clear()
+        // Can't test this function properly because jsdom does not support layout.
+        /* istanbul ignore next */
+        const handlePointer = (event: MouseEvent): void => {
+            if (this.clearOnPointerOutside && this.active) {
+                const target = document.elementFromPoint(
+                    event.clientX,
+                    event.clientY,
+                )
+                if (!target || !this.$el.contains(target)) {
+                    this.autocomplete.clear()
+                }
             }
         }
-        document.addEventListener('mousedown', onMouseButton, true)
-        document.addEventListener('mouseup', onMouseButton, true)
+        document.addEventListener('pointerdown', handlePointer, true)
+        document.addEventListener('pointerup', handlePointer, true)
         this.$once('hook:beforeDestroy', () => {
-            document.removeEventListener('mousedown', onMouseButton, true)
-            document.removeEventListener('mouseup', onMouseButton, true)
+            document.removeEventListener('pointerdown', handlePointer, true)
+            document.removeEventListener('pointerup', handlePointer, true)
         })
     },
     name: 'TwAutocomplete',
@@ -177,6 +185,15 @@ export const TwAutocomplete = Vue.extend({
         blockName: {
             default: 'tw-autocomplete',
             type: String,
+        },
+        /**
+         * Determines if `autocomplete.clear()` should be called automatically when
+         * pointerdown or pointerup is emitted when the pointer is outside this component.
+         * Defaults to `true`.
+         */
+        clearOnPointerOutside: {
+            default: true,
+            type: Boolean,
         },
     },
     render(createElement): VNode {

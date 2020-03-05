@@ -196,7 +196,7 @@ describe('component', () => {
         })
     })
 
-    describe('mouse events', () => {
+    describe('events', () => {
         beforeEach(async () => {
             editorAdapter.textBeforeCaret = 'abc'
             autocomplete.match()
@@ -209,30 +209,6 @@ describe('component', () => {
             document.body.removeChild(component.$el)
         })
 
-        test('mousedown outside', async () => {
-            const event = new MouseEvent('mousedown')
-            document.dispatchEvent(event)
-            await whenAnimationFrame()
-            expect(component.active).toBe(false)
-        })
-        test('mouseup outside', async () => {
-            const event = new MouseEvent('mouseup')
-            document.dispatchEvent(event)
-            await whenAnimationFrame()
-            expect(component.active).toBe(false)
-        })
-        test('mousedown inside', async () => {
-            const event = new MouseEvent('mousedown')
-            component.$el.dispatchEvent(event)
-            await whenAnimationFrame()
-            expect(component.active).toBe(true)
-        })
-        test('mouseup inside', async () => {
-            const event = new MouseEvent('mouseup')
-            component.$el.dispatchEvent(event)
-            await whenAnimationFrame()
-            expect(component.active).toBe(true)
-        })
         test('click item', async () => {
             wrapper
                 .find('.tw-autocomplete__list-item:nth-child(2)')

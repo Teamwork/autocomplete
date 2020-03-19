@@ -160,7 +160,11 @@ export const TwAutocomplete = Vue.extend({
         /* istanbul ignore next */
         const handlePointer = (event: MouseEvent): void => {
             if (this.clearOnPointerOutside && this.active) {
-                const target = document.elementFromPoint(
+                const rootNode =
+                    typeof this.$el.getRootNode === 'function'
+                        ? (this.$el.getRootNode() as ShadowRoot | Document)
+                        : document
+                const target = rootNode.elementFromPoint(
                     event.clientX,
                     event.clientY,
                 )

@@ -205,7 +205,11 @@ export class TwAutocomplete {
     /* istanbul ignore next */
     private handlePointer = (event: PointerEvent): void => {
         if (this.clearOnPointerOutside && this.active && this.node) {
-            const target = document.elementFromPoint(
+            const rootNode =
+                typeof this.node.getRootNode === 'function'
+                    ? (this.node.getRootNode() as ShadowRoot | Document)
+                    : document
+            const target = rootNode.elementFromPoint(
                 event.clientX,
                 event.clientY,
             )

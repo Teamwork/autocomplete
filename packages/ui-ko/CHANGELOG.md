@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-ko@2.0.0...@teamwork/autocomplete-ui-ko@2.0.1) (2020-03-19)
+
+
+### Bug Fixes
+
+* fix deactivating on pointer down in shadow DOM ([42e405e](https://github.com/Teamwork/autocomplete/commit/42e405ef1f15534db4a75dae670f68a1642bd994))
+
+
+
+
+
 # [2.0.0](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-ko@1.0.2...@teamwork/autocomplete-ui-ko@2.0.0) (2020-03-05)
 
 

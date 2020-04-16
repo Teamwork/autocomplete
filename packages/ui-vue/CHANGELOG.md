@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-vue@1.1.1...@teamwork/autocomplete-ui-vue@1.1.2) (2020-04-16)
+
+
+### Bug Fixes
+
+* remove unnecessary call to preventDefault on click ([7f17fe2](https://github.com/Teamwork/autocomplete/commit/7f17fe20080159d635c955db80aaca44b7d04a61))
+
+
+
+
+
 ## [1.1.1](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-vue@1.1.0...@teamwork/autocomplete-ui-vue@1.1.1) (2020-03-19)
 
 

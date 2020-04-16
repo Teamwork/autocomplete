@@ -257,8 +257,7 @@ export const TwAutocomplete = Vue.extend({
                                       },
                                       key: item.id,
                                       on: {
-                                          click: (event: MouseEvent): void => {
-                                              event.preventDefault()
+                                          click: (_event: MouseEvent): void => {
                                               this.autocomplete.selectedIndex = index
                                               this.autocomplete.accept()
                                           },

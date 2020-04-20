@@ -65,10 +65,10 @@ export function getCaretPosition(element: Editor, offset: number): Position {
     document.body.removeChild(mirror)
 
     return {
-        bottom: position.bottom || 0,
-        left: position.left || 0,
-        right: position.right || 0,
-        top: position.top || 0,
+        bottom: position.bottom,
+        left: position.left,
+        right: position.right,
+        top: position.top,
     }
 }
 

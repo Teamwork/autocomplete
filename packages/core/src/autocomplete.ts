@@ -403,6 +403,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
                 this.editorAdapter.focus()
                 this.replace(text)
                 this.clear()
+                this.editorAdapter.focus()
             }
         }
     }

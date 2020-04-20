@@ -16,10 +16,10 @@ const whenAnimationFrame = () =>
     new Promise(resolve => requestAnimationFrame(resolve))
 
 const caretPosition: Position = Object.freeze({
-    bottom: 19,
-    left: 11,
-    right: 19,
-    top: 19,
+    bottom: 20,
+    left: 20,
+    right: 20,
+    top: 20,
 })
 const editorPosition: Position = Object.freeze({
     bottom: 20,
@@ -146,9 +146,9 @@ describe('component', () => {
         test('visible === false && caretVisible === false', async () => {
             editorAdapter.caretPosition = {
                 bottom: 9, // outside the editor
-                left: 11,
-                right: 19,
-                top: 19,
+                left: 20,
+                right: 20,
+                top: 9,
             }
             editorAdapter.textBeforeCaret = 'abc'
             autocomplete.match()

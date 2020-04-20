@@ -120,10 +120,10 @@ export class TwAutocomplete {
             const caretPosition = this.caretPosition()
             const editorPosition = this.editorPosition()
             return (
-                caretPosition.top <= editorPosition.bottom &&
-                caretPosition.bottom >= editorPosition.top &&
-                caretPosition.left <= editorPosition.right &&
-                caretPosition.right >= editorPosition.left
+                caretPosition.top < editorPosition.bottom + 1 &&
+                caretPosition.bottom > editorPosition.top - 1 &&
+                caretPosition.left < editorPosition.right + 1 &&
+                caretPosition.right > editorPosition.left - 1
             )
         })
         this.visible = ko.pureComputed(

@@ -1,6 +1,6 @@
 {
   "name": "@teamwork/autocomplete-core",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "The core autocomplete components.",
   "keywords": [
     "autocomplete"

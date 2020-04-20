@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-core@1.1.1...@teamwork/autocomplete-core@1.1.2) (2020-04-20)
+
+
+### Bug Fixes
+
+* keep caret visible after autocomplete ([c61c7fe](https://github.com/Teamwork/autocomplete/commit/c61c7fe56d606b4c9153c2ccee865caa70a1fad8))
+
+
+
+
+
 ## [1.1.1](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-core@1.1.0...@teamwork/autocomplete-core@1.1.1) (2020-03-05)
 
 

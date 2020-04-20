@@ -98,20 +98,20 @@ class TextareaEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         const offset = this.editor.selectionStart
         const position = getCaretPosition(this.editor, offset)
         return {
-            bottom: Math.floor(position.bottom),
-            left: Math.floor(position.left),
-            right: Math.floor(position.left),
-            top: Math.floor(position.top),
+            bottom: position.bottom,
+            left: position.left,
+            right: position.left,
+            top: position.top,
         }
     }
 
     public get editorPosition(): Position {
         const position = this.editor.getBoundingClientRect()
         return {
-            bottom: Math.floor(position.bottom),
-            left: Math.floor(position.left),
-            right: Math.floor(position.right),
-            top: Math.floor(position.top),
+            bottom: position.bottom,
+            left: position.left,
+            right: position.right,
+            top: position.top,
         }
     }
 

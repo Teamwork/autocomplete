@@ -15,7 +15,7 @@ const rect = {
 range.getBoundingClientRect = () => rect
 document.createRange = () => range
 
-describe.each(['textarea', 'input'])('%s', elementName => {
+describe.each(['textarea', 'input'])('%s', (elementName) => {
     test.each<[string, number]>([
         ['', -2],
         ['', -1],

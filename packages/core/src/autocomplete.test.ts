@@ -10,7 +10,7 @@ import {
 } from '.'
 
 const whenAnimationFrame = () =>
-    new Promise(resolve => requestAnimationFrame(resolve))
+    new Promise((resolve) => requestAnimationFrame(resolve))
 
 const position0: Position = Object.freeze({
     bottom: 0,
@@ -118,7 +118,7 @@ beforeEach(() => {
             : -1
         return [countBeforeCaret, 0]
     })
-    load = jest.fn(matchedText =>
+    load = jest.fn((matchedText) =>
         /^[0-9]/.test(matchedText) ? numberItems : letterItems,
     )
     accept = jest.fn()
@@ -519,9 +519,9 @@ describe('loading', () => {
 
     test('async success', async () => {
         let resolve1: (items: Item[]) => void
-        const promise1: Promise<Item[]> = new Promise(r => (resolve1 = r))
+        const promise1: Promise<Item[]> = new Promise((r) => (resolve1 = r))
         let resolve2: (items: Item[]) => void
-        const promise2: Promise<Item[]> = new Promise(r => (resolve2 = r))
+        const promise2: Promise<Item[]> = new Promise((r) => (resolve2 = r))
         load.mockReset()
         load.mockImplementationOnce(() => promise1)
         load.mockImplementationOnce(() => promise2)
@@ -614,7 +614,7 @@ describe('loading', () => {
 
     test('clear when loading=true', async () => {
         let resolve: (items: Item[]) => void
-        const promise: Promise<Item[]> = new Promise(r => (resolve = r))
+        const promise: Promise<Item[]> = new Promise((r) => (resolve = r))
         load.mockReset()
         load.mockImplementationOnce(() => promise)
 
@@ -734,7 +734,7 @@ describe('events', () => {
             return event
         }
 
-        describe.each(['Up', 'ArrowUp'])('%p', key => {
+        describe.each(['Up', 'ArrowUp'])('%p', (key) => {
             beforeEach(() => {
                 autocomplete.selectedIndex = 2
             })
@@ -770,7 +770,7 @@ describe('events', () => {
             })
             test.each(['ctrlKey', 'shiftKey', 'altKey', 'metaKey'])(
                 'with %s',
-                async modifier => {
+                async (modifier) => {
                     const event = createEvent({ key, [modifier]: true })
                     editorAdapter.emit('keyDown', editorAdapter, event)
                     await whenAnimationFrame()
@@ -780,7 +780,7 @@ describe('events', () => {
             )
         })
 
-        describe.each(['Down', 'ArrowDown'])('%p', key => {
+        describe.each(['Down', 'ArrowDown'])('%p', (key) => {
             test('no state', async () => {
                 autocomplete.clear()
                 await whenAnimationFrame()
@@ -813,7 +813,7 @@ describe('events', () => {
             })
             test.each(['ctrlKey', 'shiftKey', 'altKey', 'metaKey'])(
                 'with %s',
-                async modifier => {
+                async (modifier) => {
                     const event = createEvent({ key, [modifier]: true })
                     editorAdapter.emit('keyDown', editorAdapter, event)
                     await whenAnimationFrame()
@@ -852,20 +852,25 @@ describe('events', () => {
                 expect(accept).toHaveBeenCalledTimes(0)
             })
 
-            test.each([0, 1, 2])('selectedIndex = %d', async selectedIndex => {
-                autocomplete.selectedIndex = selectedIndex
-                const event = createEvent({ key })
-                editorAdapter.emit('keyDown', editorAdapter, event)
-                await whenAnimationFrame()
-                expectActive({ selectedIndex })
-                expect(event.defaultPrevented).toBe(true)
-                expect(accept).toHaveBeenCalledTimes(1)
-                expect(accept).toHaveBeenCalledWith(letterItems[selectedIndex])
-            })
+            test.each([0, 1, 2])(
+                'selectedIndex = %d',
+                async (selectedIndex) => {
+                    autocomplete.selectedIndex = selectedIndex
+                    const event = createEvent({ key })
+                    editorAdapter.emit('keyDown', editorAdapter, event)
+                    await whenAnimationFrame()
+                    expectActive({ selectedIndex })
+                    expect(event.defaultPrevented).toBe(true)
+                    expect(accept).toHaveBeenCalledTimes(1)
+                    expect(accept).toHaveBeenCalledWith(
+                        letterItems[selectedIndex],
+                    )
+                },
+            )
 
             test.each(['ctrlKey', 'shiftKey', 'altKey', 'metaKey'])(
                 'with %s',
-                async modifier => {
+                async (modifier) => {
                     const event = createEvent({ key, [modifier]: true })
                     editorAdapter.emit('keyDown', editorAdapter, event)
                     await whenAnimationFrame()
@@ -876,7 +881,7 @@ describe('events', () => {
             )
         })
 
-        describe.each(['Esc', 'Escape'])('%p', key => {
+        describe.each(['Esc', 'Escape'])('%p', (key) => {
             test('no state', async () => {
                 autocomplete.clear()
                 await whenAnimationFrame()
@@ -895,7 +900,7 @@ describe('events', () => {
             })
             test.each(['ctrlKey', 'shiftKey', 'altKey', 'metaKey'])(
                 'with %s',
-                async modifier => {
+                async (modifier) => {
                     const event = createEvent({ key, [modifier]: true })
                     editorAdapter.emit('keyDown', editorAdapter, event)
                     await whenAnimationFrame()
@@ -905,7 +910,7 @@ describe('events', () => {
             )
         })
 
-        describe.each(['Spacebar', ' '])('%p', key => {
+        describe.each(['Spacebar', ' '])('%p', (key) => {
             test('no modifiers', async () => {
                 autocomplete.clear()
                 await whenAnimationFrame()
@@ -938,7 +943,7 @@ describe('events', () => {
             })
             test.each(['shiftKey', 'altKey', 'metaKey'])(
                 'with %s',
-                async modifier => {
+                async (modifier) => {
                     autocomplete.clear()
                     await whenAnimationFrame()
                     expectNotActive()

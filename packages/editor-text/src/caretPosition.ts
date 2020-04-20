@@ -73,7 +73,7 @@ export function getCaretPosition(element: Editor, offset: number): Position {
 }
 
 const mirror = document.createElement('div')
-const styleNames: Array<WritableKeys<CSSStyleDeclaration>> = [
+const styleNames: WritableKeys<CSSStyleDeclaration>[] = [
     'borderTopWidth',
     'borderRightWidth',
     'borderBottomWidth',

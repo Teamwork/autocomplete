@@ -6,7 +6,7 @@ let editorAdapter: EditorAdapter
 const textBefore = '!initial text before!'
 const textAfter = '?initial text after?'
 
-describe.each(['textarea', 'input'])('%s', elementName => {
+describe.each(['textarea', 'input'])('%s', (elementName) => {
     beforeEach(() => {
         editor = document.createElement(elementName) as Editor
         document.body.appendChild(editor)
@@ -158,7 +158,7 @@ describe.each(['textarea', 'input'])('%s', elementName => {
             editor.dispatchEvent(new Event('input'))
             const event = new Event('selectionchange')
             document.dispatchEvent(event)
-            await new Promise(resolve => setTimeout(resolve))
+            await new Promise((resolve) => setTimeout(resolve))
             expect(onSelectionChange).not.toHaveBeenCalled()
 
             document.dispatchEvent(event)

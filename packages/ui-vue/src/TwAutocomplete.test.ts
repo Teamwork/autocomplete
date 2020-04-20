@@ -13,7 +13,7 @@ import Vue from 'vue'
 import { TwAutocomplete, ViewName } from '.'
 
 const whenAnimationFrame = () =>
-    new Promise(resolve => requestAnimationFrame(resolve))
+    new Promise((resolve) => requestAnimationFrame(resolve))
 
 const caretPosition: Position = Object.freeze({
     bottom: 20,
@@ -225,7 +225,7 @@ describe('slots', () => {
     const blockName = 'my-block-name'
     const propsData = { blockName }
 
-    test.each(['footer', 'header'])('%s', async name => {
+    test.each(['footer', 'header'])('%s', async (name) => {
         const slotValue = `My "${name}" slot`
         const slot = jest.fn().mockReturnValue(slotValue)
         editorAdapter.textBeforeCaret = 'abc'
@@ -245,7 +245,7 @@ describe('slots', () => {
             viewName: component.viewName,
         })
     })
-    test.each(['afterItem', 'beforeItem', 'item'])('%s', async name => {
+    test.each(['afterItem', 'beforeItem', 'item'])('%s', async (name) => {
         const slotValue = `My "${name}" slot`
         const slot = jest.fn().mockReturnValue(slotValue)
         editorAdapter.textBeforeCaret = 'abc'

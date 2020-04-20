@@ -18,7 +18,7 @@ import {
 } from '.'
 
 const whenAnimationFrame = () =>
-    new Promise(resolve => requestAnimationFrame(resolve))
+    new Promise((resolve) => requestAnimationFrame(resolve))
 
 const caretPosition: Position = Object.freeze({
     bottom: 20,

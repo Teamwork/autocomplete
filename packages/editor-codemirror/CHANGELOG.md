@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.5](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-editor-codemirror@1.0.4...@teamwork/autocomplete-editor-codemirror@1.0.5) (2020-04-20)
+
+**Note:** Version bump only for package @teamwork/autocomplete-editor-codemirror
+
+
+
+
+
 ## [1.0.4](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-editor-codemirror@1.0.3...@teamwork/autocomplete-editor-codemirror@1.0.4) (2020-04-20)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@teamwork/autocomplete-editor-contenteditable",
-  "version": "1.0.0-0",
+  "version": "1.0.0",
   "description": "The autocomplete editor adapter for elements with the contenteditable attribute.",
   "keywords": [
     "autocomplete editor contenteditable"

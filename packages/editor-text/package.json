@@ -1,6 +1,6 @@
 {
   "name": "@teamwork/autocomplete-editor-text",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "The autocomplete editor adapter for textarea and input[text].",
   "keywords": [
     "autocomplete editor textarea"

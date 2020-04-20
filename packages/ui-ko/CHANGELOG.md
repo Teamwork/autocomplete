@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.3](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-ko@2.0.2...@teamwork/autocomplete-ui-ko@2.0.3) (2020-04-20)
+
+
+### Bug Fixes
+
+* use 1px margin for caret visibility ([af54c33](https://github.com/Teamwork/autocomplete/commit/af54c33278f4348f52ea56634708a0d683aaac72))
+
+
+
+
+
 ## [2.0.2](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-ko@2.0.1...@teamwork/autocomplete-ui-ko@2.0.2) (2020-04-20)
 
 **Note:** Version bump only for package @teamwork/autocomplete-ui-ko

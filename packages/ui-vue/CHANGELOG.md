@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.4](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-vue@1.1.3...@teamwork/autocomplete-ui-vue@1.1.4) (2020-04-20)
+
+
+### Bug Fixes
+
+* use 1px margin for caret visibility ([af54c33](https://github.com/Teamwork/autocomplete/commit/af54c33278f4348f52ea56634708a0d683aaac72))
+
+
+
+
+
 ## [1.1.3](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-vue@1.1.2...@teamwork/autocomplete-ui-vue@1.1.3) (2020-04-20)
 
 **Note:** Version bump only for package @teamwork/autocomplete-ui-vue

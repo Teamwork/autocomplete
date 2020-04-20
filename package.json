@@ -80,6 +80,7 @@
   "dependencies": {
     "@teamwork/autocomplete-core": "file:packages/core",
     "@teamwork/autocomplete-editor-codemirror": "file:packages/editor-codemirror",
+    "@teamwork/autocomplete-editor-contenteditable": "file:packages/editor-contenteditable",
     "@teamwork/autocomplete-editor-text": "file:packages/editor-text",
     "@teamwork/autocomplete-ui-ko": "file:packages/ui-ko",
     "@teamwork/autocomplete-ui-vue": "file:packages/ui-vue"

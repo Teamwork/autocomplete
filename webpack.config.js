@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const demoPages = [
     'CodeMirror-Vue',
     'CodeMirror-Knockout',
+    'Contenteditable-Vue',
     'Textarea-Vue',
     'Input-Vue',
     'Task',

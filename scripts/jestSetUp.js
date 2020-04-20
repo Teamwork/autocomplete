@@ -9,7 +9,7 @@
  * See https://github.com/facebook/jest/issues/2549#issuecomment-423202304.
  */
 Object.defineProperty(Error, Symbol.hasInstance, {
-    value: function(value) {
+    value: function (value) {
         if (this === Error) {
             return Object.prototype.toString.call(value) === '[object Error]'
         } else {
@@ -37,4 +37,31 @@ if (typeof document === 'object') {
             setStart: () => undefined,
         }
     }
+
+    // `document.getSelection` is required by editor-contenteditable but
+    // not provided by jsdom.
+    class Selection {
+        anchorNode = null
+        anchorOffset = 0
+        focusNode = null
+        focusOffset = 0
+        removeAllRanges() {
+            this.anchorNode = null
+            this.anchorOffset = 0
+            this.focusNode = null
+            this.focusOffset = 0
+        }
+        collapse(node, offset) {
+            this.anchorNode = node
+            this.anchorOffset = offset
+            this.focusNode = node
+            this.focusOffset = offset
+        }
+        extend(node, offset) {
+            this.focusNode = node
+            this.focusOffset = offset
+        }
+    }
+    const selection = new Selection()
+    document.getSelection = () => selection
 }

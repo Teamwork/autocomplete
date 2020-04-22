@@ -7,6 +7,7 @@ const demoPages = [
     'CodeMirror-Knockout',
     'Contenteditable-Vue',
     'Textarea-Vue',
+    'Textarea-Knockout',
     'Input-Vue',
     'Task',
 ]
@@ -65,7 +66,7 @@ const config = {
     },
 }
 
-demoPages.forEach(demoPage => {
+demoPages.forEach((demoPage) => {
     config.entry[demoPage] = path.join(__dirname, 'demo', `${demoPage}.js`)
     config.plugins.push(
         new HtmlWebpackPlugin({

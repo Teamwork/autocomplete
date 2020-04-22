@@ -83,9 +83,14 @@ export class TwAutocomplete {
     public readonly caretVisible: KnockoutComputed<boolean>
     public readonly visible: KnockoutComputed<boolean>
     public readonly viewName: KnockoutComputed<ViewName>
+    public readonly style: KnockoutComputed<Style>
     private node: HTMLElement | undefined = undefined
     private selectedNode: HTMLElement | undefined = undefined
     private readonly clearOnPointerOutside: boolean
+    private readonly viewportWidth: KnockoutObservable<number>
+    private readonly viewportHeight: KnockoutObservable<number>
+    private readonly componentWidth: KnockoutObservable<number>
+    private readonly componentHeight: KnockoutObservable<number>
 
     /**
      * Creates a new TwAutocomplete component.
@@ -94,6 +99,7 @@ export class TwAutocomplete {
         autocomplete,
         clearOnPointerOutside = true,
     }: TwAutocompleteOptions) {
+        const { documentElement } = document
         this.clearOnPointerOutside = clearOnPointerOutside
         this.autocomplete = autocomplete
         this.active = ko.observable(autocomplete.active)
@@ -104,6 +110,10 @@ export class TwAutocomplete {
         this.items = ko.observable(autocomplete.items)
         this.matchedText = ko.observable(autocomplete.matchedText)
         this.selectedIndex = ko.observable(autocomplete.selectedIndex)
+        this.viewportWidth = ko.observable(documentElement.clientWidth)
+        this.viewportHeight = ko.observable(documentElement.clientHeight)
+        this.componentWidth = ko.observable(0)
+        this.componentHeight = ko.observable(0)
 
         this.autocomplete.on('active', this.activeListener)
         this.autocomplete.on('caretPosition', this.caretPositionListener)
@@ -115,6 +125,7 @@ export class TwAutocomplete {
         this.autocomplete.on('selectedIndex', this.selectedIndexListener)
         document.addEventListener('pointerdown', this.handlePointer, true)
         document.addEventListener('pointerup', this.handlePointer, true)
+        window.addEventListener('resize', this.updateViewportSize)
 
         this.caretVisible = ko.pureComputed(() => {
             const caretPosition = this.caretPosition()
@@ -141,7 +152,50 @@ export class TwAutocomplete {
             }
         })
 
-        this.selectedIndex.subscribe(this.scheduleScrollList)
+        // Can't test this function properly because jsdom does not support layout.
+        /* istanbul ignore next */
+        this.style = ko.pureComputed(() => {
+            const {
+                top: caretTop,
+                right: caretRight,
+                bottom: caretBottom,
+                left: caretLeft,
+            } = this.caretPosition()
+            const viewportWidth = this.viewportWidth()
+            const viewportHeight = this.viewportHeight()
+            const componentWidth = this.componentWidth()
+            const componentHeight = this.componentHeight()
+            const style: Style = {
+                top: 'auto',
+                right: 'auto',
+                bottom: 'auto',
+                left: 'auto',
+            }
+
+            if (
+                caretBottom + componentHeight <= viewportHeight ||
+                viewportHeight - caretBottom >= caretTop
+            ) {
+                style.top = `${caretBottom}px`
+            } else {
+                style.bottom = `${viewportHeight - caretTop}px`
+            }
+
+            if (
+                caretRight + componentWidth <= viewportWidth ||
+                viewportWidth - caretRight >= caretLeft
+            ) {
+                style.left = `${caretRight}px`
+            } else {
+                style.right = `${viewportWidth - caretLeft}px`
+            }
+
+            return style
+        })
+
+        this.selectedIndex.subscribe(this.scrollListAsync)
+        this.items.subscribe(this.updateComponentSizeAsync)
+        this.viewName.subscribe(this.updateComponentSizeAsync)
     }
 
     public dispose(): void {
@@ -155,9 +209,10 @@ export class TwAutocomplete {
         this.autocomplete.off('selectedIndex', this.selectedIndexListener)
         document.removeEventListener('pointerdown', this.handlePointer, true)
         document.removeEventListener('pointerup', this.handlePointer, true)
+        window.removeEventListener('resize', this.updateViewportSize)
     }
 
-    private scheduleScrollList = (): void => {
+    private scrollListAsync = (): void => {
         requestAnimationFrame(this.scrollList)
     }
 
@@ -185,6 +240,26 @@ export class TwAutocomplete {
                 this.selectedNode.offsetHeight -
                 offsetParentElement.clientHeight
         }
+    }
+
+    public updateComponentSizeAsync = (): void => {
+        requestAnimationFrame(this.updateComponentSize)
+    }
+
+    // Can't test this function properly because jsdom does not support layout.
+    /* istanbul ignore next */
+    private updateComponentSize = (): void => {
+        if (this.node) {
+            this.componentWidth(this.node.offsetWidth)
+            this.componentHeight(this.node.offsetHeight)
+        }
+    }
+
+    // Can't test this function properly because jsdom does not support layout.
+    /* istanbul ignore next */
+    private updateViewportSize = (): void => {
+        this.viewportWidth(document.documentElement.clientWidth)
+        this.viewportHeight(document.documentElement.clientHeight)
     }
 
     private activeListener = (): void => this.active(this.autocomplete.active)
@@ -290,10 +365,7 @@ export function createTemplate({
     <div
         class="${blockName}"
         data-bind="
-            style: {
-                left: caretPosition().left + 'px',
-                top: caretPosition().bottom + 'px'
-            },
+            style: style,
             css: {
                 '${blockName}--loading': loading(),
                 '${blockName}--blank': viewName() === 'blank',
@@ -362,3 +434,7 @@ export function createTemplate({
  * The default component template.
  */
 export const template = createTemplate()
+
+type Style = {
+    [propertyName in string]: string
+}

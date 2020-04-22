@@ -17,9 +17,8 @@ import { Editor } from './text'
  * @returns Screen coordinates.
  */
 export function getCaretPosition(element: Editor, offset: number): Position {
-    // Content must have at least one character,
-    // so we fall back to a zero-width space.
-    const content = element.value || '\u200b'
+    // Add a zero-width space to ensure the correct content height.
+    const content = element.value + '\u200b'
 
     // We get the position of a character starting at `offset`,
     // as this handles line wrapping correctly.

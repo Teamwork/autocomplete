@@ -154,6 +154,35 @@ export const TwAutocomplete = Vue.extend({
                 autocomplete.off('selectedIndex', selectedIndexListener)
             })
         },
+
+        // Can't test this function properly because jsdom does not support layout.
+        /* istanbul ignore next */
+        scrollList() {
+            const { selectedItemElement } = this.$refs as Refs
+
+            if (!selectedItemElement) {
+                return
+            }
+
+            const offsetParentElement = selectedItemElement.offsetParent
+
+            if (!offsetParentElement) {
+                return
+            }
+
+            if (selectedItemElement.offsetTop < offsetParentElement.scrollTop) {
+                offsetParentElement.scrollTop = selectedItemElement.offsetTop
+            } else if (
+                selectedItemElement.offsetTop +
+                    selectedItemElement.offsetHeight >
+                offsetParentElement.scrollTop + offsetParentElement.clientHeight
+            ) {
+                offsetParentElement.scrollTop =
+                    selectedItemElement.offsetTop +
+                    selectedItemElement.offsetHeight -
+                    offsetParentElement.clientHeight
+            }
+        },
     },
     mounted() {
         // Can't test this function properly because jsdom does not support layout.
@@ -325,32 +354,9 @@ export const TwAutocomplete = Vue.extend({
             ],
         )
     },
-    // Can't test this function properly because jsdom does not support layout.
-    /* istanbul ignore next */
+
     updated() {
-        const { selectedItemElement } = this.$refs as Refs
-
-        if (!selectedItemElement) {
-            return
-        }
-
-        const offsetParentElement = selectedItemElement.offsetParent
-
-        if (!offsetParentElement) {
-            return
-        }
-
-        if (selectedItemElement.offsetTop < offsetParentElement.scrollTop) {
-            offsetParentElement.scrollTop = selectedItemElement.offsetTop
-        } else if (
-            selectedItemElement.offsetTop + selectedItemElement.offsetHeight >
-            offsetParentElement.scrollTop + offsetParentElement.clientHeight
-        ) {
-            offsetParentElement.scrollTop =
-                selectedItemElement.offsetTop +
-                selectedItemElement.offsetHeight -
-                offsetParentElement.clientHeight
-        }
+        this.scrollList()
     },
 })
 export type TwAutocomplete = typeof TwAutocomplete

@@ -66,9 +66,50 @@ export const TwAutocomplete = Vue.extend({
                 caretPosition.right > editorPosition.left - 1
             )
         },
+
+        // Can't test this function properly because jsdom does not support layout.
+        /* istanbul ignore next */
+        style(): Style {
+            const {
+                caretPosition: {
+                    top: caretTop,
+                    right: caretRight,
+                    bottom: caretBottom,
+                    left: caretLeft,
+                },
+                viewportSize: { width: viewportWidth, height: viewportHeight },
+                componentSize: {
+                    width: componentWidth,
+                    height: componentHeight,
+                },
+            } = this
+            const style: Style = {}
+
+            if (
+                caretBottom + componentHeight <= viewportHeight ||
+                viewportHeight - caretBottom >= caretTop
+            ) {
+                style.top = `${caretBottom}px`
+            } else {
+                style.bottom = `${viewportHeight - caretTop}px`
+            }
+
+            if (
+                caretRight + componentWidth <= viewportWidth ||
+                viewportWidth - caretRight >= caretLeft
+            ) {
+                style.left = `${caretRight}px`
+            } else {
+                style.right = `${viewportWidth - caretLeft}px`
+            }
+
+            return style
+        },
+
         visible(): boolean {
             return this.active && this.caretVisible
         },
+
         viewName(): ViewName {
             if (this.error) {
                 return ViewName.error
@@ -91,6 +132,14 @@ export const TwAutocomplete = Vue.extend({
             loading: false,
             matchedText: '',
             selectedIndex: -1,
+            viewportSize: {
+                width: document.documentElement.clientWidth,
+                height: document.documentElement.clientHeight,
+            },
+            componentSize: {
+                width: 0,
+                height: 0,
+            },
         }
         // Make `autocomplete` a valid property
         // but do not add it to `data` to avoid making it reactive.
@@ -183,11 +232,10 @@ export const TwAutocomplete = Vue.extend({
                     offsetParentElement.clientHeight
             }
         },
-    },
-    mounted() {
+
         // Can't test this function properly because jsdom does not support layout.
         /* istanbul ignore next */
-        const handlePointer = (event: MouseEvent): void => {
+        handlePointer(event: MouseEvent): void {
             if (this.clearOnPointerOutside && this.active) {
                 const rootNode =
                     typeof this.$el.getRootNode === 'function'
@@ -201,13 +249,32 @@ export const TwAutocomplete = Vue.extend({
                     this.autocomplete.clear()
                 }
             }
-        }
-        document.addEventListener('pointerdown', handlePointer, true)
-        document.addEventListener('pointerup', handlePointer, true)
-        this.$once('hook:beforeDestroy', () => {
-            document.removeEventListener('pointerdown', handlePointer, true)
-            document.removeEventListener('pointerup', handlePointer, true)
-        })
+        },
+
+        // Can't test this function properly because jsdom does not support layout.
+        /* istanbul ignore next */
+        updateViewportSize() {
+            this.viewportSize.width = document.documentElement.clientWidth
+            this.viewportSize.height = document.documentElement.clientHeight
+        },
+
+        // Can't test this function properly because jsdom does not support layout.
+        /* istanbul ignore next */
+        updateComponentSize() {
+            const element = this.$el as HTMLElement
+            this.componentSize.width = element.offsetWidth
+            this.componentSize.height = element.offsetHeight
+        },
+    },
+    mounted() {
+        document.addEventListener('pointerdown', this.handlePointer, true)
+        document.addEventListener('pointerup', this.handlePointer, true)
+        window.addEventListener('resize', this.updateViewportSize)
+    },
+    beforeDestroy() {
+        document.removeEventListener('pointerdown', this.handlePointer, true)
+        document.removeEventListener('pointerup', this.handlePointer, true)
+        window.removeEventListener('resize', this.updateViewportSize)
     },
     name: 'TwAutocomplete',
     props: {
@@ -244,10 +311,7 @@ export const TwAutocomplete = Vue.extend({
                     [`${this.blockName}--items`]: viewName === ViewName.items,
                     [`${this.blockName}--error`]: viewName === ViewName.error,
                 },
-                style: {
-                    left: `${this.caretPosition.left}px`,
-                    top: `${this.caretPosition.bottom}px`,
-                },
+                style: this.style,
             },
             [
                 createElement(
@@ -357,6 +421,7 @@ export const TwAutocomplete = Vue.extend({
 
     updated() {
         this.scrollList()
+        this.updateComponentSize()
     },
 })
 export type TwAutocomplete = typeof TwAutocomplete
@@ -372,3 +437,7 @@ const defaultPosition: Position = Object.freeze({
     right: 0,
     top: 0,
 })
+
+type Style = {
+    [propertyName in string]: string
+}

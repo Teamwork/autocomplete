@@ -204,7 +204,7 @@ export class TwAutocomplete {
     // Can't test this function properly because jsdom does not support layout.
     /* istanbul ignore next */
     private handlePointer = (event: PointerEvent): void => {
-        if (this.clearOnPointerOutside && this.active && this.node) {
+        if (this.clearOnPointerOutside && this.active() && this.node) {
             const rootNode =
                 typeof this.node.getRootNode === 'function'
                     ? (this.node.getRootNode() as ShadowRoot | Document)

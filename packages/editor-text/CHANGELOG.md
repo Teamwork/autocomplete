@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.6](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-editor-text@1.0.5...@teamwork/autocomplete-editor-text@1.0.6) (2020-04-22)
+
+
+### Bug Fixes
+
+* fix list position in textarea ending with new line ([2901e72](https://github.com/Teamwork/autocomplete/commit/2901e725392aed1637edb9d6ea13b2eab06bc181))
+
+
+
+
+
 ## [1.0.5](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-editor-text@1.0.4...@teamwork/autocomplete-editor-text@1.0.5) (2020-04-20)
 
 **Note:** Version bump only for package @teamwork/autocomplete-editor-text

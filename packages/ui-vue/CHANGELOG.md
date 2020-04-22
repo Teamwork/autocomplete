@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.6](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-vue@1.1.5...@teamwork/autocomplete-ui-vue@1.1.6) (2020-04-22)
+
+
+### Bug Fixes
+
+* try to keep list in viewport ([e9822c4](https://github.com/Teamwork/autocomplete/commit/e9822c4c8b0c329f49c8ab390faeadfe0f7c1db7))
+
+
+
+
+
 ## [1.1.5](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-vue@1.1.4...@teamwork/autocomplete-ui-vue@1.1.5) (2020-04-20)
 
 **Note:** Version bump only for package @teamwork/autocomplete-ui-vue

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.5](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-ko@2.0.4...@teamwork/autocomplete-ui-ko@2.0.5) (2020-04-22)
+
+
+### Bug Fixes
+
+* fix TypeError on pointer events ([6efdeec](https://github.com/Teamwork/autocomplete/commit/6efdeecb57b4a2f2c7fa7eb0a6acf8f8e187bd6c))
+* try to keep list in viewport ([1ac234f](https://github.com/Teamwork/autocomplete/commit/1ac234fde1e1b938e19de6d7127de1bae3037fc8))
+
+
+
+
+
 ## [2.0.4](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-ko@2.0.3...@teamwork/autocomplete-ui-ko@2.0.4) (2020-04-20)
 
 **Note:** Version bump only for package @teamwork/autocomplete-ui-ko

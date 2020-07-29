@@ -18,6 +18,9 @@ export function initUI(autocomplete) {
                         return 'Type something'
                     },
                 },
+                props: {
+                    uiPosition: 'caret',
+                },
             })
         },
     })

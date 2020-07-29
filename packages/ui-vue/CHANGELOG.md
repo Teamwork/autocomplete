@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-vue@1.1.6...@teamwork/autocomplete-ui-vue@1.2.0) (2020-07-29)
+
+
+### Features
+
+* add getCaretPosition to EditorAdapter ([5f0d7ce](https://github.com/Teamwork/autocomplete/commit/5f0d7ce3d5d75ceb578b23efdc855fca67c703d3))
+* add uiPosition prop ([fd1c287](https://github.com/Teamwork/autocomplete/commit/fd1c287497f3578c698ab934ac963ee69c6b6130))
+
+
+
+
+
 ## [1.1.6](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-vue@1.1.5...@teamwork/autocomplete-ui-vue@1.1.6) (2020-04-22)
 
 

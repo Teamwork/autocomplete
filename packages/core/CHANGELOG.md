@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-core@1.1.3...@teamwork/autocomplete-core@1.2.0) (2020-07-29)
+
+
+### Features
+
+* add caretOffset to Autocomplete ([c5e7ee3](https://github.com/Teamwork/autocomplete/commit/c5e7ee3d86117655f9c3b127f97abaefd4537942))
+* add getCaretPosition to EditorAdapter ([5f0d7ce](https://github.com/Teamwork/autocomplete/commit/5f0d7ce3d5d75ceb578b23efdc855fca67c703d3))
+
+
+
+
+
 ## [1.1.3](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-core@1.1.2...@teamwork/autocomplete-core@1.1.3) (2020-04-20)
 
 **Note:** Version bump only for package @teamwork/autocomplete-core

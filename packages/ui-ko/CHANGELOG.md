@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-ko@2.0.5...@teamwork/autocomplete-ui-ko@2.1.0) (2020-07-29)
+
+
+### Features
+
+* add getCaretPosition to EditorAdapter ([5f0d7ce](https://github.com/Teamwork/autocomplete/commit/5f0d7ce3d5d75ceb578b23efdc855fca67c703d3))
+* add uiPosition param ([b6151dc](https://github.com/Teamwork/autocomplete/commit/b6151dc912e089ee843bf34cbe54c4adcf029d6c))
+
+
+
+
+
 ## [2.0.5](https://github.com/Teamwork/autocomplete/compare/@teamwork/autocomplete-ui-ko@2.0.4...@teamwork/autocomplete-ui-ko@2.0.5) (2020-04-22)
 
 

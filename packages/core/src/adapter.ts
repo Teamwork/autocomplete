@@ -55,4 +55,11 @@ export interface EditorAdapter
      * Detaches this adapter from its editor.
      */
     destroy(): void
+    /**
+     * Gets the screen coordinates of the caret.
+     * @param offset Allows getting the caret position
+     * as if it was moved by the specified number of characters
+     * relative to the actual caret position. Defaults to 0.
+     */
+    getCaretPosition(offset?: number): Position
 }

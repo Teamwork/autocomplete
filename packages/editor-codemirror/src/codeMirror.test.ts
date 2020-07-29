@@ -59,6 +59,25 @@ test('textAfterCaret', () => {
     expect(editor.getCursor('head')).toStrictEqual(editor.getCursor('anchor'))
 })
 
+describe('getCaretPosition', () => {
+    test('without offset', () => {
+        expect(editorAdapter.getCaretPosition()).toStrictEqual({
+            bottom: expect.any(Number),
+            left: expect.any(Number),
+            right: expect.any(Number),
+            top: expect.any(Number),
+        })
+    })
+    test('without offset', () => {
+        expect(editorAdapter.getCaretPosition(5)).toStrictEqual({
+            bottom: expect.any(Number),
+            left: expect.any(Number),
+            right: expect.any(Number),
+            top: expect.any(Number),
+        })
+    })
+})
+
 test('caretPosition', () => {
     expect(editorAdapter.caretPosition).toStrictEqual({
         bottom: expect.any(Number),

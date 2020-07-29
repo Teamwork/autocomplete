@@ -28,6 +28,10 @@ const editorPosition: Position = Object.freeze({
     top: 10,
 })
 
+function getCaretPosition(this: EditorAdapter, _offset: number = 0): Position {
+    return this.caretPosition
+}
+
 class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
     implements EditorAdapter {
     public editor: any = {}
@@ -37,6 +41,7 @@ class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
     public editorPosition: Position = editorPosition
     public destroy = noop
     public focus = noop
+    public getCaretPosition = getCaretPosition
 }
 
 let editorAdapter: MockEditorAdapter

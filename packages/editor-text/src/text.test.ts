@@ -50,6 +50,25 @@ describe.each(['textarea', 'input'])('%s', (elementName) => {
         expect(editor.selectionStart).toBe(editor.selectionEnd)
     })
 
+    describe('getCaretPosition', () => {
+        test('without offset', () => {
+            expect(editorAdapter.getCaretPosition()).toStrictEqual({
+                bottom: expect.any(Number),
+                left: expect.any(Number),
+                right: expect.any(Number),
+                top: expect.any(Number),
+            })
+        })
+        test('with offset', () => {
+            expect(editorAdapter.getCaretPosition(5)).toStrictEqual({
+                bottom: expect.any(Number),
+                left: expect.any(Number),
+                right: expect.any(Number),
+                top: expect.any(Number),
+            })
+        })
+    })
+
     test('caretPosition', () => {
         expect(editorAdapter.caretPosition).toStrictEqual({
             bottom: expect.any(Number),

@@ -45,6 +45,36 @@ class ContenteditableEditorAdapter
         this.editor.focus()
     }
 
+    public getCaretPosition(offset: number = 0): Position {
+        const { caret } = this
+        if (!caret) {
+            return {
+                bottom: 0,
+                left: 0,
+                right: 0,
+                top: 0,
+            }
+        }
+
+        const offsetCaret = {
+            node: caret.node,
+            offset: Math.max(
+                0,
+                Math.min(caret.node.data.length, caret.offset + offset),
+            ),
+        }
+        const range = document.createRange()
+        range.setStart(offsetCaret.node, offsetCaret.offset)
+        range.setEnd(offsetCaret.node, offsetCaret.offset)
+        const position = range.getBoundingClientRect()
+        return {
+            bottom: position.bottom,
+            left: position.left,
+            right: position.left,
+            top: position.top,
+        }
+    }
+
     public get textBeforeCaret(): string {
         const { caret } = this
         return caret ? caret.node.data.substring(0, caret.offset) : ''
@@ -85,26 +115,7 @@ class ContenteditableEditorAdapter
     }
 
     public get caretPosition(): Position {
-        const { caret } = this
-        if (!caret) {
-            return {
-                bottom: 0,
-                left: 0,
-                right: 0,
-                top: 0,
-            }
-        }
-
-        const range = document.createRange()
-        range.setStart(caret.node, caret.offset)
-        range.setEnd(caret.node, caret.offset)
-        const position = range.getBoundingClientRect()
-        return {
-            bottom: position.bottom,
-            left: position.left,
-            right: position.left,
-            top: position.top,
-        }
+        return this.getCaretPosition()
     }
 
     public get editorPosition(): Position {

@@ -62,6 +62,17 @@ class TextareaEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         this.editor.focus()
     }
 
+    public getCaretPosition(offset: number = 0): Position {
+        const index = this.editor.selectionStart + offset
+        const position = getCaretPosition(this.editor, index)
+        return {
+            bottom: position.bottom,
+            left: position.left,
+            right: position.left,
+            top: position.top,
+        }
+    }
+
     public get textBeforeCaret(): string {
         const content = this.editor.value
         const offset = this.editor.selectionStart
@@ -95,14 +106,7 @@ class TextareaEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
     }
 
     public get caretPosition(): Position {
-        const offset = this.editor.selectionStart
-        const position = getCaretPosition(this.editor, offset)
-        return {
-            bottom: position.bottom,
-            left: position.left,
-            right: position.left,
-            top: position.top,
-        }
+        return this.getCaretPosition()
     }
 
     public get editorPosition(): Position {

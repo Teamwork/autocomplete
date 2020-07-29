@@ -40,6 +40,23 @@ class CodeMirrorEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
         this.editor.focus()
     }
 
+    public getCaretPosition(offset: number = 0): Position {
+        const doc = this.editor.getDoc()
+        const caret = doc.getCursor('head')
+        const offsetCaret = {
+            ch: caret.ch + offset,
+            line: caret.line,
+            sticky: caret.sticky,
+        }
+        const position = this.editor.cursorCoords(offsetCaret, 'window')
+        return {
+            bottom: position.bottom,
+            left: position.left,
+            right: position.left,
+            top: position.top,
+        }
+    }
+
     public get textBeforeCaret(): string {
         const doc = this.editor.getDoc()
         const end = doc.getCursor('head')
@@ -71,15 +88,7 @@ class CodeMirrorEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
     }
 
     public get caretPosition(): Position {
-        const doc = this.editor.getDoc()
-        const caret = doc.getCursor('head')
-        const position = this.editor.cursorCoords(caret, 'window')
-        return {
-            bottom: position.bottom,
-            left: position.left,
-            right: position.left,
-            top: position.top,
-        }
+        return this.getCaretPosition()
     }
 
     public get editorPosition(): Position {

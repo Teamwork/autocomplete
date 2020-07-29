@@ -164,6 +164,36 @@ describe('textAfterCaret', () => {
     })
 })
 
+describe('getCaretPosition', () => {
+    test('valid selection, without offset', () => {
+        expect(editorAdapter.getCaretPosition()).toStrictEqual({
+            bottom: expect.any(Number),
+            left: expect.any(Number),
+            right: expect.any(Number),
+            top: expect.any(Number),
+        })
+    })
+
+    test('valid selection, with offset', () => {
+        expect(editorAdapter.getCaretPosition(5)).toStrictEqual({
+            bottom: expect.any(Number),
+            left: expect.any(Number),
+            right: expect.any(Number),
+            top: expect.any(Number),
+        })
+    })
+
+    test('no selection', () => {
+        selection.removeAllRanges()
+        expect(editorAdapter.getCaretPosition()).toStrictEqual({
+            bottom: 0,
+            left: 0,
+            right: 0,
+            top: 0,
+        })
+    })
+})
+
 describe('caretPosition', () => {
     test('valid selection', () => {
         expect(editorAdapter.caretPosition).toStrictEqual({

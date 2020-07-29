@@ -1,5 +1,6 @@
 import { Autocomplete, Item, Position } from '@teamwork/autocomplete-core'
 import Vue, { VNode } from 'vue'
+import { PropValidator } from 'vue/types/options'
 
 /**
  * The possible view names.
@@ -9,6 +10,24 @@ export const enum ViewName {
     items = 'items',
     loading = 'loading',
     blank = 'blank',
+}
+
+/**
+ * The possible UI positions.
+ */
+export const enum UIPosition {
+    /**
+     * Align with the caret.
+     */
+    caret = 'caret',
+    /**
+     * Align with the start of the matched text.
+     */
+    start = 'start',
+    /**
+     * Align with the end of the matched text.
+     */
+    end = 'end',
 }
 
 /**
@@ -70,19 +89,31 @@ export const TwAutocomplete = Vue.extend({
         // Can't test this function properly because jsdom does not support layout.
         /* istanbul ignore next */
         style(): Style {
+            // These 2 properties are accessed just to set up a dependency,
+            // so that the style would be updated.
+            if (!this.caretPosition || !this.editorPosition) {
+                throw new Error('Should never get here')
+            }
+
             const {
-                caretPosition: {
-                    top: caretTop,
-                    right: caretRight,
-                    bottom: caretBottom,
-                    left: caretLeft,
-                },
                 viewportSize: { width: viewportWidth, height: viewportHeight },
                 componentSize: {
                     width: componentWidth,
                     height: componentHeight,
                 },
             } = this
+            const offset =
+                this.uiPosition === UIPosition.start
+                    ? -this.caretOffset
+                    : this.uiPosition === UIPosition.end
+                    ? this.matchedText.length - this.caretOffset
+                    : 0
+            const {
+                top: caretTop,
+                right: caretRight,
+                bottom: caretBottom,
+                left: caretLeft,
+            } = this.autocomplete.editorAdapter.getCaretPosition(offset)
             const style: Style = {}
 
             if (
@@ -131,6 +162,7 @@ export const TwAutocomplete = Vue.extend({
             items: defaultItems,
             loading: false,
             matchedText: '',
+            caretOffset: 0,
             selectedIndex: -1,
             viewportSize: {
                 width: document.documentElement.clientWidth,
@@ -171,6 +203,8 @@ export const TwAutocomplete = Vue.extend({
             const itemsListener = () => (this.items = autocomplete.items)
             const matchedTextListener = () =>
                 (this.matchedText = autocomplete.matchedText)
+            const caretOffsetListener = () =>
+                (this.caretOffset = autocomplete.caretOffset)
             const selectedIndexListener = () =>
                 (this.selectedIndex = autocomplete.selectedIndex)
 
@@ -181,6 +215,7 @@ export const TwAutocomplete = Vue.extend({
             loadingListener()
             itemsListener()
             matchedTextListener()
+            caretOffsetListener()
             selectedIndexListener()
 
             autocomplete.on('active', activeListener)
@@ -190,6 +225,7 @@ export const TwAutocomplete = Vue.extend({
             autocomplete.on('loading', loadingListener)
             autocomplete.on('items', itemsListener)
             autocomplete.on('matchedText', matchedTextListener)
+            autocomplete.on('caretOffset', caretOffsetListener)
             autocomplete.on('selectedIndex', selectedIndexListener)
 
             this.$once('hook:beforeDestroy', () => {
@@ -200,6 +236,7 @@ export const TwAutocomplete = Vue.extend({
                 autocomplete.off('loading', loadingListener)
                 autocomplete.off('items', itemsListener)
                 autocomplete.off('matchedText', matchedTextListener)
+                autocomplete.off('caretOffset', caretOffsetListener)
                 autocomplete.off('selectedIndex', selectedIndexListener)
             })
         },
@@ -295,6 +332,14 @@ export const TwAutocomplete = Vue.extend({
             default: true,
             type: Boolean,
         },
+        /**
+         * Determines the position of the autocomplete UI.
+         * Defaults to `"caret"`.
+         */
+        uiPosition: {
+            default: UIPosition.caret,
+            type: String,
+        } as PropValidator<UIPosition>,
     },
     render(createElement): VNode {
         if (!this.visible) {

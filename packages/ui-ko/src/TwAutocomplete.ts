@@ -12,6 +12,24 @@ export const enum ViewName {
 }
 
 /**
+ * The possible UI positions.
+ */
+export const enum UIPosition {
+    /**
+     * Align with the caret.
+     */
+    caret = 'caret',
+    /**
+     * Align with the start of the matched text.
+     */
+    start = 'start',
+    /**
+     * Align with the end of the matched text.
+     */
+    end = 'end',
+}
+
+/**
  * The options expected by the TwAutocomplete component.
  */
 export interface TwAutocompleteOptions {
@@ -25,6 +43,11 @@ export interface TwAutocompleteOptions {
      * Defaults to `true`.
      */
     clearOnPointerOutside?: boolean
+    /**
+     * Determines the position of the autocomplete UI.
+     * Defaults to `"caret"`.
+     */
+    uiPosition?: UIPosition
 }
 
 /**
@@ -79,6 +102,7 @@ export class TwAutocomplete {
     public readonly loading: KnockoutObservable<boolean>
     public readonly items: KnockoutObservable<Readonly<Item[]>>
     public readonly matchedText: KnockoutObservable<string>
+    public readonly caretOffset: KnockoutObservable<number>
     public readonly selectedIndex: KnockoutObservable<number>
     public readonly caretVisible: KnockoutComputed<boolean>
     public readonly visible: KnockoutComputed<boolean>
@@ -87,6 +111,7 @@ export class TwAutocomplete {
     private node: HTMLElement | undefined = undefined
     private selectedNode: HTMLElement | undefined = undefined
     private readonly clearOnPointerOutside: boolean
+    private readonly uiPosition: UIPosition
     private readonly viewportWidth: KnockoutObservable<number>
     private readonly viewportHeight: KnockoutObservable<number>
     private readonly componentWidth: KnockoutObservable<number>
@@ -98,9 +123,11 @@ export class TwAutocomplete {
     public constructor({
         autocomplete,
         clearOnPointerOutside = true,
+        uiPosition = UIPosition.caret,
     }: TwAutocompleteOptions) {
         const { documentElement } = document
         this.clearOnPointerOutside = clearOnPointerOutside
+        this.uiPosition = uiPosition
         this.autocomplete = autocomplete
         this.active = ko.observable(autocomplete.active)
         this.caretPosition = ko.observable(autocomplete.caretPosition)
@@ -109,6 +136,7 @@ export class TwAutocomplete {
         this.loading = ko.observable(autocomplete.loading)
         this.items = ko.observable(autocomplete.items)
         this.matchedText = ko.observable(autocomplete.matchedText)
+        this.caretOffset = ko.observable(autocomplete.caretOffset)
         this.selectedIndex = ko.observable(autocomplete.selectedIndex)
         this.viewportWidth = ko.observable(documentElement.clientWidth)
         this.viewportHeight = ko.observable(documentElement.clientHeight)
@@ -122,6 +150,7 @@ export class TwAutocomplete {
         this.autocomplete.on('loading', this.loadingListener)
         this.autocomplete.on('items', this.itemsListener)
         this.autocomplete.on('matchedText', this.matchedTextListener)
+        this.autocomplete.on('caretOffset', this.caretOffsetListener)
         this.autocomplete.on('selectedIndex', this.selectedIndexListener)
         document.addEventListener('pointerdown', this.handlePointer, true)
         document.addEventListener('pointerup', this.handlePointer, true)
@@ -155,16 +184,27 @@ export class TwAutocomplete {
         // Can't test this function properly because jsdom does not support layout.
         /* istanbul ignore next */
         this.style = ko.pureComputed(() => {
+            // These 2 properties are accessed just to set up a dependency,
+            // so that the style would be updated.
+            this.caretPosition()
+            this.editorPosition()
+
+            const viewportWidth = this.viewportWidth()
+            const viewportHeight = this.viewportHeight()
+            const componentWidth = this.componentWidth()
+            const componentHeight = this.componentHeight()
+            const offset =
+                this.uiPosition === UIPosition.start
+                    ? -this.caretOffset()
+                    : this.uiPosition === UIPosition.end
+                    ? this.matchedText().length - this.caretOffset()
+                    : 0
             const {
                 top: caretTop,
                 right: caretRight,
                 bottom: caretBottom,
                 left: caretLeft,
-            } = this.caretPosition()
-            const viewportWidth = this.viewportWidth()
-            const viewportHeight = this.viewportHeight()
-            const componentWidth = this.componentWidth()
-            const componentHeight = this.componentHeight()
+            } = this.autocomplete.editorAdapter.getCaretPosition(offset)
             const style: Style = {
                 top: 'auto',
                 right: 'auto',
@@ -206,6 +246,7 @@ export class TwAutocomplete {
         this.autocomplete.off('loading', this.loadingListener)
         this.autocomplete.off('items', this.itemsListener)
         this.autocomplete.off('matchedText', this.matchedTextListener)
+        this.autocomplete.off('caretOffset', this.caretOffsetListener)
         this.autocomplete.off('selectedIndex', this.selectedIndexListener)
         document.removeEventListener('pointerdown', this.handlePointer, true)
         document.removeEventListener('pointerup', this.handlePointer, true)
@@ -273,6 +314,8 @@ export class TwAutocomplete {
     private itemsListener = (): void => this.items(this.autocomplete.items)
     private matchedTextListener = (): void =>
         this.matchedText(this.autocomplete.matchedText)
+    private caretOffsetListener = (): void =>
+        this.caretOffset(this.autocomplete.caretOffset)
     private selectedIndexListener = (): void =>
         this.selectedIndex(this.autocomplete.selectedIndex)
 

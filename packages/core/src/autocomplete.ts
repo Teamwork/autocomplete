@@ -85,6 +85,10 @@ export interface AutocompleteEvents {
      */
     matchedText: void
     /**
+     * Emitted when the `caretOffset` property is updated.
+     */
+    caretOffset: void
+    /**
      * Emitted when the `caretPosition` property is updated.
      */
     caretPosition: void
@@ -127,6 +131,10 @@ export interface Autocomplete
      * The matched text.
      */
     readonly matchedText: string
+    /**
+     * The number of characters between the start of `matchedText` and the caret.
+     */
+    readonly caretOffset: number
     /**
      * The screen coordinates of the caret.
      */
@@ -204,6 +212,7 @@ export interface CreateAutocompleteOptions {
     clearOnSelectionChange?: boolean
 }
 
+const defaultCaretOffset = 0
 const defaultMatchedText = ''
 const defaultItems: Items = Object.freeze([])
 const defaultSelectedIndex = -1
@@ -279,6 +288,17 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
         }
     }
     private _matchedText: string = defaultMatchedText
+
+    public get caretOffset(): number {
+        return this._caretOffset
+    }
+    public set caretOffset(caretOffset: number) {
+        if (this._caretOffset !== caretOffset) {
+            this._caretOffset = caretOffset
+            this.emitLater('caretOffset')
+        }
+    }
+    private _caretOffset: number = defaultCaretOffset
 
     public get caretPosition(): Position {
         return this._caretPosition
@@ -449,6 +469,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
 
         this.active = true
         this.matchedText = matchedText
+        this.caretOffset = lengthBefore
         this.caretPosition = this.editorAdapter.caretPosition
         this.editorPosition = this.editorAdapter.editorPosition
         this.promise = pomise
@@ -472,6 +493,7 @@ class AutocompleteClass extends TypedEventEmitter<AutocompleteEvents>
     private clearNow(): void {
         this.active = false
         this.matchedText = defaultMatchedText
+        this.caretOffset = defaultCaretOffset
         this.caretPosition = defaultPosition
         this.editorPosition = defaultPosition
         this.promise = undefined

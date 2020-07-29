@@ -62,6 +62,7 @@ class MockEditorAdapter extends TypedEventEmitter<EditorAdapterEvents>
 let letterItems: Item[]
 let numberItems: Item[]
 let match: jest.Mock<[number, number], [string, string]>
+let match2: jest.Mock<[number, number], [string, string]>
 let load: jest.Mock<Item[] | Promise<Item[]>, [string]>
 let accept: jest.Mock<string | undefined, [Item]>
 let editorAdapter: MockEditorAdapter
@@ -73,6 +74,7 @@ function expectNotActive(): void {
     expect(autocomplete.editorPosition).toStrictEqual(position0)
     expect(autocomplete.items).toStrictEqual([])
     expect(autocomplete.matchedText).toBe('')
+    expect(autocomplete.caretOffset).toBe(0)
     expect(autocomplete.selectedIndex).toBe(-1)
     expect(autocomplete.error).toBe(undefined)
     expect(autocomplete.loading).toBe(false)
@@ -83,6 +85,7 @@ function expectActive({
     editorPosition = editorPosition1,
     items = letterItems,
     matchedText = 'def',
+    caretOffset = 3,
     selectedIndex = 0,
     error,
     loading = false,
@@ -91,6 +94,7 @@ function expectActive({
     editorPosition?: Position
     items?: Readonly<Item[]>
     matchedText?: string
+    caretOffset?: number
     selectedIndex?: number
     error?: Error | undefined
     loading?: boolean
@@ -100,6 +104,7 @@ function expectActive({
     expect(autocomplete.editorPosition).toStrictEqual(editorPosition)
     expect(autocomplete.items).toStrictEqual(items)
     expect(autocomplete.matchedText).toBe(matchedText)
+    expect(autocomplete.caretOffset).toBe(caretOffset)
     expect(autocomplete.selectedIndex).toBe(selectedIndex)
     expect(autocomplete.error).toBe(error)
     expect(autocomplete.loading).toBe(loading)
@@ -122,6 +127,15 @@ beforeEach(() => {
             ? matchBeforeCaret[0].length
             : -1
         return [countBeforeCaret, 0]
+    })
+    match2 = jest.fn((textBeforeCaret, textAfterCaret) => {
+        const matchBeforeCaret = /\w+$/.exec(textBeforeCaret)
+        const countBeforeCaret = matchBeforeCaret
+            ? matchBeforeCaret[0].length
+            : -1
+        const matchAfterCaret = /^\w+/.exec(textAfterCaret)
+        const countAfterCaret = matchAfterCaret ? matchAfterCaret[0].length : -1
+        return [countBeforeCaret, countAfterCaret]
     })
     load = jest.fn((matchedText) =>
         /^[0-9]/.test(matchedText) ? numberItems : letterItems,
@@ -212,6 +226,21 @@ describe('match', () => {
         autocomplete.match()
         await whenAnimationFrame()
         expectNotActive()
+    })
+
+    test('match function matching text before and after caret', async () => {
+        autocomplete.destroy()
+        autocomplete = createAutocomplete({
+            editorAdapter,
+            load,
+            accept,
+            match: match2,
+        })
+        editorAdapter.textBeforeCaret = '123 abcd'
+        editorAdapter.textAfterCaret = 'efghij 456'
+        autocomplete.match()
+        await whenAnimationFrame()
+        expectActive({ matchedText: 'abcdefghij', caretOffset: 4 })
     })
 })
 
@@ -470,6 +499,7 @@ describe('replace', () => {
 describe('loading', () => {
     let onActive: jest.Mock
     let onMatchedText: jest.Mock
+    let onCaretOffset: jest.Mock
     let onItems: jest.Mock
     let onSelectedIndex: jest.Mock
     let onCaretPosition: jest.Mock
@@ -480,6 +510,7 @@ describe('loading', () => {
     beforeEach(() => {
         autocomplete.on('active', (onActive = jest.fn()))
         autocomplete.on('matchedText', (onMatchedText = jest.fn()))
+        autocomplete.on('caretOffset', (onCaretOffset = jest.fn()))
         autocomplete.on('items', (onItems = jest.fn()))
         autocomplete.on('selectedIndex', (onSelectedIndex = jest.fn()))
         autocomplete.on('caretPosition', (onCaretPosition = jest.fn()))
@@ -495,6 +526,7 @@ describe('loading', () => {
 
         expect(onActive).toHaveBeenCalledTimes(1)
         expect(onMatchedText).toHaveBeenCalledTimes(1)
+        expect(onCaretOffset).toHaveBeenCalledTimes(1)
         expect(onItems).toHaveBeenCalledTimes(1)
         expect(onSelectedIndex).toHaveBeenCalledTimes(1)
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
@@ -514,6 +546,7 @@ describe('loading', () => {
 
         expect(onActive).toHaveBeenCalledTimes(1)
         expect(onMatchedText).toHaveBeenCalledTimes(1)
+        expect(onCaretOffset).toHaveBeenCalledTimes(1)
         expect(onItems).toHaveBeenCalledTimes(0)
         expect(onSelectedIndex).toHaveBeenCalledTimes(0)
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
@@ -558,6 +591,7 @@ describe('loading', () => {
         expectActive()
         expect(onActive).toHaveBeenCalledTimes(1)
         expect(onMatchedText).toHaveBeenCalledTimes(1)
+        expect(onCaretOffset).toHaveBeenCalledTimes(1)
         expect(onItems).toHaveBeenCalledTimes(1)
         expect(onSelectedIndex).toHaveBeenCalledTimes(1)
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
@@ -609,6 +643,7 @@ describe('loading', () => {
 
         expect(onActive).toHaveBeenCalledTimes(1)
         expect(onMatchedText).toHaveBeenCalledTimes(1)
+        expect(onCaretOffset).toHaveBeenCalledTimes(1)
         expect(onItems).toHaveBeenCalledTimes(0)
         expect(onSelectedIndex).toHaveBeenCalledTimes(0)
         expect(onCaretPosition).toHaveBeenCalledTimes(1)
@@ -641,6 +676,7 @@ describe('loading', () => {
 
         expect(onActive).toHaveBeenCalledTimes(2)
         expect(onMatchedText).toHaveBeenCalledTimes(2)
+        expect(onCaretOffset).toHaveBeenCalledTimes(2)
         expect(onItems).toHaveBeenCalledTimes(0)
         expect(onSelectedIndex).toHaveBeenCalledTimes(0)
         expect(onCaretPosition).toHaveBeenCalledTimes(2)

@@ -9,12 +9,12 @@ export function initAutocomplete(editorAdapter) {
             const matchBeforeCaret = /(?:^|\p{White_Space})(@[\p{Alphabetic}\p{gc=Mark}\p{gc=Decimal_Number}\p{gc=Connector_Punctuation}\p{Join_Control}]*)$/u.exec(
                 textBeforeCaret,
             )
-            const matchAfterCaret = /^(?:$|\p{White_Space})/u.exec(
+            const matchAfterCaret = /^([\p{Alphabetic}\p{gc=Mark}\p{gc=Decimal_Number}\p{gc=Connector_Punctuation}\p{Join_Control}]*)(?:$|\p{White_Space})/u.exec(
                 textAfterCaret,
             )
             return [
                 matchBeforeCaret ? matchBeforeCaret[1].length : -1,
-                matchAfterCaret ? 0 : -1,
+                matchAfterCaret ? matchAfterCaret[1].length : -1,
             ]
         },
         async load(matchedText) {
@@ -22,7 +22,7 @@ export function initAutocomplete(editorAdapter) {
 
             if (/^slow_/.test(matchedText)) {
                 matchedText = matchedText.substring(5)
-                await new Promise(resolve => setTimeout(resolve, 2000))
+                await new Promise((resolve) => setTimeout(resolve, 2000))
             }
 
             if (/^error_/.test(matchedText)) {
@@ -39,7 +39,7 @@ export function initAutocomplete(editorAdapter) {
                 )}`,
             )
             const body = await response.json()
-            return body[1].map(text => ({
+            return body[1].map((text) => ({
                 id: text,
                 text,
                 title: text,
